@@ -1,14 +1,32 @@
 <!DOCTYPE html>
-<!-- As much as it pains me to use JS, I feel like doing it in C with WASM would be massively overcomplicated.-->
-<html>
-
-
+<html lang="en">
 <head>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Table Viewer</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+    </style>
 </head>
-
 <body>
+    <h1>My Web Page</h1>
+    <h2>CSV Data</h2>
+    <div id="csv-table">Loading table...</div>
 
+    <script>
+        fetch('http://localhost:8080/table')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('csv-table').innerHTML = data;
+            })
+            .catch(error => {
+                document.getElementById('csv-table').innerHTML = 'Error loading table: ' + error.message;
+            });
+    </script>
 </body>
-
 </html>

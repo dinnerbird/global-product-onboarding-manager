@@ -1,7 +1,8 @@
 # Stupidly important
-[ ] Create an Excel file with a bunch of bogus names (as proof of concept)...and figure out a way to turn it into a more appropriate CSV file
+[x] Create an Excel file with a bunch of bogus names (as proof of concept)...and figure out a way to turn it into a more appropriate CSV file
 [ ] Assign HR and "new" employee metadata. Some sort of labeling system involved there
 [ ] Write the darn HTML
+[ ] Write README
 
 ## Knowledge
 [ ] As much as JS pisses me off personally, I know it

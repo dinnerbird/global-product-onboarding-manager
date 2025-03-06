@@ -14,20 +14,13 @@
     </style>
 </head>
 <body>
-    <h1>This is h1</h1>
-    <h2>Sanity check button</h2>
-    <button id="stupid-button" onclick="chungus()">Click me!</button>
-
-    <script>
-        function chungus() {
-            // sends a message to the BOSS
-            // alight here's the deal chief
-            fetch('/sanity-check')
-                .then(response => response.text())
-                .then(data => console.log(data)) // returning the goods
-                .catch(err => console.error('ERROR!', err)); // you gotta be #$%& kidding me
-            
-        }
+    <h1>HR Table</h1>
+    <table id="data-table">
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+    <script src="tablemaker.js">
+        
         </script>
 </body>
 </html>

@@ -1,5 +1,5 @@
-window.addEventListener('load', function() {
-    console.log('All assets are loaded')
+function pageInitThing() {
+    console.log('Fetching the goods')
     fetch('/page-init')
         .then(response => response.json())
         .then(data => {
@@ -11,7 +11,13 @@ window.addEventListener('load', function() {
         }) // returning the goods
         .catch(err => console.error('ERROR!', err)); // you gotta be #$%& kidding me
     
-});
+};
+
+
+
+function sayhi() {
+    alert('hello');
+}
 
 function renderTable(data) {
     const table = document.getElementById('data-table');
@@ -34,7 +40,7 @@ function renderTable(data) {
     //make the magic happen
     data.forEach(item => {
         const row = tbody.insertRow();
-        headers.forEach(header => {
+        headers.forEach(header => { //ideally you want to use a forEach here. Like plugging surge protectors
             const cell = row.insertCell();
             cell.textContent = item[header];
         });

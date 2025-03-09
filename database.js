@@ -8,7 +8,7 @@ const port = 3030;
 const DBusername = "dinnerbird"
 const DBhostName = "localhost"
 const DBpassword = "buttsauce"
-
+const DBname = "bogus_data"
 /* Note to future self:
 
 VS Code's internal html preview thing runs on 3000 which seems to piss off Node because it's in use
@@ -21,7 +21,7 @@ var connection = mysql.createConnection({
     host: DBhostName,
     user: DBusername,  // You would OBVIOUSLY change these. This is for my own personal dev environment
     password: DBpassword, // The danger zone. You should NEVER have a password in plain text like this
-	database: "bogus_data"
+	database: DBname
   });
 
 
@@ -30,13 +30,12 @@ var connection = mysql.createConnection({
 // People hear you query like that, getting all the endpoints fired up
 
 function sanityCheck(callback) {
-    const selectTest = "SELECT * FROM bogus_data";
+    const selectTest = "SELECT * FROM " + DBname; // gotta watch those spaces
     connection.query(selectTest, (err, results) => {
         if (err) {
             callback(err, null);
             return;
         }
-        console.log("DB entries loaded")
         callback(null, results);
     });
 }
@@ -51,6 +50,10 @@ expressApp.get('/page-init', (req, res) => {
         }
     });
 });
+
+expressApp.get('/add-entry', (req, res) => {
+    connection.query()
+})
 
 //This is important for some bizarre reason. Something about serving static filenames?
 expressApp.use(express.static(__dirname));

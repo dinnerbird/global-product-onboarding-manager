@@ -9,12 +9,26 @@ const DBusername = "dinnerbird"
 const DBhostName = "localhost"
 const DBpassword = "buttsauce"
 const DBname = "bogus_data"
+
+
 /* Note to future self:
 
 VS Code's internal html preview thing runs on 3000 which seems to piss off Node because it's in use
 For testing these silly things in the browser, use 3030 instead.
 
 */
+function sanityCheck(callback) {
+    const selectTest = "SELECT * FROM bogus_data";
+    connection.query(selectTest, (err, results) => {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        console.log("DB entries loaded")
+        callback(null, results);
+    });
+}
+
 
 // Call me Kenny the way I got these Logins
 var connection = mysql.createConnection({
@@ -25,23 +39,7 @@ var connection = mysql.createConnection({
   });
 
 
-// I ain't no callaback girl
-// I heard that you were POSTing shit and you didn't think that I would GET it
-// People hear you query like that, getting all the endpoints fired up
-
-function sanityCheck(callback) {
-    const selectTest = "SELECT * FROM " + DBname; // gotta watch those spaces
-    connection.query(selectTest, (err, results) => {
-        if (err) {
-            callback(err, null);
-            return;
-        }
-        callback(null, results);
-    });
-}
-
-// API route to trigger the query
-expressApp.get('/page-init', (req, res) => {
+  expressApp.get('/page-init', (req, res) => {
     sanityCheck((err, results) => {
         if (err) {
             res.status(500).send('Error executing query: ' + err.message);
@@ -51,9 +49,55 @@ expressApp.get('/page-init', (req, res) => {
     });
 });
 
-expressApp.get('/add-entry', (req, res) => {
-    connection.query()
-})
+// I ain't no callaback girl
+// I heard that you were POSTing shit and you didn't think that I would GET it
+// People hear you query like that, getting all the endpoints fired up
+
+expressApp.get('/filter', (req, res) => {
+    const option = req.query.option;
+    const firstName = req.query.firstName;
+    const lastName = req.query.lastName;
+    let query = '';
+    const queryParams = [];
+
+    // This probably could be done better
+    if (option === 'opt_HR') {
+        query = 'SELECT * FROM ' + DBname + ' WHERE DESIGNATION = "HR"';
+    } else if (option === 'opt_NEW') {
+        query = 'SELECT * FROM ' + DBname + ' WHERE DESIGNATION = "NEW"';
+    } else if (option === 'opt_CURRENT') {
+        query = 'SELECT * FROM ' + DBname + ' WHERE DESIGNATION = "CURRENT"';
+    } else if (option === 'opt_ALL') {
+        query = 'SELECT * FROM ' + DBname;
+    }
+    else {
+        return res.status(400).json({ error: 'Invalid option' });
+    }
+
+    // Handle case-insensitive and partial matches. You know how people's spelling skills are
+    if (firstName) {
+        query += ' AND LOWER(first_name) LIKE ?';
+        queryParams.push(`%${firstName.toLowerCase()}%`);
+    }
+    if (lastName) {
+        query += ' AND LOWER(last_name) LIKE ?';
+        queryParams.push(`%${lastName.toLowerCase()}%`);
+    }
+    console.log(query);
+    console.log(queryParams);
+
+
+    connection.query(query, queryParams, (err, results) => {
+        if (err) {
+            console.error('Query error:', err);
+            return res.status(500).json({ error: 'Database query failed' });
+        }
+        res.json(results);
+    })
+});
+
+
+
 
 //This is important for some bizarre reason. Something about serving static filenames?
 expressApp.use(express.static(__dirname));
@@ -74,6 +118,8 @@ expressApp.listen(port, () => {
                 throw new Error("Duplicate entry. Ensure unique values only");
             default:
                 throw new Error("OUCH! An error occurred:" + err.message);
+            case 'ER_PARSE_ERROR':
+                throw new Error("...fat fingers?");
        }
     }
     console.log("MySQL interface ready");

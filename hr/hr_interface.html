@@ -1,28 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CSV Table</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { text-align: center; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
-        th { background-color: #f2f2f2; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-    </style>
+    <link rel="stylesheet" href="/boring_corporate.css" />
 </head>
+
 <body>
-    <h1>HR Table</h1>
+    <img src="/enterprise_testlogo.png">
+    <h2>Tools:</h2>
+    <button id="rerender-table" onclick="pageInitThing()">Re-render Table</button>
+    <button id="add_new" onclick="window.location.href = 'new_employee.html'">Add New Employee</button>
+    <!-- This looks like complete doodoofart but I'll let someone handle the css-->
+    <!-- @Kansara1 Do you want to make it look nice and pretty?-->
+    <br />
+    <h2>Filter Options:</h2>
+    <input type="text" id="firstNameBox" placeholder="First Name">
+    <input type="text" id="lastNameBox" placeholder="Last Name">
+    <label for="entryTypeSelector">Sort By:</label>
+    <select id="entryTypeSelector" onchange="logChange()">
+        <option value="opt_HR">HR</option>
+        <option value="opt_NEW">New Employee</option>
+        <option value="opt_CURRENT">Current Employee</option>
+        <option value="opt_ALL">None</option>
+    </select>
+    <button id="filterButton" onclick="filterTable()">Filter!</button>
+    <div id="oops"></div>
     <table id="data-table">
         <thead></thead>
         <tbody></tbody>
     </table>
-    <button id="hibutton" onclick="sayhi()">SAY HI!</button>
-    <button id="rerender-table" onclick="pageInitThing()">Re-render Table</button>
-    <button id="add_new" onclick="window.location.href = 'new_employee.html'">Add New Employee</button>
     <script src="/tablemaker.js"></script>
     <script>pageInitThing();</script>
 </body>
+
 </html>

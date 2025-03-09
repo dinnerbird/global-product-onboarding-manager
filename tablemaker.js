@@ -1,3 +1,6 @@
+
+const oopsSpot = document.getElementById('oops')
+
 function pageInitThing() {
     console.log('Fetching the goods')
     fetch('/page-init')
@@ -13,14 +16,50 @@ function pageInitThing() {
     
 };
 
+function filterTable() {
+    const option = logChange();
 
+    const firstName = document.getElementById('firstNameBox').value;
+    const lastName = document.getElementById('lastNameBox').value;
+
+    console.log("NAME DEBUG:" + firstName + ' ' + lastName)
+    fetch(`/filter?option=${option}&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`)
+    .then(response => response.json())
+    .then(data => {
+        renderTable(data);
+    })
+    .catch(err => {
+        oopsSpot.innerHTML = 'there\'s nothing here';
+       
+    });
+};
+
+function logChange() {
+    var selectedValue = document.getElementById('entryTypeSelector').value;
+    return selectedValue;
+};
 
 function sayhi() {
     alert('hello');
 }
 
 function renderTable(data) {
+    oopsSpot.innerHTML = '';
     const table = document.getElementById('data-table');
+
+
+    if (table === null) {
+        console.log("Where's the table? I'm calling my lawyer!");
+        /*
+        <table id="data-table">
+        <thead></thead>
+        <tbody></tbody>
+        </table>
+        */
+    }
+
+
+
     const thead = table.querySelector('thead');
     const tbody = table.querySelector('tbody');
     

@@ -2,6 +2,7 @@
 *   @author Alex Helton (@dinnerbird)
     Yes, I am for hire.
 */
+
 var mysql = require('mysql');
 const express = require('express');
 const expressApp = express();
@@ -127,7 +128,7 @@ expressApp.get('/filter', (req, res) => {
 //This is important for some bizarre reason. Something about serving static filenames?
 expressApp.use(express.static(__dirname));
 expressApp.listen(port, () => {
-    console.log(`Express is listening at http://localhost:${port}`);
+    console.log(`Express is ready. Listening on ${port}!`);
 });
 
 // WOO YEAH WOO YEAH WOO YEAH
@@ -147,5 +148,5 @@ connection.connect(function (err) {
                 throw new Error("...fat fingers?");
         }
     }
-    console.log("MySQL interface ready");
+    console.log("Database manager loaded!");
 });

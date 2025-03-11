@@ -4,15 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSV Table</title>
+    <title>Enterprise Onboarding</title>
     <link rel="stylesheet" href="/boring_corporate.css" />
 </head>
 
 <body>
     <img src="/enterprise_testlogo.png">
+    <h1>Enterprise Employee Manager</h1>
     <h2>Tools:</h2>
-    <button id="rerender-table" onclick="pageInitThing()">Re-render Table</button>
-    <button id="add_new" onclick="window.location.href = 'new_employee.html'">Add New Employee</button>
+    <button id="rerender-table" onclick="pageInitThing()">Reset Table</button>
+    <button id="add_new" onclick="window.open('new_employee.html')">Edit Employees...</button>
     <!-- This looks like complete doodoofart but I'll let someone handle the css-->
     <!-- @Kansara1 Do you want to make it look nice and pretty?-->
     <br />
@@ -24,7 +25,6 @@
         <option value="opt_HR">HR</option>
         <option value="opt_NEW">New Employee</option>
         <option value="opt_CURRENT">Current Employee</option>
-        <option value="opt_ALL">None</option>
     </select>
     <button id="filterButton" onclick="filterTable()">Filter!</button>
     <div id="oops"></div>

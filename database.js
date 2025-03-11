@@ -1,4 +1,7 @@
-
+/*
+*   @author Alex Helton (@dinnerbird)
+    Yes, I am for hire.
+*/
 var mysql = require('mysql');
 const express = require('express');
 const expressApp = express();
@@ -35,11 +38,11 @@ var connection = mysql.createConnection({
     host: DBhostName,
     user: DBusername,  // You would OBVIOUSLY change these. This is for my own personal dev environment
     password: DBpassword, // The danger zone. You should NEVER have a password in plain text like this
-	database: DBname
-  });
+    database: DBname
+});
 
 
-  expressApp.get('/page-init', (req, res) => {
+expressApp.get('/page-init', (req, res) => {
     sanityCheck((err, results) => {
         if (err) {
             res.status(500).send('Error executing query: ' + err.message);
@@ -53,6 +56,30 @@ var connection = mysql.createConnection({
 // I heard that you were POSTing shit and you didn't think that I would GET it
 // People hear you query like that, getting all the endpoints fired up
 
+expressApp.get('/add-new', (req, res) => {
+    const firstName = req.query.firstName;
+    const lastName = req.query.lastName;
+    const query = `
+  INSERT INTO ${DBname} (FIRST_NAME, LAST_NAME, DESIGNATION) 
+  VALUES (?, ?, 'NEW')
+`;
+
+    connection.query(query, [firstName, lastName], (err, results) => {
+        if (err) throw err;
+        console.log("Employee added:", results);
+        console.log(query);
+        if (err) {
+            console.error('Query error:', err);
+            return res.status(500).json({ error: 'Database query failed' });
+        } else {
+            console.log(results)
+            console.log(query);
+        }
+
+    })
+})
+
+// hot filtering action in your area
 expressApp.get('/filter', (req, res) => {
     const option = req.query.option;
     const firstName = req.query.firstName;
@@ -67,8 +94,6 @@ expressApp.get('/filter', (req, res) => {
         query = 'SELECT * FROM ' + DBname + ' WHERE DESIGNATION = "NEW"';
     } else if (option === 'opt_CURRENT') {
         query = 'SELECT * FROM ' + DBname + ' WHERE DESIGNATION = "CURRENT"';
-    } else if (option === 'opt_ALL') {
-        query = 'SELECT * FROM ' + DBname;
     }
     else {
         return res.status(400).json({ error: 'Invalid option' });
@@ -83,8 +108,8 @@ expressApp.get('/filter', (req, res) => {
         query += ' AND LOWER(last_name) LIKE ?';
         queryParams.push(`%${lastName.toLowerCase()}%`);
     }
-    console.log(query);
-    console.log(queryParams);
+    console.log('QUERY DEBUG: ' + query);
+    console.log('EXTRA PARAMS: ' + queryParams);
 
 
     connection.query(query, queryParams, (err, results) => {
@@ -107,9 +132,9 @@ expressApp.listen(port, () => {
 
 // WOO YEAH WOO YEAH WOO YEAH
 // "Make your connection, now"
-  connection.connect(function(err) {
+connection.connect(function (err) {
     if (err) {
-       switch (err.code) {
+        switch (err.code) {
             case 'ECONNREFUSED':
                 throw new Error("Connection refused. Is the database running?");
             case 'ER_ACCESS_DENIED_ERROR':
@@ -120,7 +145,7 @@ expressApp.listen(port, () => {
                 throw new Error("OUCH! An error occurred:" + err.message);
             case 'ER_PARSE_ERROR':
                 throw new Error("...fat fingers?");
-       }
+        }
     }
     console.log("MySQL interface ready");
-  });
+});

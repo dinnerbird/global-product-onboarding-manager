@@ -1,3 +1,4 @@
+// Robert'); DROP TABLE Students; --
 
 const oopsSpot = document.getElementById('oops')
 
@@ -16,20 +17,37 @@ function pageInitThing() {
     
 };
 
+function crunchatizeMeCaptain() {
+// The FDA has required me to inform you that JSON 
+// is not part of this balanced breakfast.
+
+const firstName = document.getElementById('firstNameBox').value;
+const lastName = document.getElementById('lastNameBox').value;
+    console.log("Crunchatized: " + firstName + ' ' + lastName)
+    fetch(`/add-new?&firstname=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`)
+    .then(response => response.json())
+    .then(data => { 
+        console.log(data) 
+    })
+}
+
+// honestly I'm kinda proud of this
 function filterTable() {
     const option = logChange();
 
     const firstName = document.getElementById('firstNameBox').value;
     const lastName = document.getElementById('lastNameBox').value;
 
+    // I'll admit I had ChudGPT help me with this part. Yeesh
     console.log("NAME DEBUG:" + firstName + ' ' + lastName)
     fetch(`/filter?option=${option}&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`)
     .then(response => response.json())
     .then(data => {
         renderTable(data);
     })
+
     .catch(err => {
-        oopsSpot.innerHTML = 'there\'s nothing here';
+        oopsSpot.innerHTML = 'there\'s nothing here'; // sunset corp
        
     });
 };
@@ -47,9 +65,9 @@ function renderTable(data) {
     oopsSpot.innerHTML = '';
     const table = document.getElementById('data-table');
 
-
     if (table === null) {
         console.log("Where's the table? I'm calling my lawyer!");
+        oopsSpot.innerHTML("Your target table in the HTML is missing.")
         /*
         <table id="data-table">
         <thead></thead>
@@ -57,8 +75,6 @@ function renderTable(data) {
         </table>
         */
     }
-
-
 
     const thead = table.querySelector('thead');
     const tbody = table.querySelector('tbody');
@@ -79,7 +95,8 @@ function renderTable(data) {
     //make the magic happen
     data.forEach(item => {
         const row = tbody.insertRow();
-        headers.forEach(header => { //ideally you want to use a forEach here. Like plugging surge protectors
+        headers.forEach(header => { 
+            //ideally you want to use a forEach here. Like plugging surge protectors in series.
             const cell = row.insertCell();
             cell.textContent = item[header];
         });

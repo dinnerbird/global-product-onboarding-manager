@@ -13,31 +13,38 @@ function pageInitThing() {
                 console.warn('Expected an array, got:', data)
             }
         }) // returning the goods
-        .catch(err => console.error('ERROR!', err)); // you gotta be #$%& kidding me
+        .catch(err => console.error('pageInitThing ERROR!', err)); // you gotta be #$%& kidding me
     
 };
 
 function addNewEmployee() {
     console.log('Adding new employee')
     fetch('/new_employee')
-        .then(response => response.text())
-        .then(html => {
-            console.log(html);
-            const newWindow = window.open('/new_employee', '_blank');
-            newWindow.document.write(html);
-            newWindow.document.close();
-        })
-        .catch(err => console.error('ERROR!', err));
+    .then(response => response.text())
+    .then(data => {
+        console.log(data);
+        const newWindow = window.open('/new_employee', '_blank');
+        newWindow.document.open();
+        newWindow.document.write(data); // okay document.write is bad but I'm in a hurry
+        newWindow.document.close();
+        newWindow.history.pushState({}, '', '/new_employee'); // fancy!
+    })
+    .catch(err => console.error('addNewEmployee ERROR!', err));
 }
+
+
 
 function crunchatizeMeCaptain() {
 // The FDA has required me to inform you that JSON 
 // is not part of this balanced breakfast.
 
+// A healthier alternative is immediate self-defenestration
+
 const firstName = document.getElementById('firstNameBox').value;
 const lastName = document.getElementById('lastNameBox').value;
     console.log("Crunchatized: " + firstName + ' ' + lastName)
     fetch(`/add-new?&firstname=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`)
+    // stays encoded, even in milk
     .then(response => response.json())
     .then(data => { 
         console.log(data) 

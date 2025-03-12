@@ -2,10 +2,10 @@
 *   @author Alex Helton (@dinnerbird)
     Yes, I am for hire.
 */
-const path = require('path');
+const path = require('path'); // is that 211 bytes?
 var mysql = require('mysql');
 const port = 3030;
-//           ^^^^ Don't touch unless you want to have a Long Afternoon
+//           ^^^^ Do NOT touch this unless you want to have a really long afternoon
 
 const DBusername = "dinnerbird"
 const DBhostName = "localhost"
@@ -13,7 +13,8 @@ const DBpassword = "buttsauce"
 const DBname = "bogus_data"
 
 let expressApp;
-
+// be careful with this, it can cause circular references
+// ask me how I know!
 function initializeExpressApp() {
     expressApp = require('./enterprise_onboarding');
     expressApp.listen(port, () => {
@@ -30,30 +31,36 @@ function initializeExpressApp() {
         });
     })
     
-    expressApp.get('/add-new', (req, res) => {
-        const firstName = req.query.firstName;
-        const lastName = req.query.lastName;
-        const query = `
-      INSERT INTO ${DBname} (FIRST_NAME, LAST_NAME, DESIGNATION) 
-      VALUES (?, ?, 'NEW')
-    `;
-    
-        connection.query(query, [firstName, lastName], (err, results) => {
-            if (err) throw err;
-            console.log("Employee added:", results);
-            console.log(query);
-            if (err) {
-                console.error('Query error:', err);
-                return res.status(500).json({ error: 'Database query failed' });
-            } else {
-                console.log(results)
+    // need to figure out why the firstname is not being passed
+    // throws a NULL in the database
+        expressApp.get('/submit', (req, res) => {
+            const firstName = req.query.firstName;
+            const lastName = req.query.lastName;
+        
+            console.log('Received firstName:', firstName);
+            console.log('Received lastName:', lastName);
+        
+            const query = `
+              INSERT INTO ${DBname} (FIRST_NAME, LAST_NAME, DESIGNATION) 
+              VALUES (?, ?, 'NEW')
+            `;
+        
+            connection.query(query, [firstName, lastName], (err, results) => {
+                if (err) throw err;
+                console.log("Employee added:", results);
                 console.log(query);
-            }
+                if (err) {
+                    console.error('Query error:', err);
+                    return res.status(500).json({ error: 'Database query failed' });
+                } else {
+                    console.log(results);
+                    res.json(results);
+                }
+            });
+        });
     
-        })
-    })
-    
-    // hot filtering action in your area
+    // hot damn, this is a lot of code for a simple filter
+    // this is a GET request because we're not changing anything in the database
     expressApp.get('/filter', (req, res) => {
         const option = req.query.option;
         const firstName = req.query.firstName;
@@ -70,7 +77,7 @@ function initializeExpressApp() {
             query = 'SELECT * FROM ' + DBname + ' WHERE DESIGNATION = "CURRENT"';
         }
         else {
-            return res.status(400).json({ error: 'Invalid option' });
+            return res.status(400).json({ error: 'Bad request' });
         }
     
         // Handle case-insensitive and partial matches. You know how people's spelling skills are
@@ -82,6 +89,7 @@ function initializeExpressApp() {
             query += ' AND LOWER(last_name) LIKE ?';
             queryParams.push(`%${lastName.toLowerCase()}%`);
         }
+        // who needs silly debuggers when you can just log everything???
         console.log('QUERY DEBUG: ' + query);
         console.log('EXTRA PARAMS: ' + queryParams);
     
@@ -95,16 +103,11 @@ function initializeExpressApp() {
         })
     });
     
-    expressApp.get('/hr_interface', (req, res) => {
-        res.sendFile(path.join(__dirname, '..', 'hr', 'hr_interface.html'));
-    });
 
-    expressApp.get('/new_employee', (req, res) => {
-        res.sendFile(path.join(__dirname, '..', 'hr', 'new_employee.html'));
-    });
 }
 
-
+// This is a sanity check to make sure the database is up and running
+// and that the table is accessible
 function sanityCheck(callback) {
     const selectTest = "SELECT * FROM bogus_data";
     connection.query(selectTest, (err, results) => {
@@ -117,8 +120,12 @@ function sanityCheck(callback) {
     });
 }
 
+// When you're doing your own dev, you can change these to your own values
+// ...but please remember to change them back before you commit
+// or you're gonna have a bad time.
 
-// Call me Kenny the way I got these Logins
+// actually it'll probably just throw me on a wild goose chase next morning
+
 var connection = mysql.createConnection({
     host: DBhostName,
     user: DBusername,  // You would OBVIOUSLY change these. This is for my own personal dev environment
@@ -126,26 +133,16 @@ var connection = mysql.createConnection({
     database: DBname
 });
 
-
-
-
 // I ain't no callaback girl
 // I heard that you were POSTing shit and you didn't think that I would GET it
 // People hear you query like that, getting all the endpoints fired up
 
-
-
-// WOO YEAH WOO YEAH WOO YEAH
 // "Make your connection, now"
 connection.connect(function (err) {
     if (err) {
         switch (err.code) {
             case 'ECONNREFUSED':
                 throw new Error("Connection refused. Is the database running?");
-            case 'ER_ACCESS_DENIED_ERROR':
-                throw new Error("Access denied. Please check permissions and all that.");
-            case 'ER_DUP_ENTRY':
-                throw new Error("Duplicate entry. Ensure unique values only");
             default:
                 throw new Error("OUCH! An error occurred:" + err.message);
             case 'ER_PARSE_ERROR':

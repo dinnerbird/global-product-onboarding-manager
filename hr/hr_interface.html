@@ -13,10 +13,11 @@
     <h1>Enterprise Employee Manager</h1>
     <h2>Tools:</h2>
     <button id="rerender-table" onclick="pageInitThing()">Reset Table</button>
-    <button id="add_new" onclick="window.open('new_employee.html')">Edit Employees...</button>
+    <button id="add_new" onclick="addNewEmployee()">Edit Employees...</button>
     <!-- This looks like complete doodoofart but I'll let someone handle the css-->
     <!-- @Kansara1 Do you want to make it look nice and pretty?-->
     <br />
+    <div id="content"></div>
     <h2>Filter Options:</h2>
     <input type="text" id="firstNameBox" placeholder="First Name">
     <input type="text" id="lastNameBox" placeholder="Last Name">
@@ -32,8 +33,7 @@
         <thead></thead>
         <tbody></tbody>
     </table>
-    <script src="../components/tablemaker.js"></script>
+    <script src="../components/middleman.js"></script>
     <script>pageInitThing();</script>
 </body>
-
 </html>

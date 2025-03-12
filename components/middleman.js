@@ -17,6 +17,19 @@ function pageInitThing() {
     
 };
 
+function addNewEmployee() {
+    console.log('Adding new employee')
+    fetch('/new_employee')
+        .then(response => response.text())
+        .then(html => {
+            console.log(html);
+            const newWindow = window.open('/new_employee', '_blank');
+            newWindow.document.write(html);
+            newWindow.document.close();
+        })
+        .catch(err => console.error('ERROR!', err));
+}
+
 function crunchatizeMeCaptain() {
 // The FDA has required me to inform you that JSON 
 // is not part of this balanced breakfast.

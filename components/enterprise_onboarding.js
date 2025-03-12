@@ -9,7 +9,7 @@ const expressApp = express();
 expressApp.use(express.static(path.join(__dirname, '..')));
 
 expressApp.get('/', (req, res) => {
-    res.send('hello');
+    res.send('Nothing to see here. Move along.');
 });
 
 module.exports = expressApp;

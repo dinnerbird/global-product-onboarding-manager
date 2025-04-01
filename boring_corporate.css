@@ -1,10 +1,51 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
+
 }
 
-h1 {
-    text-align: center;
+div {
+    display: flex;
+}
+.loginControls {
+    align-items: center;
+    justify-content: center;
+    border: 2px dotted rgb(225, 0, 255);
+    margin: 0 auto;
+  }
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px; /* Adds spacing between label and input */
+    text-align: left; /* Ensures text is aligned to the left */
+    width: 100%; /* Makes the label span the full width of the container */
+}
+
+.tableContainer {
+    display: flex;
+    min-height: min-content;
+    overflow:auto;
+}
+
+.toolbox{
+    display: flex;
+    flex-direction: row;
+    align-items: center; 
+    justify-content: space-around; /* do the space around, everybody do the space around */
+    margin: 0 auto;
+    border: 2px dotted rgb(225, 0, 255);
+    gap: 10px;
+}
+
+.header_bar {
+    font-family: "Comic Sans MS"; 
+    /* for the love of god, please don't use this in production */
+    background-color: #4CAF50;
+    color: white;
+    padding: 2px;
+    font-size: 24px;
+    
+    align-items: center;
+    justify-content: center;
 }
 
 table {
@@ -31,3 +72,75 @@ tr:nth-child(even) {
 .oops {
     color: red;
 }
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Aligns the form elements to the left */
+    margin: 20px auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 50%; /* Adjusted width for better layout */
+}
+
+input[type=text], input[type=password], select {
+    padding: 12px 20px;
+    margin: 8px 0 20px 0; /* Adds spacing between inputs */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%; /* Ensures inputs span the full width of the form */
+    box-sizing: border-box; /* Includes padding and border in width calculation */
+}
+
+input[type=submit] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 30%;
+  }
+  
+  input[type=submit]:hover {
+    background-color: #49db4d;
+  }
+
+input[type=submit]:active {
+    background-color: #45a049;
+  }
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 30%;
+  }
+  
+  button:hover {
+    background-color: #49db4d;
+  }
+
+#firstNameBox, #lastNameBox, #entryTypeSelector
+{
+    margin: 0 auto;
+    
+}
+
+#sortBy {
+    text-align: right;
+    margin: 0 auto;
+    padding-right: 2%;
+}
+
+button:active {
+    background-color: #45a049;
+  }

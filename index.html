@@ -8,14 +8,19 @@
     <link rel="stylesheet" href="boring_corporate.css">
 </head>
 <body>
-    <h2>login page ദ്ദി(˵ •ᴗ•- ˵ )✧</h2>
-    <form action="/login" method="POST">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <button type="submit">Login</button>
-    </form>
-    <p>Don't have an account? Get bent!</p>
+    <div class="header_bar">
+        <h2>Global Product Onboarding</h2>
+    </div>
+    <div class="loginControls">
+        <form action="/login" method="POST">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <input type="submit">
+        </form>
+    </div>
+
+    <a href="/forgotpassword">Forgot Password?</a>
 </body>
 </html>

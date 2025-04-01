@@ -9,31 +9,46 @@
 </head>
 
 <body>
-    <img src="/enterprise_testlogo.png">
-    <h1>Enterprise Employee Manager</h1>
-    <h2>Tools:</h2>
-    <button id="rerender-table" onclick="pageInitThing()">Reset Table</button>
-    <button id="add_new" onclick="addNewEmployee()">Edit Employees...</button>
+    <div class="header_bar">
+
+        <img src="/enterprise_testlogo.png">
+        <h2>Global Product Employee Manager</h2>
+    </div>
+    <div class="toolbox">
+        
+        <h2>Tools:</h2>
+        <button id="rerender-table" onclick="pageInitThing()">Reset Table</button>
+        <button id="add_new" onclick="addNewEmployee()">Edit Employees...</button>
+        <button id="pendingApprovals" onclick="pendingApprovals()">Pending Approvals...</button>
+        <button id="sendReminder" onclick="sendReminder()">Send Reminder...</button>
+
+    </div>
+
     <!-- This looks like complete doodoofart but I'll let someone handle the css-->
     <!-- @Kansara1 Do you want to make it look nice and pretty?-->
     <br />
     <div id="content"></div>
-    <h2>Filter Options:</h2>
-    <input type="text" id="firstNameBox" placeholder="First Name">
-    <input type="text" id="lastNameBox" placeholder="Last Name">
-    <label for="entryTypeSelector">Sort By:</label>
-    <select id="entryTypeSelector" onchange="logChange()">
-        <option value="opt_HR">HR</option>
-        <option value="opt_NEW">New Employee</option>
-        <option value="opt_CURRENT">Current Employee</option>
-    </select>
-    <button id="filterButton" onclick="filterTable()">Filter!</button>
+    <div class="toolbox">
+        <input type="text" id="firstNameBox" placeholder="First Name">
+        <input type="text" id="lastNameBox" placeholder="Last Name">
+        <label for="entryTypeSelector" id="sortBy">Sort By:</label>
+        <select id="entryTypeSelector" onchange="logChange()">
+            <option value="opt_HR">HR</option>
+            <option value="opt_NEW">New Employee</option>
+            <option value="opt_CURRENT">Current Employee</option>
+        </select>
+        <button id="filterButton" onclick="filterTable()">Filter!</button>
+    </div>
     <div id="oops"></div>
-    <table id="data-table">
-        <thead></thead>
-        <tbody></tbody>
-    </table>
+    <div class="tablecontainer">
+        <table id="data-table">
+            <thead></thead>
+            <tbody></tbody>
+        </table>
+        </div>
+
     <script src="../components/middleman.js"></script>
     <script>pageInitThing();</script>
 </body>
+
 </html>

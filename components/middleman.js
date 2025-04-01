@@ -40,10 +40,10 @@ function crunchatizeMeCaptain() {
 
 // A healthier alternative is immediate self-defenestration
 
-const firstName = document.getElementById('firstNameBox').value;
-const lastName = document.getElementById('lastNameBox').value;
+const firstName = document.getElementById('FNBOX').value;
+const lastName = document.getElementById('LNBOX').value;
     console.log("Crunchatized: " + firstName + ' ' + lastName)
-    fetch(`/add-new?&firstname=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`)
+    fetch(`/submit?&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`)
     // stays encoded, even in milk
     .then(response => response.json())
     .then(data => { 

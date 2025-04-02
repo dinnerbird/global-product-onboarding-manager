@@ -51,6 +51,22 @@ const lastName = document.getElementById('LNBOX').value;
     })
 }
 
+
+// may not be able to get some things done in time.
+// This function is just a placeholder if Enterprise is actually insane enough to warrant using my software
+
+function Nothingburger(action) {
+    // I mean, I guess you could do *something* here
+    // but I'm not your dad
+    if (action == 'pending') {
+        console.log('Pending approvals function');
+    }
+    else if (action == 'reminder') {
+        console.log('Send reminder function');
+    }
+
+}
+
 // honestly I'm kinda proud of this
 function filterTable() {
     const option = logChange();

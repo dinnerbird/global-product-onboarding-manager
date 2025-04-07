@@ -16,10 +16,31 @@
     </div>
 
     <!-- TODO: #1 -->
+     <!--
     <input type="text" id="FNBOX" placeholder="First Name">
     <input type="text" id="LNBOX" placeholder="Last Name">
-    <button id="addNew" onclick="crunchatizeMeCaptain()">Add Employee</button>
+    <button id="addNew" onclick="crunchatizeMeCaptain()">Add Employee</button> -->
     <!-- afterwards, we'll have some sort of API call to tell the system when the employee has upgraded from NEW to CURRENT -->
+    <div class="toolbox">
+        
+        <h2>Tools:</h2>
+        <button id="rerender-table" onclick="pageInitThing()">Reset Table</button>
+        <button id="add_new" onclick="yeetEmployees()">Remove Employees...</button>
+        <button id="promote" onclick="Nothingburger('reminder')">Promote Employee...</button>
+
+    </div>
+    <div class="tablecontainer">
+        <table id="data-table">
+            <thead></thead>
+            <tbody></tbody>
+        </table>
+        </div>
+
+    <script src="../components/middleman.js"></script>
+    <script>pageInitThing();</script>
+    <script>
+        
+    </script>
 </body>
 
 </html>

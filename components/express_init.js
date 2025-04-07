@@ -35,4 +35,7 @@ expressApp.get('/new_employee', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'hr', 'new_employee.html'));
 });
 
+
+expressApp.use(express.json());
+
 module.exports = expressApp;

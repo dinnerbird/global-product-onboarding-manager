@@ -97,6 +97,47 @@ expressApp.get('/filter', (req, res) => {
     })
 });
 
+// This is a POST request because we're changing the database
+// it's not even 1pm yet and I want to consider drinking
+
+// Add a new endpoint for deleting employees
+expressApp.post('/delete_employees', (req, res) => {
+    const { employees } = req.body; // Expecting an array of employee objects or JSON strings
+
+    if (!Array.isArray(employees) || employees.length === 0) {
+        return res.status(400).json({ error: 'No employees provided for deletion' });
+    }
+
+    // Parse the employees array to extract EMPLOYEE_IDs
+    const employeeIds = employees.map(employee => {
+        if (typeof employee === 'string') {
+            employee = JSON.parse(employee); // Parse JSON string
+        }
+        return employee.EMPLOYEE_ID; // Extract EMPLOYEE_ID
+    });
+
+    if (employeeIds.some(id => id == null)) {
+        return res.status(400).json({ error: 'Invalid employee data provided' });
+    }
+
+    // Construct the query to delete multiple employees
+    const placeholders = employeeIds.map(() => '?').join(','); // Create placeholders for the query
+    const query = `DELETE FROM ${DBname} WHERE EMPLOYEE_ID IN (${placeholders})`;
+
+    console.log('DELETE QUERY DEBUG:', query);
+    console.log('EMPLOYEES TO DELETE:', employeeIds);
+
+    connection.query(query, employeeIds, (err, results) => {
+        if (err) {
+            console.error('Error deleting employees:', err.message, err.code);
+            return res.status(500).json({ error: 'Database query failed', details: err.message });
+        }
+
+        console.log('Deleted employees:', results.affectedRows);
+        res.json({ message: 'Employees deleted successfully', affectedRows: results.affectedRows });
+    });
+});
+
 // This is a sanity check to make sure the database is up and running
 // and that the table is accessible
 function sanityCheck(callback) {
@@ -152,3 +193,4 @@ connection.connect(function (err) {
     }
     console.log("Database manager loaded!");
 });
+

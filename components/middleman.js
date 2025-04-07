@@ -1,6 +1,9 @@
 // Robert'); DROP TABLE Students; --
 
-const oopsSpot = document.getElementById('oops')
+
+// no shame in reused code if it saves time
+
+var oopsSpot = document.getElementsByClassName('oops')
 
 function pageInitThing() {
     console.log('Fetching the goods')
@@ -22,7 +25,7 @@ function addNewEmployee() {
     fetch('/new_employee')
     .then(response => response.text())
     .then(data => {
-        console.log(data);
+        //console.log(data);
         const newWindow = window.open('/new_employee', '_blank');
         newWindow.document.open();
         newWindow.document.write(data); // okay document.write is bad but I'm in a hurry
@@ -38,7 +41,7 @@ function crunchatizeMeCaptain() {
 // The FDA has required me to inform you that JSON 
 // is not part of this balanced breakfast.
 
-// A healthier alternative is immediate self-defenestration
+// An infinitely healthier alternative to JSON is immediate defenestration.
 
 const firstName = document.getElementById('FNBOX').value;
 const lastName = document.getElementById('LNBOX').value;
@@ -51,9 +54,19 @@ const lastName = document.getElementById('LNBOX').value;
     })
 }
 
+function debugatizeMeCaptain(debugFirst, debugLast) {
+    fetch(`/submit?&firstName=${encodeURIComponent(debugFirst)}&lastName=${encodeURIComponent(debugLast)}`)
+    .then(response => response.json())
+    .then(data => { 
+        console.log(data) 
+    })
+
+}
+
 
 // may not be able to get some things done in time.
-// This function is just a placeholder if Enterprise is actually insane enough to warrant using my software
+// This function is just a placeholder if Enterprise is actually insane enough 
+// to warrant using my software
 
 function Nothingburger(action) {
     // I mean, I guess you could do *something* here
@@ -103,13 +116,8 @@ function renderTable(data) {
 
     if (table === null) {
         console.log("Where's the table? I'm calling my lawyer!");
-        oopsSpot.innerHTML("Your target table in the HTML is missing.")
-        /*
-        <table id="data-table">
-        <thead></thead>
-        <tbody></tbody>
-        </table>
-        */
+        oopsSpot.innerHTML = "Your target table in the HTML is missing.";
+        return;
     }
 
     const thead = table.querySelector('thead');
@@ -118,24 +126,74 @@ function renderTable(data) {
     thead.innerHTML = '';
     tbody.innerHTML = '';
 
-    // make those headers
+    // Create table headers
     const headers = Object.keys(data[0]);
     const headerRow = thead.insertRow();
 
+    // Add a header for the checkbox column
+    const checkboxHeader = document.createElement('th');
+    checkboxHeader.textContent = 'Select';
+    headerRow.appendChild(checkboxHeader);
+
     headers.forEach(header => {
-        const th = document.createElement('th'); // mike tyson
-        th.textContent = header; 
+        const th = document.createElement('th');
+        th.textContent = header;
         headerRow.appendChild(th);
     });
-    
-    //make the magic happen
+
+    // Populate table rows
     data.forEach(item => {
         const row = tbody.insertRow();
-        headers.forEach(header => { 
-            //ideally you want to use a forEach here. Like plugging surge protectors in series.
+
+        // Add a checkbox to each row
+        const checkboxCell = row.insertCell();
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.name = 'employee';
+        checkbox.value = item.id || JSON.stringify(item); // Use a unique identifier or the entire item
+        checkboxCell.appendChild(checkbox);
+
+        headers.forEach(header => {
             const cell = row.insertCell();
             cell.textContent = item[header];
         });
     });
+};
 
+function yeetEmployees() {
+    const selectedEmployees = Array.from(document.querySelectorAll('input[name="employee"]:checked'))
+        .map(input => input.value);
+
+    if (selectedEmployees.length === 0) {
+        console.log('No employees selected');
+        alert('Please select at least one employee to delete.');
+        return;
+    }
+
+    console.log('Selected employees:', selectedEmployees);
+
+    // Send the selected employees to the server
+    fetch('/delete_employees', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ employees: selectedEmployees }) // Send as JSON
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`FIDDLESTICKS! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Delete response:', data);
+    })
+    .catch(err => console.error('Error deleting employees:', err))
+    .then(
+        renderTable(data) // Re-render the table after deletion
+    )
+    
+
+    
 }

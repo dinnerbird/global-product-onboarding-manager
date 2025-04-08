@@ -20,22 +20,28 @@ function pageInitThing() {
 
 };
 
-function addNewEmployee() {
-    console.log('Adding new employee')
-    fetch('/new_employee')
+function openEmployeeManager() {
+    console.log('Opening employee manager')
+    fetch('/employee_manager')
         .then(response => response.text())
         .then(data => {
             //console.log(data);
-            const newWindow = window.open('/new_employee', '_blank');
+            const newWindow = window.open('/employee_manager', '_blank');
             newWindow.document.open();
             newWindow.document.write(data); // okay document.write is bad but I'm in a hurry
             newWindow.document.close();
-            newWindow.history.pushState({}, '', '/new_employee'); // fancy!
+            newWindow.history.pushState({}, '', '/employee_manager'); // fancy!
         })
         .catch(err => console.error('addNewEmployee ERROR!', err));
 }
 
-
+function addNewPopupBox() {
+    fetch('/add-employee')
+        .then(response => response.text())
+        .then(data => {
+            const newERWindow = window.open('/add_employee', '_blank');
+        })
+}
 
 function crunchatizeMeCaptain() {
     // The FDA has required me to inform you that JSON 
@@ -131,7 +137,7 @@ function renderTable(data) {
     const headerRow = thead.insertRow();
 
     // Check if it's actually the new employee page
-    const isNewEmployeePage = window.location.pathname === '/new_employee';
+    const isNewEmployeePage = window.location.pathname === '/employee_manager';
 
     if (isNewEmployeePage) {
         const checkboxHeader = document.createElement('th');

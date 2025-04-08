@@ -13,6 +13,7 @@
 - Employee Manager:
     [x] Add/remove/modify employee data
     [ ] Prepare requests for onboarding
+    [x] Promotion and ensuring HR can't be promoted by accident
 - Authentication Manager:
     [ ] Username/password handling
     [ ] Can identify the difference between HR "admins", new employees, and existing employees

@@ -31,10 +31,13 @@ expressApp.get('/hr_interface', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'hr', 'hr_interface.html'));
 });
 
-expressApp.get('/new_employee', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'hr', 'new_employee.html'));
+expressApp.get('/employee_manager', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'hr', 'employee_manager.html'));
 });
 
+expressApp.get('/add_employee', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'hr', 'add_employee_popup.html'));
+})
 
 expressApp.use(express.json());
 

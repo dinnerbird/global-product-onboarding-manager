@@ -3,7 +3,7 @@
     Yes, I am for hire.
 */
 const path = require('path'); // is that 211 bytes?
-var mysql = require('mysql');
+var mysql = require('mysql2'); // adam was here :)
 const port = 3030;
 //           ^^^^ Do NOT touch this unless you want to have a really long afternoon
 const expressApp = require('./express_init.js');

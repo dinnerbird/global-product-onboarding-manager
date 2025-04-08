@@ -25,9 +25,21 @@
         
         <h2>Tools:</h2>
         <button id="rerender-table" onclick="pageInitThing()">Reset Table</button>
-        <button id="add_new" onclick="yeetEmployees()">Remove Employees...</button>
-        <button id="promote" onclick="Nothingburger('reminder')">Promote Employee...</button>
+        <button id="yeet" onclick="yeetEmployees()">Remove Selected</button>
+        <button id="add_new" onclick="addNewPopupBox()">Add Employee...</button>
+        <button id="promote" onclick="congrats()">Promote Selected</button>
 
+    </div>
+    <div class="toolbox">
+        <input type="text" id="firstNameBox" placeholder="First Name">
+        <input type="text" id="lastNameBox" placeholder="Last Name">
+        <label for="entryTypeSelector" id="sortBy">Sort By:</label>
+        <select id="entryTypeSelector" onchange="logChange()">
+            <option value="opt_HR">HR</option>
+            <option value="opt_NEW">New Employee</option>
+            <option value="opt_CURRENT">Current Employee</option>
+        </select>
+        <button id="filterButton" onclick="filterTable()">Filter!</button>
     </div>
     <div class="tablecontainer">
         <table id="data-table">

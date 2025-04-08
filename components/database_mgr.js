@@ -100,6 +100,55 @@ expressApp.get('/filter', (req, res) => {
 // This is a POST request because we're changing the database
 // it's not even 1pm yet and I want to consider drinking
 
+// add a new endpoint for updating employees
+expressApp.post('/promote_employees', (req, res) => {
+    const { employees } = req.body;
+    if (!Array.isArray(employees) || employees.length === 0) {
+        return res.status(400).json({ error: 'No employees provided for promotion' });
+    }
+
+    const employeeIds = employees.map(employee => {
+        if (typeof employee === 'string') {
+            employee = JSON.parse(employee);
+        }
+        return employee.EMPLOYEE_ID;
+    });
+
+    if (employeeIds.some(id => id == null)) {
+        return res.status(400).json({ error: 'Invalid employee data provided' });
+    }
+
+    // Query to check if any employee is part of HR
+    const placeholders = employeeIds.map(() => '?').join(',');
+    const checkQuery = `SELECT EMPLOYEE_ID FROM ${DBname} WHERE EMPLOYEE_ID IN (${placeholders}) AND DESIGNATION = 'HR'`;
+
+    connection.query(checkQuery, employeeIds, (err, results) => {
+        if (err) {
+            console.error('Error checking HR employees:', err.message, err.code);
+            return res.status(500).json({ error: 'Database query failed', details: err.message });
+        }
+
+        if (results.length > 0) {
+            console.log('HR employees found:', results);
+            return res.status(403).json({ error: 'Cannot promote HR employees', hrEmployees: results });
+        }
+
+        // Proceed with the promotion if no HR employees are found
+        const updateQuery = `UPDATE ${DBname} SET DESIGNATION = 'CURRENT' WHERE EMPLOYEE_ID IN (${placeholders})`;
+
+        connection.query(updateQuery, employeeIds, (err, results) => {
+            if (err) {
+                console.error('Error promoting employees:', err.message, err.code);
+                return res.status(500).json({ error: 'Database query failed', details: err.message });
+            }
+
+            console.log('Promoted employees:', results.affectedRows);
+            res.json({ message: 'Employees promoted successfully', affectedRows: results.affectedRows });
+        });
+    });
+});
+
+
 // Add a new endpoint for deleting employees
 expressApp.post('/delete_employees', (req, res) => {
     const { employees } = req.body; // Expecting an array of employee objects or JSON strings

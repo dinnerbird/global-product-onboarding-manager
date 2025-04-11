@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
 * {
     margin: 0;
     padding: 0;
@@ -8,7 +9,7 @@
 body {
     margin: 0;
     padding: 0;
-    background: #4CAF50;
+    background: #ffffff;
     background-size: cover;
     background-position: center;
     font-family: "Poppins", sans-serif; 
@@ -25,12 +26,19 @@ body {
 
 
 .header_bar {
-    background-color: #004080;
+    font-family: "Comic Sans MS";
+    background-color: #4CAF50;
     color: white;
     padding: 20px;
-    text-align: center;
     font-size: 24px;
-    font-family: Arial, sans-serif;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
 }
 
 .loginContainer {
@@ -52,9 +60,10 @@ body {
     border: 2px solid rgba(255, 255, 255, .2);
     backdrop-filter: blur(20px);
     box-shadow: 0 0 10px rgba(0, 0, 0, .2);
-    color: #ffffff;
+    color: #f2f2f2;
     border-radius: 10px;
     padding: 30px 40px;
+    background-color: #4CAF50;
 }
 
 .loginControls h1 {
@@ -86,13 +95,6 @@ body {
     color: #fff;
 }
 
-.input-box i {
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 20px;
-}
 
 .loginControls .remember-forgot {
     display: flex;

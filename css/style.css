@@ -3,7 +3,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
+    font-family: "Arial", sans-serif;
 }
 
 body {
@@ -26,20 +26,46 @@ body {
 
 
 .header_bar {
-    font-family: "Comic Sans MS";
-    background-color: #4CAF50;
-    color: white;
-    padding: 20px;
-    font-size: 24px;
-    align-items: center;
+    position: relative;
     justify-content: center;
     display: flex;
-    flex-direction: row;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
-    text-align: center;
+    background-color: #4CAF50;
+    color: white;
+    padding: 55px 20px;
+    font-size: 24px; 
 }
+
+
+.header_bar h2 {
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    transform: translateX(50px);
+}
+    
+.header-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+    text-align: center;
+
+}
+
+
+.logo-link {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 70px;
+    display: block;
+  }
+    
+.logo-link img.logo {
+    height: 100%;
+}
+      
+
 
 .loginContainer {
     flex: 1;
@@ -64,6 +90,11 @@ body {
     border-radius: 10px;
     padding: 30px 40px;
     background-color: #4CAF50;
+    display: none;
+}
+
+.loginControls.active {
+    display: block;
 }
 
 .loginControls h1 {
@@ -89,6 +120,30 @@ body {
     font-size: 16px;
     color: #fff;
     padding: 20px 45px 20px 20px;
+}
+.input-box select {
+    width: 100%; 
+    height: 100%; 
+    background: transparent; 
+    border: none;
+    outline: none;
+    border: 2px solid rgba(255, 255, 255, .2); 
+    border-radius: 40px; 
+    font-size: 16px; 
+    color: #fff;  
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+    background-color: transparent;
+}
+
+.input-box select option {
+    background-color: #f2f2f2; 
+    color: #000; 
+}
+.input-box input:focus {
+    border: 2px solid #fff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, .2);
 }
 
 .input-box input::placeholder {
@@ -153,3 +208,4 @@ body {
 .header_bar h2 {
     margin: 0;;
 }
+

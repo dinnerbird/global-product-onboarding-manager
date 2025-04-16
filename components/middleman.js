@@ -72,6 +72,7 @@ function addNewPopupBox() {
 }
 
 function crunchatizeMeCaptain() {
+
     // The FDA has required me to inform you that JSON 
     // is not part of this balanced breakfast.
 
@@ -79,14 +80,42 @@ function crunchatizeMeCaptain() {
 
     const firstName = document.getElementById('FNBOX').value;
     const lastName = document.getElementById('LNBOX').value;
-    console.log("Crunchatized: " + firstName + ' ' + lastName)
-    fetch(`/submit?&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`)
-        // stays encoded, even in milk
-        .then(response => response.json())
-        .then(data => {
-            console.log(data)
-        })
-}
+    const emailAddress = document.getElementById('EMAILBOX').value;
+    const phoneNum = document.getElementById('TELBOX').value;
+
+    if (!firstName || !lastName || !emailAddress || !phoneNum) {
+        alert("All fields are required!");
+        return false;
+    }
+
+    try {
+        console.log("Crunchatized: " + firstName + ' ' + lastName + ' ' + emailAddress + ' ' + phoneNum);
+        fetch(`/submit?&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}&phoneNum=${encodeURIComponent(phoneNum)}&emailAddress=${encodeURIComponent(emailAddress)}`)
+            .then(response => {
+                if (!response.ok) {
+                    // If the response is not OK, throw an error with the response JSON
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.message || 'Failed to add employee...');
+                    });
+                }
+                return response.json(); // Parse the JSON if the response is OK
+            })
+            .then(data => {
+                console.log(data);
+                alert("Employee added successfully!");
+                window.close();
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert(`Error: ${error.message}`);
+            });
+    } catch (error) {
+        console.error("Unexpected error:", error);
+    }
+        
+    return false; //boowomp :(
+
+    }
 
 function debugatizeMeCaptain(debugFirst, debugLast) {
     fetch(`/submit?&firstName=${encodeURIComponent(debugFirst)}&lastName=${encodeURIComponent(debugLast)}`)
@@ -236,6 +265,42 @@ function yeetEmployees() {
 
 }
 
+function stragonc() {
+    const selectedEmployees = Array.from(document.querySelectorAll('input[name="employee"]:checked'))
+    .map(input => input.value);
+
+if (selectedEmployees.length === 0) {
+    console.log('No employees selected');
+    alert('Please select at least one employee to demote.');
+    return;
+}
+
+console.log('Selected employees:', selectedEmployees);
+
+fetch('/DEMOTE_employees', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ employees: selectedEmployees }) // Send as JSON
+})
+    .then(response => {
+        if (!response.ok) {
+            alert("An error occurred while promoting. Please check the console.");
+
+        }
+        if (response.ok) {
+            alert('Employees *demoted* successfully!');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response:', data);
+
+        pageInitThing();
+    });
+}
+
 function congrats() {
     const selectedEmployees = Array.from(document.querySelectorAll('input[name="employee"]:checked'))
         .map(input => input.value);
@@ -260,8 +325,8 @@ function congrats() {
     })
         .then(response => {
             if (!response.ok) {
-                alert("You cannot promote HR employees.");
-               
+                alert("An error occurred while promoting. Please check the console.");
+
             }
             if (response.ok) {
                 alert('Employees promoted successfully!');

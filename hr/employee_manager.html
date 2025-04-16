@@ -5,7 +5,11 @@
     <title>Modify/Add Employee Form</title>
     <script src="../components/middleman.js"></script>
     <link rel="stylesheet" href="../css/boring_corporate.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add,autorenew,block,bolt,delete,done" />
+    <style>
 
+
+    </style>
 </head>
 
 <body>
@@ -26,10 +30,12 @@
     <div class="toolbox">
         
         <h2>Tools:</h2>
-        <button id="rerender-table" onclick="pageInitThing()">Reset Table</button>
-        <button id="yeet" onclick="yeetEmployees()">Remove Selected</button>
-        <button id="add_new" onclick="addNewPopupBox()">Add Employee...</button>
-        <button id="promote" onclick="congrats()">Promote Selected</button>
+        <button id="rerender-table" onclick="pageInitThing()"><span class="material-symbols-rounded">autorenew</span>Reset Table</button>
+        <button id="yeet" onclick="yeetEmployees()"><span class="material-symbols-rounded">delete</span>Remove Selected</button>
+        <button id="promote" onclick="congrats()"><span class="material-symbols-rounded">bolt</span>Promote Selected</button>
+        <button id="promote" onclick="stragonc()"><span class="material-symbols-rounded">block</span>DEMOTE Selected</button>
+
+        <button id="add_new" onclick="addNewPopupBox()"><span class="material-symbols-rounded">add</span>Add Employee...</button>
 
     </div>
     <div class="toolbox">
@@ -50,9 +56,9 @@
         </table>
         </div>
 
-    <script src="../components/middleman.js" defer>
-    pageInitThing();</script>
-    <script>
+    <script src="../components/middleman.js"></script>
+    <script>pageInitThing();</script>
+    
         
     </script>
 </body>

@@ -12,11 +12,35 @@ const DBhostName = "localhost"
 const DBpassword = "buttsauce"
 const DBname = "bogus_data"
 
-// be careful with this, it can cause circular references
+// be careful with the require stuff, it can cause circular references
 // ask me how I know!
 
+// This is a sanity check to make sure the database is up and running
+// and that the table is accessible
+
+// So instead of a "sanity check" this just became the table init function
+// the quickest fixes are the longest features, amirite fellas?
+
+
+
+// I ain't no callaback girl
+// I heard that you were POSTing shit and you didn't think that I would GET it
+// People hear you query like that, getting all the endpoints fired up
+
+function offToSeeTheWizard(callback) {
+    const selectTest = `SELECT * FROM ${DBname}.EMPLOYEE_DATA`; // Need a way to pretty print it
+    connection.query(selectTest, (err, results) => {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        console.log("DB entries loaded")
+        callback(null, results);
+    });
+}
+
 expressApp.get('/page-init', (req, res) => {
-    sanityCheck((err, results) => {
+    offToSeeTheWizard((err, results) => {
         if (err) {
             res.status(500).send('Error executing query: ' + err.message);
         } else {
@@ -25,21 +49,60 @@ expressApp.get('/page-init', (req, res) => {
     });
 })
 
-// need to figure out why the firstname is not being passed
-// throws a NULL in the database
+
+
+// "Make your connection, now"
+
+// This does the actual connection business.
+
+var connection = mysql.createConnection({
+    host: DBhostName,
+    user: DBusername,  // You would OBVIOUSLY change these. This is for my own personal dev environment
+    password: DBpassword, // The danger zone. You should NEVER have a password in plain text like this
+    database: DBname // in this case it's "bogus_data"
+});
+
+
+connection.connect(function (err) {
+    if (err) {
+        switch (err.code) {
+            case 'ECONNREFUSED':
+                throw new Error("Connection refused. Is the database running?");
+            default:
+                throw new Error("NUTS!!! An error occurred:" + err.message);
+            case 'ER_PARSE_ERROR':
+                throw new Error("Please recheck your query. I won't accept that garglemesh.");
+            case 'ER_NOT_SUPPORTED_AUTH_MODE':
+                throw new Error("Your client doesn't support the auth protocol the I'm looking for. Replace the loose screw behind the keyboard.");
+            case 'ER_DBACCESS_DENIED_ERROR':
+                throw new Error('Access denied. Have you considered kicking rocks? ' + err.message);
+            // I have had to waste a week of my time getting these morons to set up their dev environments
+
+        }
+    }
+    console.log("[INFO] Database manager loaded");
+});
+
+
+
+// listens for the crunchatizeMeCaptain function call and does some wizardry here
 expressApp.get('/submit', (req, res) => {
     const firstName = req.query.firstName;
     const lastName = req.query.lastName;
+    const phoneNum = req.query.phoneNum;
+    const emailAddress = req.query.emailAddress;
+
 
     console.log('Received firstName:', firstName);
     console.log('Received lastName:', lastName);
+    console.log('Received email:', emailAddress);
+    console.log('Received phone:', phoneNum);
 
     const query = `
-              INSERT INTO ${DBname} (FIRST_NAME, LAST_NAME, DESIGNATION) 
-              VALUES (?, ?, 'NEW')
-            `;
+              INSERT INTO ${DBname}.EMPLOYEE_DATA (FIRST_NAME, LAST_NAME, DESIGNATION, EMAIL, PHONE) VALUES (?, ?, 'NEW', ?, ?);
+            `; // Question marks protect against SQL injection, apparently
 
-    connection.query(query, [firstName, lastName], (err, results) => {
+    connection.query(query, [firstName, lastName, emailAddress, phoneNum], (err, results) => {
         if (err) throw err;
         console.log("Employee added:", results);
         console.log(query);
@@ -64,11 +127,11 @@ expressApp.get('/filter', (req, res) => {
 
     // This probably could be done better
     if (option === 'opt_HR') {
-        query = 'SELECT * FROM ' + DBname + ' WHERE DESIGNATION = "HR"';
+        query = `SELECT * FROM ' + ${DBname}.EMPLOYEE_DATA + ' WHERE DESIGNATION = "HR"`;
     } else if (option === 'opt_NEW') {
-        query = 'SELECT * FROM ' + DBname + ' WHERE DESIGNATION = "NEW"';
+        query = `SELECT * FROM ' + ${DBname}.EMPLOYEE_DATA + ' WHERE DESIGNATION = "NEW"`;
     } else if (option === 'opt_CURRENT') {
-        query = 'SELECT * FROM ' + DBname + ' WHERE DESIGNATION = "CURRENT"';
+        query = `SELECT * FROM ' + ${DBname}.EMPLOYEE_DATA + ' WHERE DESIGNATION = "CURRENT"`;
     }
     else {
         return res.status(400).json({ error: 'Bad request' });
@@ -120,7 +183,7 @@ expressApp.post('/promote_employees', (req, res) => {
 
     // Query to check if any employee is part of HR
     const placeholders = employeeIds.map(() => '?').join(',');
-    const checkQuery = `SELECT EMPLOYEE_ID FROM ${DBname} WHERE EMPLOYEE_ID IN (${placeholders}) AND DESIGNATION = 'HR'`;
+    const checkQuery = `SELECT EMPLOYEE_ID FROM ${DBname}.EMPLOYEE_DATA WHERE "EMPLOYEE_ID" IN (${placeholders}) AND DESIGNATION = 'HR'`;
 
     connection.query(checkQuery, employeeIds, (err, results) => {
         if (err) {
@@ -134,7 +197,7 @@ expressApp.post('/promote_employees', (req, res) => {
         }
 
         // Proceed with the promotion if no HR employees are found
-        const updateQuery = `UPDATE ${DBname} SET DESIGNATION = 'CURRENT' WHERE EMPLOYEE_ID IN (${placeholders})`;
+        const updateQuery = `UPDATE ${DBname}.EMPLOYEE_DATA SET DESIGNATION = 'CURRENT' WHERE EMPLOYEE_ID IN (${placeholders})`;
 
         connection.query(updateQuery, employeeIds, (err, results) => {
             if (err) {
@@ -148,6 +211,53 @@ expressApp.post('/promote_employees', (req, res) => {
     });
 });
 
+// Promoted back to NEW
+expressApp.post('/DEMOTE_employees', (req, res) => {
+    const { employees } = req.body;
+    if (!Array.isArray(employees) || employees.length === 0) {
+        return res.status(400).json({ error: 'No employees provided for demotion' });
+    }
+
+    const employeeIds = employees.map(employee => {
+        if (typeof employee === 'string') {
+            employee = JSON.parse(employee);
+        }
+        return employee.EMPLOYEE_ID;
+    });
+
+    if (employeeIds.some(id => id == null)) {
+        return res.status(400).json({ error: 'Invalid employee data provided' });
+    }
+
+    // Query to check if any employee is part of HR
+    const placeholders = employeeIds.map(() => '?').join(',');
+    const checkQuery = `SELECT EMPLOYEE_ID FROM ${DBname}.EMPLOYEE_DATA WHERE "EMPLOYEE_ID" IN (${placeholders}) AND DESIGNATION = 'HR'`;
+
+    connection.query(checkQuery, employeeIds, (err, results) => {
+        if (err) {
+            console.error('Error checking HR employees:', err.message, err.code);
+            return res.status(500).json({ error: 'Database query failed', details: err.message });
+        }
+
+        if (results.length > 0) {
+            console.log('HR employees found:', results);
+            return res.status(403).json({ error: 'Cannot promote HR employees', hrEmployees: results });
+        }
+
+        // Proceed with the promotion if no HR employees are found
+        const updateQuery = `UPDATE ${DBname}.EMPLOYEE_DATA SET DESIGNATION = 'NEW' WHERE EMPLOYEE_ID IN (${placeholders})`;
+
+        connection.query(updateQuery, employeeIds, (err, results) => {
+            if (err) {
+                console.error('Error promoting employees:', err.message, err.code);
+                return res.status(500).json({ error: 'Database query failed', details: err.message });
+            }
+
+            console.log('Promoted employees:', results.affectedRows);
+            res.json({ message: 'Employees demoted successfully', affectedRows: results.affectedRows });
+        });
+    });
+});
 
 // Add a new endpoint for deleting employees
 expressApp.post('/delete_employees', (req, res) => {
@@ -171,7 +281,7 @@ expressApp.post('/delete_employees', (req, res) => {
 
     // Construct the query to delete multiple employees
     const placeholders = employeeIds.map(() => '?').join(','); // Create placeholders for the query
-    const query = `DELETE FROM ${DBname} WHERE EMPLOYEE_ID IN (${placeholders})`;
+    const query = `DELETE FROM ${DBname}.EMPLOYEE_DATA WHERE EMPLOYEE_ID IN (${placeholders})`;
 
     console.log('DELETE QUERY DEBUG:', query);
     console.log('EMPLOYEES TO DELETE:', employeeIds);
@@ -186,60 +296,3 @@ expressApp.post('/delete_employees', (req, res) => {
         res.json({ message: 'Employees deleted successfully', affectedRows: results.affectedRows });
     });
 });
-
-// This is a sanity check to make sure the database is up and running
-// and that the table is accessible
-function sanityCheck(callback) {
-    const selectTest = "SELECT * FROM bogus_data";
-    connection.query(selectTest, (err, results) => {
-        if (err) {
-            callback(err, null);
-            return;
-        }
-        console.log("DB entries loaded")
-        callback(null, results);
-    });
-}
-
-// When you're doing your own dev, you can change these to your own values
-// ...but please remember to change them back before you commit
-// or you're gonna have a bad time.
-
-// actually it'll probably just throw me on a wild goose chase next morning
-
-var connection = mysql.createConnection({
-    host: DBhostName,
-    user: DBusername,  // You would OBVIOUSLY change these. This is for my own personal dev environment
-    password: DBpassword, // The danger zone. You should NEVER have a password in plain text like this
-    database: DBname
-});
-
-// I ain't no callaback girl
-// I heard that you were POSTing shit and you didn't think that I would GET it
-// People hear you query like that, getting all the endpoints fired up
-
-// "Make your connection, now"
-
-// This does the actual connection business.
-// With a convenient error handler, of course
-connection.connect(function (err) {
-    if (err) {
-        switch (err.code) {
-            case 'ECONNREFUSED':
-                throw new Error("Connection refused. Is the database running?");
-            default:
-                throw new Error("OUCH! An error occurred:" + err.message);
-            case 'ER_PARSE_ERROR':
-                throw new Error("Check your spelling?");
-            case 'ER_NOT_SUPPORTED_AUTH_MODE':
-                throw new Error("Your client doesn't support the auth protocol the server wants. Get it sorted and then come back.");
-            case 'ER_DBACCESS_DENIED_ERROR':
-                throw new Error('Access denied.' + err.message);
-            //note to self: 
-            // ALTER USER 'youruser'@'localhost' IDENTIFIED WITH mysql_native_password BY 'whatever';
-            // Probably need to figure out a way to do caching_sha2_password instead but eeeeehhhhhh
-        }
-    }
-    console.log("[INFO] Database manager loaded");
-});
-

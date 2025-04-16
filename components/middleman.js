@@ -5,6 +5,33 @@
 
 var oopsSpot = document.getElementsByClassName('oops')
 
+function showMeTheMoney() {
+    console.log('sending out creds');
+    const password = document.getElementById('password-input').value;
+    const loginName = document.getElementById('user-input').value;
+
+    fetch('/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ loginName, password }),
+    })
+        .then(response => {
+            if (response.ok) {
+                console.log('Login successful');
+                return response.json();
+            } else {
+                console.error('Login failed');
+                return response.json().then(err => { throw err; });
+            }
+        })
+        .then(data => {
+            console.log('Server response:', data);
+        })
+        .catch(err => console.error('Error:', err));
+}
+
 function pageInitThing() {
     console.log('Fetching the goods')
     fetch('/page-init')

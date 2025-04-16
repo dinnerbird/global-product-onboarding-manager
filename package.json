@@ -1,10 +1,15 @@
 {
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "cli-table3": "^0.6.5",
+    "cookie-session": "^2.1.0",
+    "cors": "^2.8.5",
     "csv": "^6.3.11",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
     "mysql": "^2.18.1",
     "mysql2": "^3.14.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "sequelize": "^6.37.7"
   }
 }

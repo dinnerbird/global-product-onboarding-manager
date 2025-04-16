@@ -240,6 +240,6 @@ connection.connect(function (err) {
             // Probably need to figure out a way to do caching_sha2_password instead but eeeeehhhhhh
         }
     }
-    console.log("Database manager loaded!");
+    console.log("[INFO] Database manager loaded");
 });
 

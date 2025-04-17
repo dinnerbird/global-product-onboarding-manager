@@ -72,7 +72,7 @@ function openEmployeeManager() {
 }
 
 function addNewPopupBox() {
-    fetch('/add-employee')
+    fetch('/add_employee')
         .then(response => response.text())
         .then(data => {
             const newERWindow = window.open('/add_employee', '_blank');

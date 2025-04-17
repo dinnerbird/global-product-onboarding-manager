@@ -5,7 +5,8 @@
 
 var oopsSpot = document.getElementsByClassName('oops')
 
-
+// This is the login function. I'll be honest I'm kinda proud of how it turned out
+// It's 8am on a cloudy thursday, not even on my second cup of coffee
 function showMeTheMoney() {
     console.log('sending out creds');
     const password = document.getElementById('password-input').value;
@@ -21,16 +22,23 @@ function showMeTheMoney() {
         .then(response => {
             if (response.ok) {
                 console.log('Login successful');
-                return response.json();
+                return response.text(); // Parse the response as plain text (HTML)
             } else {
                 console.error('Login failed');
-                return response.json().then(err => { throw err; });
+                return response.text().then(err => { throw new Error(err); });
             }
         })
-        .then(data => {
-            console.log('Server response:', data);
+        .then(html => {
+            console.log('Server response received, opening in a new tab...');
+            const newWindow = window.open();
+            newWindow.document.open();
+            newWindow.document.write(html); // is document.write really that verboten?
+            newWindow.document.close();
         })
-        .catch(err => console.error('Error:', err));
+        .catch(err => {
+            console.error('Error:', err);
+            alert(`Error: ${err.message}`);
+        });
 }
 
 function pageInitThing() {
@@ -64,7 +72,7 @@ function openEmployeeManager() {
 }
 
 function addNewPopupBox() {
-    fetch('/add-employee')
+    fetch('/add_employee')
         .then(response => response.text())
         .then(data => {
             const newERWindow = window.open('/add_employee', '_blank');
@@ -117,14 +125,6 @@ function crunchatizeMeCaptain() {
 
     }
 
-function debugatizeMeCaptain(debugFirst, debugLast) {
-    fetch(`/submit?&firstName=${encodeURIComponent(debugFirst)}&lastName=${encodeURIComponent(debugLast)}`)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data)
-        })
-
-}
 
 
 // may not be able to get some things done in time.

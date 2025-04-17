@@ -7,6 +7,8 @@ var mysql = require('mysql2'); // adam was here :)
 const port = 3030;
 //           ^^^^ Do NOT touch this unless you want to have a really long afternoon
 const expressApp = require('./express_init.js');
+
+const bcrypt = require('bcrypt');
 const DBusername = "dinnerbird"
 const DBhostName = "localhost"
 const DBpassword = "buttsauce"
@@ -85,13 +87,17 @@ connection.connect(function (err) {
 
 
 
+
+// Simple and Accessible Hash (SAHash)
 // listens for the crunchatizeMeCaptain function call and does some wizardry here
-expressApp.get('/submit', (req, res) => {
+expressApp.get('/submit', async (req, res) => {
     const firstName = req.query.firstName;
     const lastName = req.query.lastName;
     const phoneNum = req.query.phoneNum;
     const emailAddress = req.query.emailAddress;
 
+    const TempUserName = firstName + lastName;
+    console.log('Temporary Username: ' + TempUserName);
 
     console.log('Received firstName:', firstName);
     console.log('Received lastName:', lastName);
@@ -99,19 +105,40 @@ expressApp.get('/submit', (req, res) => {
     console.log('Received phone:', phoneNum);
 
     const query = `
-              INSERT INTO ${DBname}.EMPLOYEE_DATA (FIRST_NAME, LAST_NAME, DESIGNATION, EMAIL, PHONE) VALUES (?, ?, 'NEW', ?, ?);
-            `; // Question marks protect against SQL injection, apparently
+        INSERT INTO ${DBname}.EMPLOYEE_DATA (FIRST_NAME, LAST_NAME, DESIGNATION, EMAIL, PHONE) VALUES (?, ?, 'NEW', ?, ?);
+    `;
 
-    connection.query(query, [firstName, lastName, emailAddress, phoneNum], (err, results) => {
-        if (err) throw err;
-        console.log("Employee added:", results);
-        console.log(query);
+    connection.query(query, [firstName, lastName, emailAddress, phoneNum], async (err, results) => {
         if (err) {
             console.error('Query error:', err);
             return res.status(500).json({ error: 'Database query failed' });
-        } else {
-            console.log(results);
-            res.json(results);
+        }
+        console.log('Employee added:', results);
+
+        const tempClientPassword = req.query.phoneNum; // Use phone number as the password
+        const saltRounds = 10;
+
+        try {
+            // Wait for the hash to be generated
+            const THE_BIG_ONE = await bcrypt.hash(tempClientPassword, saltRounds);
+
+            // Insert the hashed password into the LOGIN_INFO table
+
+            // "Now, are you ready? It's showtime!"
+            const SAHASH_QUERY = `
+                INSERT INTO ${DBname}.LOGIN_INFO (USER, PASS, DESIGNATION) VALUES (?, ?, 'NEW');
+            `;
+            connection.query(SAHASH_QUERY, [TempUserName, THE_BIG_ONE], (err, results) => {
+                if (err) {
+                    console.error('Failed to add new user:', err);
+                    return res.status(500).json({ error: 'Failed to add new user' });
+                }
+                console.log('User added to LOGIN_INFO:', results);
+                res.json({ message: 'Employee and login info added successfully' });
+            });
+        } catch (hashError) {
+            console.error('Error generating hash:', hashError);
+            res.status(500).json({ error: 'Failed to generate password hash' });
         }
     });
 });
@@ -267,32 +294,63 @@ expressApp.post('/delete_employees', (req, res) => {
         return res.status(400).json({ error: 'No employees provided for deletion' });
     }
 
-    // Parse the employees array to extract EMPLOYEE_IDs
-    const employeeIds = employees.map(employee => {
+    // Parse the employees array to extract EMPLOYEE_IDs and validate FIRST_NAME and LAST_NAME
+    const employeeIds = [];
+    const userNames = [];
+
+    employees.forEach(employee => {
         if (typeof employee === 'string') {
             employee = JSON.parse(employee); // Parse JSON string
         }
-        return employee.EMPLOYEE_ID; // Extract EMPLOYEE_ID
+
+        if (!employee.EMPLOYEE_ID || !employee.FIRST_NAME || !employee.LAST_NAME) {
+            return res.status(400).json({ error: 'Invalid employee data provided' });
+        }
+
+        employeeIds.push(employee.EMPLOYEE_ID);
+        userNames.push(`${employee.FIRST_NAME}${employee.LAST_NAME}`); // Generate TempUserName
     });
 
-    if (employeeIds.some(id => id == null)) {
-        return res.status(400).json({ error: 'Invalid employee data provided' });
+    if (employeeIds.length === 0 || userNames.length === 0) {
+        return res.status(400).json({ error: 'No valid employees provided for deletion' });
     }
 
-    // Construct the query to delete multiple employees
+    // Construct the query to delete employees
     const placeholders = employeeIds.map(() => '?').join(','); // Create placeholders for the query
-    const query = `DELETE FROM ${DBname}.EMPLOYEE_DATA WHERE EMPLOYEE_ID IN (${placeholders})`;
+    const deleteEmployeesQuery = `DELETE FROM ${DBname}.EMPLOYEE_DATA WHERE EMPLOYEE_ID IN (${placeholders})`;
 
-    console.log('DELETE QUERY DEBUG:', query);
+    console.log('DELETE EMPLOYEES QUERY DEBUG:', deleteEmployeesQuery);
     console.log('EMPLOYEES TO DELETE:', employeeIds);
 
-    connection.query(query, employeeIds, (err, results) => {
+    // First, delete employees from EMPLOYEE_DATA
+    connection.query(deleteEmployeesQuery, employeeIds, (err, results) => {
         if (err) {
             console.error('Error deleting employees:', err.message, err.code);
             return res.status(500).json({ error: 'Database query failed', details: err.message });
         }
 
         console.log('Deleted employees:', results.affectedRows);
-        res.json({ message: 'Employees deleted successfully', affectedRows: results.affectedRows });
+
+        // Now delete corresponding login info from LOGIN_INFO
+        const deleteLoginsQuery = `DELETE FROM ${DBname}.LOGIN_INFO WHERE USER IN (${userNames.map(() => '?').join(',')})`;
+
+        console.log('DELETE LOGIN INFO QUERY DEBUG:', deleteLoginsQuery);
+        console.log('USERS TO DELETE:', userNames);
+
+        connection.query(deleteLoginsQuery, userNames, (err, results) => {
+            if (err) {
+                console.error('Error deleting login info:', err.message, err.code);
+                return res.status(500).json({ error: 'Database query failed', details: err.message });
+            }
+
+            console.log('Deleted login info:', results.affectedRows);
+            res.json({
+                message: 'Employees and corresponding login info deleted successfully',
+                affectedRows: {
+                    employees: results.affectedRows,
+                    logins: results.affectedRows,
+                },
+            });
+        });
     });
 });

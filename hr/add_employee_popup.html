@@ -32,10 +32,11 @@
                 <input type="text" id="LNBOX" placeholder="Last Name" required>
             </div>
             <div class="toolboxInputForm">
-                <input type="email" id="EMAILBOX" placeholder="Email Address" required>
+                <input type="email" id="EMAILBOX" placeholder="Email Address" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address" required>
+                <!-- "Hello, regex?" "FALSE" "Understandable, have a great day" -->
             </div>
             <div class="toolboxInputForm">
-                <input type="tel" id="TELBOX" placeholder="Phone Number" required>
+                <input type="tel" id="TELBOX" placeholder="Phone Number" pattern="\d{10}" title="Please enter a 10-digit phone number" required>
             </div>
             <div class="toolbox">
                 <button type="button" id="cancelButton" onclick="window.close()">

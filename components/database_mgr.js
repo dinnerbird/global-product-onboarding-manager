@@ -9,10 +9,8 @@ const port = 3030;
 const expressApp = require('./express_init.js');
 
 const bcrypt = require('bcrypt');
-const DBusername = "dinnerbird"
-const DBhostName = "localhost"
-const DBpassword = "buttsauce"
-const DBname = "bogus_data"
+const pathwayConfig = require('./config.js');
+
 
 // be careful with the require stuff, it can cause circular references
 // ask me how I know!
@@ -30,7 +28,7 @@ const DBname = "bogus_data"
 // People hear you query like that, getting all the endpoints fired up
 
 function offToSeeTheWizard(callback) {
-    const selectTest = `SELECT * FROM ${DBname}.EMPLOYEE_DATA`; // Need a way to pretty print it
+    const selectTest = `SELECT * FROM ${pathwayConfig.databaseName}.EMPLOYEE_DATA`; // Need a way to pretty print it
     connection.query(selectTest, (err, results) => {
         if (err) {
             callback(err, null);
@@ -58,10 +56,10 @@ expressApp.get('/page-init', (req, res) => {
 // This does the actual connection business.
 
 var connection = mysql.createConnection({
-    host: DBhostName,
-    user: DBusername,  // You would OBVIOUSLY change these. This is for my own personal dev environment
-    password: DBpassword, // The danger zone. You should NEVER have a password in plain text like this
-    database: DBname // in this case it's "bogus_data"
+    host: pathwayConfig.host,
+    user: pathwayConfig.user,
+    password: pathwayConfig.password,
+    database: pathwayConfig.databaseName
 });
 
 
@@ -105,7 +103,7 @@ expressApp.get('/submit', async (req, res) => {
     console.log('Received phone:', phoneNum);
 
     const query = `
-        INSERT INTO ${DBname}.EMPLOYEE_DATA (FIRST_NAME, LAST_NAME, DESIGNATION, EMAIL, PHONE) VALUES (?, ?, 'NEW', ?, ?);
+        INSERT INTO ${pathwayConfig.databaseName}.EMPLOYEE_DATA (FIRST_NAME, LAST_NAME, DESIGNATION, EMAIL, PHONE) VALUES (?, ?, 'NEW', ?, ?);
     `;
 
     connection.query(query, [firstName, lastName, emailAddress, phoneNum], async (err, results) => {
@@ -126,7 +124,7 @@ expressApp.get('/submit', async (req, res) => {
 
             // "Now, are you ready? It's showtime!"
             const SAHASH_QUERY = `
-                INSERT INTO ${DBname}.LOGIN_INFO (USER, PASS, DESIGNATION) VALUES (?, ?, 'NEW');
+                INSERT INTO ${pathwayConfig.databaseName}.LOGIN_INFO (USER, PASS, DESIGNATION) VALUES (?, ?, 'NEW');
             `;
             connection.query(SAHASH_QUERY, [TempUserName, THE_BIG_ONE], (err, results) => {
                 if (err) {
@@ -154,11 +152,11 @@ expressApp.get('/filter', (req, res) => {
 
     // This probably could be done better
     if (option === 'opt_HR') {
-        query = `SELECT * FROM ' + ${DBname}.EMPLOYEE_DATA + ' WHERE DESIGNATION = "HR"`;
+        query = `SELECT * FROM ' + ${pathwayConfig.databaseName}.EMPLOYEE_DATA + ' WHERE DESIGNATION = "HR"`;
     } else if (option === 'opt_NEW') {
-        query = `SELECT * FROM ' + ${DBname}.EMPLOYEE_DATA + ' WHERE DESIGNATION = "NEW"`;
+        query = `SELECT * FROM ' + ${pathwayConfig.databaseName}.EMPLOYEE_DATA + ' WHERE DESIGNATION = "NEW"`;
     } else if (option === 'opt_CURRENT') {
-        query = `SELECT * FROM ' + ${DBname}.EMPLOYEE_DATA + ' WHERE DESIGNATION = "CURRENT"`;
+        query = `SELECT * FROM ' + ${pathwayConfig.databaseName}.EMPLOYEE_DATA + ' WHERE DESIGNATION = "CURRENT"`;
     }
     else {
         return res.status(400).json({ error: 'Bad request' });
@@ -210,7 +208,7 @@ expressApp.post('/promote_employees', (req, res) => {
 
     // Query to check if any employee is part of HR
     const placeholders = employeeIds.map(() => '?').join(',');
-    const checkQuery = `SELECT EMPLOYEE_ID FROM ${DBname}.EMPLOYEE_DATA WHERE "EMPLOYEE_ID" IN (${placeholders}) AND DESIGNATION = 'HR'`;
+    const checkQuery = `SELECT EMPLOYEE_ID FROM ${pathwayConfig.databaseName}.EMPLOYEE_DATA WHERE "EMPLOYEE_ID" IN (${placeholders}) AND DESIGNATION = 'HR'`;
 
     connection.query(checkQuery, employeeIds, (err, results) => {
         if (err) {
@@ -224,7 +222,7 @@ expressApp.post('/promote_employees', (req, res) => {
         }
 
         // Proceed with the promotion if no HR employees are found
-        const updateQuery = `UPDATE ${DBname}.EMPLOYEE_DATA SET DESIGNATION = 'CURRENT' WHERE EMPLOYEE_ID IN (${placeholders})`;
+        const updateQuery = `UPDATE ${pathwayConfig.databaseName}.EMPLOYEE_DATA SET DESIGNATION = 'CURRENT' WHERE EMPLOYEE_ID IN (${placeholders})`;
 
         connection.query(updateQuery, employeeIds, (err, results) => {
             if (err) {
@@ -258,7 +256,7 @@ expressApp.post('/DEMOTE_employees', (req, res) => {
 
     // Query to check if any employee is part of HR
     const placeholders = employeeIds.map(() => '?').join(',');
-    const checkQuery = `SELECT EMPLOYEE_ID FROM ${DBname}.EMPLOYEE_DATA WHERE "EMPLOYEE_ID" IN (${placeholders}) AND DESIGNATION = 'HR'`;
+    const checkQuery = `SELECT EMPLOYEE_ID FROM ${pathwayConfig.databaseName}.EMPLOYEE_DATA WHERE "EMPLOYEE_ID" IN (${placeholders}) AND DESIGNATION = 'HR'`;
 
     connection.query(checkQuery, employeeIds, (err, results) => {
         if (err) {
@@ -272,7 +270,7 @@ expressApp.post('/DEMOTE_employees', (req, res) => {
         }
 
         // Proceed with the promotion if no HR employees are found
-        const updateQuery = `UPDATE ${DBname}.EMPLOYEE_DATA SET DESIGNATION = 'NEW' WHERE EMPLOYEE_ID IN (${placeholders})`;
+        const updateQuery = `UPDATE ${pathwayConfig.databaseName}.EMPLOYEE_DATA SET DESIGNATION = 'NEW' WHERE EMPLOYEE_ID IN (${placeholders})`;
 
         connection.query(updateQuery, employeeIds, (err, results) => {
             if (err) {
@@ -317,7 +315,7 @@ expressApp.post('/delete_employees', (req, res) => {
 
     // Construct the query to delete employees
     const placeholders = employeeIds.map(() => '?').join(','); // Create placeholders for the query
-    const deleteEmployeesQuery = `DELETE FROM ${DBname}.EMPLOYEE_DATA WHERE EMPLOYEE_ID IN (${placeholders})`;
+    const deleteEmployeesQuery = `DELETE FROM ${pathwayConfig.databaseName}.EMPLOYEE_DATA WHERE EMPLOYEE_ID IN (${placeholders})`;
 
     console.log('DELETE EMPLOYEES QUERY DEBUG:', deleteEmployeesQuery);
     console.log('EMPLOYEES TO DELETE:', employeeIds);
@@ -332,7 +330,7 @@ expressApp.post('/delete_employees', (req, res) => {
         console.log('Deleted employees:', results.affectedRows);
 
         // Now delete corresponding login info from LOGIN_INFO
-        const deleteLoginsQuery = `DELETE FROM ${DBname}.LOGIN_INFO WHERE USER IN (${userNames.map(() => '?').join(',')})`;
+        const deleteLoginsQuery = `DELETE FROM ${pathwayConfig.databaseName}.LOGIN_INFO WHERE USER IN (${userNames.map(() => '?').join(',')})`;
 
         console.log('DELETE LOGIN INFO QUERY DEBUG:', deleteLoginsQuery);
         console.log('USERS TO DELETE:', userNames);

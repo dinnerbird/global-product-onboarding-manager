@@ -1,8 +1,14 @@
-// Robert'); DROP TABLE Students; --
+/*
 
+▙▗▌▗   ▌  ▌▜    ▙▗▌      
+▌▘▌▄ ▞▀▌▞▀▌▐ ▞▀▖▌▘▌▝▀▖▛▀▖
+▌ ▌▐ ▌ ▌▌ ▌▐ ▛▀ ▌ ▌▞▀▌▌ ▌
+▘ ▘▀▘▝▀▘▝▀▘ ▘▝▀▘▘ ▘▝▀▘▘ ▘
+...Middle(ware) Management
 
-// no shame in reused code if it saves time
+"Just barely intelligent enough to get the job done."
 
+*/
 var oopsSpot = document.getElementsByClassName('oops')
 
 // This is the login function. I'll be honest I'm kinda proud of how it turned out
@@ -125,8 +131,6 @@ function crunchatizeMeCaptain() {
 
     }
 
-
-
 // may not be able to get some things done in time.
 // This function is just a placeholder if Enterprise is actually insane enough 
 // to warrant using my software
@@ -135,10 +139,13 @@ function Nothingburger(action) {
     // I mean, I guess you could do *something* here
     // but I'm not your dad
     if (action == 'pending') {
-        console.log('Pending approvals function');
+        alert('Pending approvals function');
     }
     else if (action == 'reminder') {
-        console.log('Send reminder function');
+        alert('Send reminder function');
+    }
+    else if (action == 'register-link') {
+        alert('AIN\'T YET IMPLEMENTED CHIEF');
     }
 
 }

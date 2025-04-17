@@ -1,5 +1,4 @@
 # Stupidly important
-~~[x] Create an Excel file with a bunch of bogus names (as proof of concept)...and figure out a way to turn it into a more appropriate CSV file~~
 [x] So instead of using a CSV file, I've implemented a MySQL backend to handle the data
 [x] Assign HR and "new" employee metadata. Some sort of labeling system involved there
 [x] Write the darn HTML
@@ -14,15 +13,33 @@
     [x] Add/remove/modify employee data
     [ ] Prepare requests for onboarding
     [x] Promotion and ensuring HR can't be promoted by accident
-- Authentication Manager:
-    [ ] Username/password handling
+- Logon Manager:
+    [x] Username/password handling
+    [?] Password handouts. Currently handled by hash+salted phone number
     [ ] Can identify the difference between HR "admins", new employees, and existing employees
-
-## Knowledge
-[ ] As much as JS pisses me off personally, I know it
-[ ] Daniel and Adam said they were going to handle the DB stuff
-[ ] Smit has Java experience apparently
-[ ] Need to look into capabilities for Chido and Kennedy, see what they know
 
 ## Less important
 [ ] Pretty up the web page itself
+
+Client <-> MiddleMan <-> (Node/SQL)
+
+
+# Data Models
+## Trainer**
+    - Partially hardcoded list of "training people" tasked with handling information
+    - One person for every "expertise"
+    *- Might not be a lasting feature and may have to cut last minute*
+
+## Training Program
+    - Serialized training IDs for every video.
+    - Title, description, and duration
+    - Look into category types for different use cases
+        - "General"
+        - "Brand New"
+        - (Whatever specific departments? Consult with @adamarbini)
+## Training Status
+    - I'm thinking multiple employees will have several training videos queued up.
+    - Status ID, serialized similar to Training ID, all are unique. Probably could get away with a gobbledy tag of some sort
+    - Completion status TRUE/FALSE
+    - Completion date YYYY-MM-DD
+    

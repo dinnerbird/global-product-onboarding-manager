@@ -12,14 +12,8 @@
 
 <body>
     <div class="header_bar">
-
-        <a href="../hr/hr_interface.html" class="logo-link">
-            <img src="../enterprise_testlogo.png" alt="Enterprise Logo" class="logo"/>
-        </a>
+        <img src="./res/Pathway_logo.png" alt="Pathway Logo" style="max-width: 120px;"/>
         <h2>Add Employee</h2>
-        <a href="../hr/hr_interface.html" class="logo-link">
-            <img src="../enterprise_testlogo.png" class="logo" min-height="274px" min-width="88px">
-        </a>
     </div>
 
 
@@ -32,8 +26,10 @@
                 <input type="text" id="LNBOX" placeholder="Last Name" required>
             </div>
             <div class="toolboxInputForm">
-                <input type="email" id="EMAILBOX" placeholder="Email Address" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address" required>
-                <!-- "Hello, regex?" "FALSE" "Understandable, have a great day" -->
+                <input type="email" id="EMAILBOX" placeholder="Email Address" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$" title="Please enter a valid email address" required>
+                <!-- "Hello, regex?" 
+                 "FALSE!" 
+                 "Understandable, have a great day" -->
             </div>
             <div class="toolboxInputForm">
                 <input type="tel" id="TELBOX" placeholder="Phone Number" pattern="\d{10}" title="Please enter a 10-digit phone number" required>
@@ -48,7 +44,6 @@
             </div>
         </form>
     </div>
-    <div id="oops"></div>
 
     <script src="../components/middleman.js"></script>
 </body>

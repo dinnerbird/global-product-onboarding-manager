@@ -15,6 +15,10 @@ expressApp.use(express.static(path.join(__dirname, '..')));
 // These routes are for general pages.
 // Fun fact: if you forget the "req" parameter, the server will crash.
 expressApp.get('/client', (req, res) => {
+    const referer = req.get('Referer');
+    if (!referer || !referer.startsWith('http://localhost:3030')) {
+        return res.status(403).send(`You shall not pass!`);
+    }
     res.sendFile(path.join(__dirname, '..', 'client', 'client_interface.html'));
 });
 
@@ -23,20 +27,35 @@ expressApp.get('/', (req, res) => {
 });
 
 expressApp.get('/teapot', (req, res) => {
-    res.status(418).send('I am a teapot');
-    console.log('short and stout, here is my handle, here is my spout');
+    res.status(418).sendFile(path.join(__dirname, '..', 'res', 'teapot.html'), (err) => {
+        if (err) {
+            res.status(418).send(`I'm a teapot`);
+        }
+    });
 });
 
 expressApp.get('/hr_interface', (req, res) => {
+    const referer = req.get('Referer');
+    if (!referer || !referer.startsWith('http://localhost:3030')) {
+        return res.status(403).send(`You can't just go typing in addresses like that...`);
+    }
     res.sendFile(path.join(__dirname, '..', 'hr', 'hr_interface.html'));
 });
 
 expressApp.get('/employee_manager', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'hr', 'employee_manager.html'));
+    const referer = req.get('Referer');
+    if (!referer || !referer.startsWith('http://localhost:3030')) {
+        return res.status(403).send(`Not quite...`);
+    }
 });
 
 expressApp.get('/add_employee', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'hr', 'add_employee_popup.html'));
+    const referer = req.get('Referer');
+    if (!referer || !referer.startsWith('http://localhost:3030')) {
+        return res.status(403).send(`Just what do you think you're doing?`);
+    }
 })
 
 

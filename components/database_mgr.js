@@ -75,7 +75,7 @@ connection.connect(function (err) {
             case 'ER_NOT_SUPPORTED_AUTH_MODE':
                 throw new Error("Your client doesn't support the auth protocol the I'm looking for. Replace the loose screw behind the keyboard.");
             case 'ER_DBACCESS_DENIED_ERROR':
-                throw new Error('Access denied. Have you considered kicking rocks? ' + err.message);
+                throw new Error('Access denied. Have you considered kicking rocks?' + err.message);
             // I have had to waste a week of my time getting these morons to set up their dev environments
 
         }
@@ -95,7 +95,7 @@ expressApp.get('/submit', async (req, res) => {
     const emailAddress = req.query.emailAddress;
 
     const TempUserName = firstName + lastName;
-    console.log('Temporary Username: ' + TempUserName);
+    console.log('Temporary Username:', TempUserName);
 
     console.log('Received firstName:', firstName);
     console.log('Received lastName:', lastName);
@@ -152,11 +152,11 @@ expressApp.get('/filter', (req, res) => {
 
     // This probably could be done better
     if (option === 'opt_HR') {
-        query = `SELECT * FROM ' + ${pathwayConfig.databaseName}.EMPLOYEE_DATA + ' WHERE DESIGNATION = "HR"`;
+        query = `SELECT * FROM ${pathwayConfig.databaseName}.EMPLOYEE_DATA WHERE DESIGNATION = "HR"`;
     } else if (option === 'opt_NEW') {
-        query = `SELECT * FROM ' + ${pathwayConfig.databaseName}.EMPLOYEE_DATA + ' WHERE DESIGNATION = "NEW"`;
+        query = `SELECT * FROM ${pathwayConfig.databaseName}.EMPLOYEE_DATA WHERE DESIGNATION = "NEW"`;
     } else if (option === 'opt_CURRENT') {
-        query = `SELECT * FROM ' + ${pathwayConfig.databaseName}.EMPLOYEE_DATA + ' WHERE DESIGNATION = "CURRENT"`;
+        query = `SELECT * FROM ${pathwayConfig.databaseName}.EMPLOYEE_DATA WHERE DESIGNATION = "CURRENT"`;
     }
     else {
         return res.status(400).json({ error: 'Bad request' });
@@ -172,8 +172,8 @@ expressApp.get('/filter', (req, res) => {
         queryParams.push(`%${lastName.toLowerCase()}%`);
     }
     // who needs silly debuggers when you can just log everything???
-    console.log('QUERY DEBUG: ' + query);
-    console.log('EXTRA PARAMS: ' + queryParams);
+    console.log('QUERY DEBUG:' + query);
+    console.log('EXTRA PARAMS:' + queryParams);
 
 
     connection.query(query, queryParams, (err, results) => {

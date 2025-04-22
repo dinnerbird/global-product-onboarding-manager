@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<!-- Pathway HR Interface -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pathway Employee Manager</title>
     <link rel="icon" type="image/x-icon" href="/res/favicon.ico">
     <link rel="stylesheet" href="../css/boring_corporate.css" />
-    <!-- <link rel="stylesheet" href="css/style.css" /> -->
+
 </head>
 
 <body>
@@ -18,7 +18,7 @@
     <h2>At a glance</h2>
     <div class="toolbox">
         <div class="buttonbox">
-            <button id="rerender-table" onclick="pageInitThing()">Reset Table</button>
+            <button id="rerender-table" onclick="dashboardOverviewInit()">Reset Table</button>
             <button id="add_new" onclick="openEmployeeManager()">Edit Employees...</button>
             <button id="pendingApprovals" onclick="Nothingburger('pending')">Pending Approvals...</button>
             <button id="sendReminder" onclick="Nothingburger('reminder')">Send Reminder...</button>
@@ -31,13 +31,7 @@
             </table>
             </div>
     </div>
-        
-            
     </div>
-
-
-
-
     <script src="../components/middleman.js"></script>
     <script>dashboardOverviewInit()</script>
 </body>

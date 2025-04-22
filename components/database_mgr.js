@@ -1,7 +1,7 @@
-/*
-*   @author Alex Helton (@dinnerbird)
-    Yes, I am for hire.
-*/
+// Pathway Database Manager
+// You're telling me a dolphin wrote this database software?
+
+
 const path = require('path'); // is that 211 bytes?
 var mysql = require('mysql2'); // adam was here :)
 const port = 3030;
@@ -14,18 +14,6 @@ const pathwayConfig = require('./config.js');
 
 // be careful with the require stuff, it can cause circular references
 // ask me how I know!
-
-// This is a sanity check to make sure the database is up and running
-// and that the table is accessible
-
-// So instead of a "sanity check" this just became the table init function
-// the quickest fixes are the longest features, amirite fellas?
-
-
-
-// I ain't no callaback girl
-// I heard that you were POSTing shit and you didn't think that I would GET it
-// People hear you query like that, getting all the endpoints fired up
 
 function offToSeeTheWizard(callback) {
     const selectTest = `SELECT * FROM ${pathwayConfig.databaseName}.EMPLOYEE_DATA`; // Need a way to pretty print it

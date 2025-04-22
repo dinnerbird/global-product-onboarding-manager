@@ -69,27 +69,28 @@ label {
     /* for the love of god, please don't use this in production */
     background-color: #4CAF50;
     color: white;
-    padding: 20px;
+    padding: 25px;
     font-size: 24px;
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Ensures proper spacing between logo and text */
+
+    gap: 50px;
 }
 
 .header_bar h2 {
     justify-content: center;
     display: flex;
 }
-
-.header_bar a img {
+/*
+.header_bar img {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     gap: 20px;
-    text-decoration: none; /* Removes underline from links */
-    color: white; /* Ensures link text color matches header text */
-}
-
+    text-decoration: none; /* Removes underline from links 
+    color: white; /* Ensures link text color matches header text 
+    max-height: 150px;
+} */
 
 table {
     width: 100%;
@@ -119,7 +120,6 @@ tr:nth-child(even) {
 form {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Aligns the form elements to the left */
     margin: 20px auto;
     padding: 10px;
     border: 1px solid #ccc;

@@ -62,6 +62,21 @@ function pageInitThing() {
 
 };
 
+function dashboardOverviewInit() {
+    console.log('Glancing...')
+    fetch('/overview-init')
+        .then(response => response.json())
+        .then(data => {
+            if (Array.isArray(data)) {
+                renderTable(data);
+            } else {
+                console.warn('Expected an array, got:', data)
+            }
+        }) // returning the goods
+        .catch(err => console.error('overviewInit ERROR!', err)); // you gotta be #$%& kidding me
+
+};
+
 function openEmployeeManager() {
     console.log('Opening employee manager')
     fetch('/employee_manager')

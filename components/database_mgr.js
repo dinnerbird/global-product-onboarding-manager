@@ -39,6 +39,44 @@ function offToSeeTheWizard(callback) {
     });
 }
 
+function DodgeSecondGenDashboard(callback) {
+    // CRUNCH CRUNCH CRUNCH CRUNCH
+    const selectTest = `
+    SELECT 
+    EMPLOYEE_DATA.EMPLOYEE_ID AS 'Employee ID', 
+    FIRST_NAME AS 'First Name', 
+    LAST_NAME AS 'Last Name', 
+    CASE COMPLETION_STATUS
+        WHEN 0 THEN 'Not Started'
+        WHEN 1 THEN 'Complete'
+        WHEN 2 THEN 'INCOMPLETE'
+        ELSE 'UNKNOWN'
+    END AS 'Completion Status', 
+    COMPLETION_DATE AS 'Completion Date' 
+FROM EMPLOYEE_DATA 
+INNER JOIN TRAINING_STATUS 
+    ON EMPLOYEE_DATA.EMPLOYEE_ID = TRAINING_STATUS.EMPLOYEE_ID;`
+    // Honestly, my favorite part of SQL is getting to SCREAM AT YOUR COMPUTER... in style.
+    connection.query(selectTest, (err, results) => {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        console.log("DB entries loaded")
+        callback(null, results);
+    });
+}
+
+expressApp.get('/overview-init', (req, res) => {
+    DodgeSecondGenDashboard((err, results) => {
+        if (err) {
+            res.status(500).send('Error executing query: ' + err.message);
+        } else {
+            res.json(results);
+        }
+    });
+})
+
 expressApp.get('/page-init', (req, res) => {
     offToSeeTheWizard((err, results) => {
         if (err) {

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pathway Employee Manager</title>
-
+    <link rel="icon" type="image/x-icon" href="/res/favicon.ico">
     <link rel="stylesheet" href="../css/boring_corporate.css" />
     <!-- <link rel="stylesheet" href="css/style.css" /> -->
 </head>
@@ -15,39 +15,31 @@
         <img src="./res/Pathway_logo.png" alt="Pathway Logo" style="max-width: 120px;"/>
         <h2>Employee Manager</h2>
     </div>
+    <h2>At a glance</h2>
     <div class="toolbox">
-        
-        <h2>Tools:</h2>
-        <button id="rerender-table" onclick="pageInitThing()">Reset Table</button>
-        <button id="add_new" onclick="openEmployeeManager()">Edit Employees...</button>
-        <button id="pendingApprovals" onclick="Nothingburger('pending')">Pending Approvals...</button>
-        <button id="sendReminder" onclick="Nothingburger('reminder')">Send Reminder...</button>
-
-    </div>
-
-    <br />
-    <div id="content"></div>
-    <div class="toolbox">
-        <input type="text" id="firstNameBox" placeholder="First Name">
-        <input type="text" id="lastNameBox" placeholder="Last Name">
-        <label for="entryTypeSelector" id="sortBy">Sort By:</label>
-        <select id="entryTypeSelector" onchange="logChange()">
-            <option value="opt_HR">HR</option>
-            <option value="opt_NEW">New Employee</option>
-            <option value="opt_CURRENT">Current Employee</option>
-        </select>
-        <button id="filterButton" onclick="filterTable()">Filter!</button>
-    </div>
-    <div id="oops"></div>
-    <div class="tablecontainer">
-        <table id="data-table">
-            <thead></thead>
-            <tbody></tbody>
-        </table>
+        <div class="buttonbox">
+            <button id="rerender-table" onclick="pageInitThing()">Reset Table</button>
+            <button id="add_new" onclick="openEmployeeManager()">Edit Employees...</button>
+            <button id="pendingApprovals" onclick="Nothingburger('pending')">Pending Approvals...</button>
+            <button id="sendReminder" onclick="Nothingburger('reminder')">Send Reminder...</button>
         </div>
+    <div class="toolbox">
+        <div class="tablecontainer">
+            <table id="data-table">
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+            </div>
+    </div>
+        
+            
+    </div>
+
+
+
 
     <script src="../components/middleman.js"></script>
-    <script>pageInitThing();</script>
+    <script>dashboardOverviewInit()</script>
 </body>
 
 </html>

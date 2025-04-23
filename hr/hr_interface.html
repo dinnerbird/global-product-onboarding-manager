@@ -1,40 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <!-- Pathway HR Interface -->
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pathway Employee Manager</title>
     <link rel="icon" type="image/x-icon" href="/res/favicon.ico">
     <link rel="stylesheet" href="../css/boring_corporate.css" />
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    
 </head>
 
 <body>
     <div class="header_bar">
-        <img src="./res/Pathway_logo.png" alt="Pathway Logo" style="max-width: 120px;"/>
+        <img src="./res/Pathway_logo.png" alt="Pathway Logo" style="max-width: 120px;" />
         <h2>Employee Manager</h2>
     </div>
-    <h2>At a glance</h2>
-    <div class="toolbox">
+<div class="content" >
+    <h2 id="GREETZ"></h2>
+    <div class="toolbox" style="border: 1px solid #ccc;
+border-radius: 4px; padding: 50px;">
+
         <div class="buttonbox">
             <button id="rerender-table" onclick="dashboardOverviewInit()">Reset Table</button>
             <button id="add_new" onclick="openEmployeeManager()">Edit Employees...</button>
-            <button id="pendingApprovals" onclick="Nothingburger('pending')">Pending Approvals...</button>
-            <button id="sendReminder" onclick="Nothingburger('reminder')">Send Reminder...</button>
-            <button id="fileUpload" onclick="Nothingburger()">File Upload...?</button>
+            <!--<button id="pendingApprovals" onclick="Nothingburger('pending')">Pending Approvals...</button>
+            <button id="sendReminder" onclick="Nothingburger('reminder')">Send Reminder...</button>-->
+            <button id="fileUpload" onclick="Nothingburger()">Manage Training Materials...</button>
         </div>
-    <div class="toolbox">
-        <div class="tablecontainer">
-            <table id="data-table">
-                <thead></thead>
-                <tbody></tbody>
-            </table>
+        <div class="toolbox">
+            <div class="tablecontainer">
+                <table id="data-table">
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
             </div>
+        </div>
     </div>
-    </div>
+</div>
     <script src="../components/middleman.js"></script>
-    <script>dashboardOverviewInit()</script>
+    <script>dashboardOverviewInit(); getTheGreetz();</script>
 </body>
 
 </html>

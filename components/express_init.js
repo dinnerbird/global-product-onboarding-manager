@@ -15,11 +15,14 @@ expressApp.use(express.static(path.join(__dirname, '..')));
 // These routes are for general pages.
 // FUN FACT! If you forget the "req" parameter, the server will crash.
 expressApp.get('/client', (req, res) => {
+    
     const referer = req.get('Referer');
     if (!referer || !referer.startsWith('http://localhost:3030')) {
         return res.status(403).send(`You shall not pass!`);
     }
     res.sendFile(path.join(__dirname, '..', 'client', 'client_interface.html'));
+    
+    
 });
 
 // *puts on sunglasses*

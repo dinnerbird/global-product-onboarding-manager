@@ -2,19 +2,11 @@
 
 /* 
 
-Acknowledgements:
-
 This program is dedicated to the naysayers, the doubters, and the downers that thought I'd never graduate from college.
-
-Here's to my bird, Roger, for being my best bud during the development. 
-
-My girlfriend, Celeste, for encouraging words and shared colorful resentments towards JavaScript.
-
-My homie, Sev, for the laughs and positive reinforcement.
 
 */
 const GREEN = "\u001b[32m";
-const WHITE= "\u001b[37m";
+const WHITE = "\u001b[37m";
 const BOLD = "\u001b[1m";
 const database_mgr = require('./database_mgr.js');
 const logon_mgr = require('./logon_mgr.js');

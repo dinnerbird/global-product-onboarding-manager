@@ -361,3 +361,28 @@ function congrats() {
             pageInitThing();
         });
 }
+
+
+// This is a friendly way to greet the user.
+function getTheGreetz() {
+    fetch('/get-login-name')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to get login name.')
+        }
+        return response.json();
+    })
+    .then(data => {
+        const loginName = data.loginName
+        console.log('Login name: ', loginName);
+
+        const greetzH2 = document.getElementById('GREETZ');
+        let formattedLoginName = loginName.replace(/([A-Z][^A-Z]*)([A-Z])/, '$1 $2'); // Insert space after the second capital letter
+        greetzH2.innerHTML = 'Hello, ' + formattedLoginName + '!';
+    })
+    .catch(err => {
+        console.error('Error caught for login name:', err);
+    });
+
+
+}

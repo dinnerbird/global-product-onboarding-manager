@@ -10,7 +10,7 @@ const pathwayConfig = require('./config.js');
 const session = require('express-session');
 
 expressApp.use(session({
-    secret: 'your_secret_key', // Replace with a strong secret key
+    secret: 'bologna', // Replace with a strong secret key
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false } // Set to true if using HTTPS
@@ -40,7 +40,7 @@ expressApp.post('/login', async (req, res) => {
 
         // Query the database for the user
         const [rows] = await connection.execute(
-            `SELECT * FROM LOGIN_INFO WHERE USER = ?`,
+            `SELECT * FROM EMPLOYEE_DATA WHERE USERNAME = ?`,
             [loginName]
         );
 
@@ -56,17 +56,18 @@ expressApp.post('/login', async (req, res) => {
 
         if (isMatch) {
             const userRole = rows[0].DESIGNATION;
-            console.log(userRole);
-            // Store user role in session
+            console.log(`USER LOGGED IN AS: ${userRole}`); // Logs the raw role
             req.session.user = { loginName, role: userRole };
 
             if (userRole === 'HR') {
-                return res.sendFile(path.join(__dirname, '../hr/hr_interface.html'));
-            } else if (userRole === 'NEW') {
-                return res.sendFile(path.join(__dirname, '../client/client_interface.html'));
+                res.redirect('/hr/hr_interface.html');
+            
+            } else if (userRole === 'NEW' || userRole === 'CURRENT') {
+                res.redirect('/client/client_interface.html');
             } else {
                 return res.status(401).json({ error: "Invalid username or password" });
             }
+            console.log(req.session.user); // Tells me "nicely" what the loginName and role are
         }
     } catch (error) {
         console.error("[ERROR]", error);
@@ -91,5 +92,15 @@ expressApp.get('/hr/hr_interface.html', isAuthenticated, authorizeRole('HR'), (r
 // Protect Client interface
 expressApp.get('/client/client_interface.html', isAuthenticated, authorizeRole('NEW'), (req, res) => {
     res.sendFile(path.join(__dirname, '../client/client_interface.html'));
+});
+
+// Example in logon_mgr
+expressApp.get('/get-login-name', (req, res) => {
+    const loginName = req.session?.user?.loginName; // Assuming session stores user info
+    if (loginName) {
+        res.json({ loginName });
+    } else {
+        res.status(401).json({ error: 'User not logged in' });
+    }
 });
 

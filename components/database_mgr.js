@@ -29,23 +29,41 @@ function offToSeeTheWizard(callback) {
 
 function DodgeSecondGenDashboard(callback) {
     // CRUNCH CRUNCH CRUNCH CRUNCH
-    const selectTest = `
-    SELECT 
-    EMPLOYEE_DATA.EMPLOYEE_ID AS 'Employee ID', 
-    FIRST_NAME AS 'First Name', 
-    LAST_NAME AS 'Last Name', 
-    CASE COMPLETION_STATUS
+    const dashboardSelect = `
+    SELECT
+    EMPLOYEE_DATA.EMPLOYEE_ID AS 'Employee ID',
+    FIRST_NAME AS 'First Name',
+    LAST_NAME AS 'Last Name',
+    CASE TRAINING_STATUS.COMPLETION_STATUS
         WHEN 0 THEN 'Not Started'
         WHEN 1 THEN 'Complete'
-        WHEN 2 THEN 'INCOMPLETE'
-        ELSE 'UNKNOWN'
-    END AS 'Completion Status', 
-    COMPLETION_DATE AS 'Completion Date' 
-FROM EMPLOYEE_DATA 
-INNER JOIN TRAINING_STATUS 
-    ON EMPLOYEE_DATA.EMPLOYEE_ID = TRAINING_STATUS.EMPLOYEE_ID;`
+        WHEN 2 THEN 'Incomplete'
+        ELSE 'Unknown'
+    END AS 'Completion Status',
+    TRAINING_PROGRAM.TITLE AS 'Training Title',
+    DATE_FORMAT(TRAINING_STATUS.COMPLETION_DATE, '%M %d, %Y') AS 'Completion Date',
+CASE 
+        WHEN DATEDIFF(CURDATE(), COMPLETION_DATE) = 0 THEN 'Today'
+        WHEN DATEDIFF(CURDATE(), COMPLETION_DATE) = 1 THEN 'Yesterday'
+        WHEN DATEDIFF(CURDATE(), COMPLETION_DATE) < 7 THEN 
+            CONCAT(DATEDIFF(CURDATE(), COMPLETION_DATE), ' days ago')
+        WHEN DATEDIFF(CURDATE(), COMPLETION_DATE) < 30 THEN 
+            CONCAT(FLOOR(DATEDIFF(CURDATE(), COMPLETION_DATE) / 7), ' weeks ago')
+        WHEN DATEDIFF(CURDATE(), COMPLETION_DATE) < 365 THEN 
+            CONCAT(FLOOR(DATEDIFF(CURDATE(), COMPLETION_DATE) / 30), ' months ago')
+        ELSE 
+            CONCAT(FLOOR(DATEDIFF(CURDATE(), COMPLETION_DATE) / 365), ' years ago')
+    END AS 'Relative Date'
+FROM EMPLOYEE_DATA
+INNER JOIN TRAINING_STATUS
+    ON EMPLOYEE_DATA.EMPLOYEE_ID = TRAINING_STATUS.EMPLOYEE_ID
+INNER JOIN TRAINING_PROGRAM
+    ON TRAINING_STATUS.TRAINING_ID = TRAINING_PROGRAM.TRAINING_ID;
+    `
     // Honestly, my favorite part of SQL is getting to SCREAM AT YOUR COMPUTER... in style.
-    connection.query(selectTest, (err, results) => {
+
+    // TODO: Map TRAINING_IDs to pretty names
+    connection.query(dashboardSelect, (err, results) => {
         if (err) {
             callback(err, null);
             return;
@@ -114,56 +132,29 @@ connection.connect(function (err) {
 
 // Simple and Accessible Hash (SAHash)
 // listens for the crunchatizeMeCaptain function call and does some wizardry here
+
+// This is a BIG ASS FUNCTION with lots of moving parts. Things can go wrong here.
 expressApp.get('/submit', async (req, res) => {
     const firstName = req.query.firstName;
     const lastName = req.query.lastName;
     const phoneNum = req.query.phoneNum;
     const emailAddress = req.query.emailAddress;
-
+    const tempClientPassword = req.query.phoneNum; // Use phone number as the password
+    const saltRounds = 10;
+    const THE_BIG_ONE = await bcrypt.hash(tempClientPassword, saltRounds);
     const TempUserName = firstName + lastName;
-    console.log('Temporary Username:', TempUserName);
-
-    console.log('Received firstName:', firstName);
-    console.log('Received lastName:', lastName);
-    console.log('Received email:', emailAddress);
-    console.log('Received phone:', phoneNum);
+    console.log(`RECEIVED: ${firstName} ${lastName} (NEW EMPLOYEE) ${emailAddress} ${phoneNum} ${TempUserName} ${THE_BIG_ONE}`);
 
     const query = `
-        INSERT INTO ${pathwayConfig.databaseName}.EMPLOYEE_DATA (FIRST_NAME, LAST_NAME, DESIGNATION, EMAIL, PHONE) VALUES (?, ?, 'NEW', ?, ?);
-    `;
+        INSERT INTO ${pathwayConfig.databaseName}.EMPLOYEE_DATA (FIRST_NAME, LAST_NAME, DESIGNATION, EMAIL, PHONE, USERNAME, PASS) VALUES (?, ?, 'NEW', ?, ?, ?, ?);`;
 
-    connection.query(query, [firstName, lastName, emailAddress, phoneNum], async (err, results) => {
+    connection.query(query, [firstName, lastName, emailAddress, phoneNum, TempUserName, THE_BIG_ONE], async (err, results) => {
         if (err) {
             console.error('Query error:', err);
             return res.status(500).json({ error: 'Database query failed' });
         }
         console.log('Employee added:', results);
-
-        const tempClientPassword = req.query.phoneNum; // Use phone number as the password
-        const saltRounds = 10;
-
-        try {
-            // Wait for the hash to be generated
-            const THE_BIG_ONE = await bcrypt.hash(tempClientPassword, saltRounds);
-
-            // Insert the hashed password into the LOGIN_INFO table
-
             // "Now, are you ready? It's showtime!"
-            const SAHASH_QUERY = `
-                INSERT INTO ${pathwayConfig.databaseName}.LOGIN_INFO (USER, PASS, DESIGNATION) VALUES (?, ?, 'NEW');
-            `;
-            connection.query(SAHASH_QUERY, [TempUserName, THE_BIG_ONE], (err, results) => {
-                if (err) {
-                    console.error('Failed to add new user:', err);
-                    return res.status(500).json({ error: 'Failed to add new user' });
-                }
-                console.log('User added to LOGIN_INFO:', results);
-                res.json({ message: 'Employee and login info added successfully' });
-            });
-        } catch (hashError) {
-            console.error('Error generating hash:', hashError);
-            res.status(500).json({ error: 'Failed to generate password hash' });
-        }
     });
 });
 

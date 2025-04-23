@@ -16,7 +16,7 @@ const pathwayConfig = require('./config.js');
 // ask me how I know!
 
 function offToSeeTheWizard(callback) {
-    const selectTest = `SELECT * FROM ${pathwayConfig.databaseName}.EMPLOYEE_DATA`; // Need a way to pretty print it
+    const selectTest = `SELECT * FROM ${pathwayConfig.databaseName}.no_passes_for_you`; // Need a way to pretty print it
     connection.query(selectTest, (err, results) => {
         if (err) {
             callback(err, null);
@@ -309,6 +309,18 @@ expressApp.post('/delete_employees', (req, res) => {
         return res.status(400).json({ error: 'No employees provided for deletion' });
     }
 
+    // Validate the employees array before processing
+    const invalidEmployee = employees.find(employee => {
+        if (typeof employee === 'string') {
+            employee = JSON.parse(employee); // Parse JSON string
+        }
+        return !employee.EMPLOYEE_ID || !employee.FIRST_NAME || !employee.LAST_NAME;
+    });
+
+    if (invalidEmployee) {
+        return res.status(400).json({ error: 'Invalid employee data provided' });
+    }
+
     // Parse the employees array to extract EMPLOYEE_IDs and validate FIRST_NAME and LAST_NAME
     const employeeIds = [];
     const userNames = [];
@@ -317,11 +329,6 @@ expressApp.post('/delete_employees', (req, res) => {
         if (typeof employee === 'string') {
             employee = JSON.parse(employee); // Parse JSON string
         }
-
-        if (!employee.EMPLOYEE_ID || !employee.FIRST_NAME || !employee.LAST_NAME) {
-            return res.status(400).json({ error: 'Invalid employee data provided' });
-        }
-
         employeeIds.push(employee.EMPLOYEE_ID);
         userNames.push(`${employee.FIRST_NAME}${employee.LAST_NAME}`); // Generate TempUserName
     });
@@ -347,25 +354,4 @@ expressApp.post('/delete_employees', (req, res) => {
         console.log('Deleted employees:', results.affectedRows);
 
         // Now delete corresponding login info from LOGIN_INFO
-        const deleteLoginsQuery = `DELETE FROM ${pathwayConfig.databaseName}.LOGIN_INFO WHERE USER IN (${userNames.map(() => '?').join(',')})`;
-
-        console.log('DELETE LOGIN INFO QUERY DEBUG:', deleteLoginsQuery);
-        console.log('USERS TO DELETE:', userNames);
-
-        connection.query(deleteLoginsQuery, userNames, (err, results) => {
-            if (err) {
-                console.error('Error deleting login info:', err.message, err.code);
-                return res.status(500).json({ error: 'Database query failed', details: err.message });
-            }
-
-            console.log('Deleted login info:', results.affectedRows);
-            res.json({
-                message: 'Employees and corresponding login info deleted successfully',
-                affectedRows: {
-                    employees: results.affectedRows,
-                    logins: results.affectedRows,
-                },
-            });
-        });
-    });
-});
+    })});

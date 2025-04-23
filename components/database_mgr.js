@@ -135,16 +135,26 @@ connection.connect(function (err) {
 
 // This is a BIG ASS FUNCTION with lots of moving parts. Things can go wrong here.
 expressApp.get('/submit', async (req, res) => {
+
+    // Get the heaping spaghetti pile of informacione
     const firstName = req.query.firstName;
     const lastName = req.query.lastName;
     const phoneNum = req.query.phoneNum;
     const emailAddress = req.query.emailAddress;
     const tempClientPassword = req.query.phoneNum; // Use phone number as the password
+
+    // Begin hashing
     const saltRounds = 10;
     const THE_BIG_ONE = await bcrypt.hash(tempClientPassword, saltRounds);
+
+    // If you can't remember your own first and last name, God help you
     const TempUserName = firstName + lastName;
+
+    // Debug
     console.log(`RECEIVED: ${firstName} ${lastName} (NEW EMPLOYEE) ${emailAddress} ${phoneNum} ${TempUserName} ${THE_BIG_ONE}`);
 
+    // The question marks perfectly sum up my confusion here.
+    // Seems to work well enough
     const query = `
         INSERT INTO ${pathwayConfig.databaseName}.EMPLOYEE_DATA (FIRST_NAME, LAST_NAME, DESIGNATION, EMAIL, PHONE, USERNAME, PASS) VALUES (?, ?, 'NEW', ?, ?, ?, ?);`;
 
@@ -156,6 +166,32 @@ expressApp.get('/submit', async (req, res) => {
         console.log('Employee added:', results);
             // "Now, are you ready? It's showtime!"
     });
+
+    // TRAINING MATERIALS ASSIGNMENT!
+    const trainingQuery = `
+    INSERT INTO ${pathwayConfig.databaseName}.TRAINING_STATUS (EMPLOYEE_ID, TRAINING_ID, COMPLETION_STATUS, COMPLETION_DATE)
+SELECT 
+    (SELECT EMPLOYEE_ID 
+     FROM bogus_data.EMPLOYEE_DATA 
+     ORDER BY EMPLOYEE_ID DESC 
+     LIMIT 1),
+    TRAINING_ID,
+    0,
+    NULL
+FROM TRAINING_PROGRAM;
+
+    `; // THIS IS GOOD DO NOT TOUCH FOR THE LOVE OF GOD PLEEEEEAAAASEEEE
+    connection.query(trainingQuery, [firstName, lastName], (err, results) => {
+        if (err) {
+            console.error('Training assignment error:', err);
+            return res.status(500).json({ error: 'Training assignment failed' });
+        }
+        console.log('Training assignments added:', results);
+        res.json({ message: 'Training assignments added successfully', results });
+    });
+    // I don't know why this is here, but it seems to work
+
+    console.log('Submit endpoint processed successfully');
 });
 
 // hot damn, this is a lot of code for a simple filter

@@ -119,19 +119,18 @@ function crunchatizeMeCaptain() {
 
     try {
         console.log("Crunchatized: " + firstName + ' ' + lastName + ' ' + emailAddress + ' ' + phoneNum);
-        fetch(`/submit?&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}&phoneNum=${encodeURIComponent(phoneNum)}&emailAddress=${encodeURIComponent(emailAddress)}`)
-            .then(response => {
+        fetch(`/submit?&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}&phoneNum=${encodeURIComponent(phoneNum)}&emailAddress=${encodeURIComponent(emailAddress)}`) // Stuffs it all in the endpoint POST
+            .then(async response => {
                 if (!response.ok) {
                     // If the response is not OK, throw an error with the response JSON
-                    return response.json().then(errorData => {
-                        throw new Error(errorData.message || 'Failed to add employee...');
-                    });
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to add employee...');
                 }
                 return response.json(); // Parse the JSON if the response is OK
             })
             .then(data => {
                 console.log(data);
-                alert("Employee added successfully!");
+                alert(`Employee ${firstName} ${lastName} added successfully!`);
                 window.close();
             })
             .catch(error => {
@@ -142,10 +141,12 @@ function crunchatizeMeCaptain() {
         console.error("Unexpected error:", error);
     }
         
-    return false; //boowomp :(
+    return false;
 
     }
 
+
+    
 // may not be able to get some things done in time.
 // This function is just a placeholder if Enterprise is actually insane enough 
 // to warrant using my software

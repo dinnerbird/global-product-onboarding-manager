@@ -14,4 +14,3 @@ console.log('[INFO] Training manager loaded');
 console.log('[INFO] Training manager loaded');
 
 const expressApp = require('./express_init.js');
-

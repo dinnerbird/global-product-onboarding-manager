@@ -30,9 +30,18 @@ border-radius: 4px; padding: 50px;">
             <!--<button id="pendingApprovals" onclick="Nothingburger('pending')">Pending Approvals...</button>
             <button id="sendReminder" onclick="Nothingburger('reminder')">Send Reminder...</button>-->
             <button id="fileUpload" onclick="Nothingburger()">Manage Training Materials...</button>
+            <select id="entryTypeSelector" onchange="logChange()">
+                <option value="opt_NOTSTARTED">Not Started</option>
+                <option value="opt_INCOMPLETE">Incomplete</option>
+                <option value="opt_COMPLETED">Completed</option>
+            </select>
+            <button id="filterButton" onclick="filterHRTable()">Filter!</button>
         </div>
         <div class="toolbox">
+
+        
             <div class="tablecontainer">
+                <div class="oops" id="errorSpot"></div>
                 <table id="data-table">
                     <thead></thead>
                     <tbody></tbody>

@@ -11,7 +11,16 @@ const BOLD = "\u001b[1m";
 const database_mgr = require('./database_mgr.js');
 const logon_mgr = require('./logon_mgr.js');
 const training_mgr = require('./training_mgr.js');
-const path = require('path');
+
+const path = require('path'); // is that 211 bytes?
+var mysql = require('mysql2'); // adam was here :)
+const port = 3030;
+//           ^^^^ Do NOT touch this unless you want to have a really long afternoon
+const expressApp = require('./express_init.js');
+
+const bcrypt = require('bcrypt');
+const pathwayConfig = require('./config.js');
+
 
 async function initializeModules() {
     try {
@@ -40,6 +49,8 @@ Employee Management and Onboarding System`
         console.error('Error initializing modules:', error);
     }
 }
+
+
 
 initializeModules();
 // Off to the races.

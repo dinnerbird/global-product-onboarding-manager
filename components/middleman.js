@@ -9,7 +9,9 @@
 "Just barely intelligent enough to get the job done."
 
 */
-var oopsSpot = document.getElementsByClassName('oops')
+
+var errorMessage = document.getElementById('errorSpot');
+
 
 // This is the login function. I'll be honest I'm kinda proud of how it turned out
 // It's 8am on a cloudy thursday, not even on my second cup of coffee
@@ -73,9 +75,9 @@ function dashboardOverviewInit() {
                 console.warn('Expected an array, got:', data)
             }
         }) // returning the goods
-        .catch(err => console.error('overviewInit ERROR!', err)); // you gotta be #$%& kidding me
-
-};
+        .catch(
+            err => (
+                errorMessage.innerHTML = 'There doesn\'t seem to be anything here...'))}; // you gotta be #$%& kidding me
 
 function openEmployeeManager() {
     console.log('Opening employee manager')
@@ -182,10 +184,30 @@ function filterTable() {
         })
 
         .catch(err => {
-            oopsSpot.innerHTML = 'there\'s nothing here'; // sunset corp
+            errorMessage.innerHTML = 'there\'s nothing here'; // sunset corp
 
         });
 };
+
+function filterHRTable() {
+
+    const options = logChange();
+    /* 
+                    <option value="opt_INCOMPLETE">Incomplete</option>
+                <option value="opt_NOTSTARTED">New Employee</option>
+                <option value="opt_COMPLETED">Completed</option>
+    */
+   console.log("Selected option: " + options);
+
+   fetch(`/filter?option=${options}`)
+       .then(response => response.json())
+       .then(data => {
+           renderTable(data);
+       })
+       .catch(err => {
+        errorMessage.innerHTML = 'There\'s nothing to show here.'
+       });
+}
 
 function logChange() {
     var selectedValue = document.getElementById('entryTypeSelector').value;
@@ -197,12 +219,12 @@ function sayhi() {
 }
 
 function renderTable(data) {
-    oopsSpot.innerHTML = '';
+    errorMessage.innerHTML = '';
     const table = document.getElementById('data-table');
 
     if (table === null) {
         console.log("Where's the table? I'm calling my lawyer!");
-        oopsSpot.innerHTML = "Your target table in the HTML is missing.";
+        errorMessage.innerHTML = "Your target table in the HTML is missing.";
         return;
     }
 

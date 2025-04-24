@@ -1,17 +1,13 @@
 // Pathway Database Manager
 // You're telling me a dolphin wrote this database software?
 
-
-const path = require('path'); // is that 211 bytes?
-var mysql = require('mysql2'); // adam was here :)
-const port = 3030;
-//           ^^^^ Do NOT touch this unless you want to have a really long afternoon
-const expressApp = require('./express_init.js');
-
+// SEE I wanted to try doing it FANCY but NOOOOOOOO
 const bcrypt = require('bcrypt');
+const path = require('path');
+const mysql = require('mysql');
+const port = 3030;
+const expressApp = require('./express_init.js');
 const pathwayConfig = require('./config.js');
-
-
 // be careful with the require stuff, it can cause circular references
 // ask me how I know!
 
@@ -30,35 +26,7 @@ function offToSeeTheWizard(callback) {
 function DodgeSecondGenDashboard(callback) {
     // CRUNCH CRUNCH CRUNCH CRUNCH
     const dashboardSelect = `
-    SELECT
-    EMPLOYEE_DATA.EMPLOYEE_ID AS 'Employee ID',
-    FIRST_NAME AS 'First Name',
-    LAST_NAME AS 'Last Name',
-    CASE TRAINING_STATUS.COMPLETION_STATUS
-        WHEN 0 THEN 'Not Started'
-        WHEN 1 THEN 'Complete'
-        WHEN 2 THEN 'Incomplete'
-        ELSE 'Unknown'
-    END AS 'Completion Status',
-    TRAINING_PROGRAM.TITLE AS 'Training Title',
-    DATE_FORMAT(TRAINING_STATUS.COMPLETION_DATE, '%M %d, %Y') AS 'Completion Date',
-CASE 
-        WHEN DATEDIFF(CURDATE(), COMPLETION_DATE) = 0 THEN 'Today'
-        WHEN DATEDIFF(CURDATE(), COMPLETION_DATE) = 1 THEN 'Yesterday'
-        WHEN DATEDIFF(CURDATE(), COMPLETION_DATE) < 7 THEN 
-            CONCAT(DATEDIFF(CURDATE(), COMPLETION_DATE), ' days ago')
-        WHEN DATEDIFF(CURDATE(), COMPLETION_DATE) < 30 THEN 
-            CONCAT(FLOOR(DATEDIFF(CURDATE(), COMPLETION_DATE) / 7), ' weeks ago')
-        WHEN DATEDIFF(CURDATE(), COMPLETION_DATE) < 365 THEN 
-            CONCAT(FLOOR(DATEDIFF(CURDATE(), COMPLETION_DATE) / 30), ' months ago')
-        ELSE 
-            CONCAT(FLOOR(DATEDIFF(CURDATE(), COMPLETION_DATE) / 365), ' years ago')
-    END AS 'Relative Date'
-FROM EMPLOYEE_DATA
-INNER JOIN TRAINING_STATUS
-    ON EMPLOYEE_DATA.EMPLOYEE_ID = TRAINING_STATUS.EMPLOYEE_ID
-INNER JOIN TRAINING_PROGRAM
-    ON TRAINING_STATUS.TRAINING_ID = TRAINING_PROGRAM.TRAINING_ID;
+    SELECT * FROM bogus_data.NICERLOOKINGTABLE
     `
     // Honestly, my favorite part of SQL is getting to SCREAM AT YOUR COMPUTER... in style.
 
@@ -92,9 +60,6 @@ expressApp.get('/page-init', (req, res) => {
         }
     });
 })
-
-
-
 // "Make your connection, now"
 
 // This does the actual connection business.
@@ -164,7 +129,7 @@ expressApp.get('/submit', async (req, res) => {
             return res.status(500).json({ error: 'Database query failed' });
         }
         console.log('Employee added:', results);
-            // "Now, are you ready? It's showtime!"
+        // "Now, are you ready? It's showtime!"
     });
 
     // TRAINING MATERIALS ASSIGNMENT!
@@ -210,7 +175,15 @@ expressApp.get('/filter', (req, res) => {
         query = `SELECT * FROM ${pathwayConfig.databaseName}.EMPLOYEE_DATA WHERE DESIGNATION = "NEW"`;
     } else if (option === 'opt_CURRENT') {
         query = `SELECT * FROM ${pathwayConfig.databaseName}.EMPLOYEE_DATA WHERE DESIGNATION = "CURRENT"`;
+    } else if (option === 'opt_INCOMPLETE') {
+        query = `SELECT * FROM ${pathwayConfig.databaseName}.NICERLOOKINGTABLE WHERE \`Completion Status\` = "Incomplete"`;
+    } else if (option === 'opt_NOTSTARTED') {
+        query = `SELECT * FROM ${pathwayConfig.databaseName}.NICERLOOKINGTABLE WHERE \`Completion Status\` = "Not Started"`;
+    } else if (option === 'opt_COMPLETED') {
+        query = `SELECT * FROM ${pathwayConfig.databaseName}.NICERLOOKINGTABLE WHERE \`Completion Status\` = "Complete"`;
     }
+    // "Ones and zeroes everywhere! I thought I saw a 2..."
+    // "It was just a dream, Bender. There's no such thing as 2."
     else {
         return res.status(400).json({ error: 'Bad request' });
     }
@@ -380,6 +353,16 @@ expressApp.post('/delete_employees', (req, res) => {
     console.log('DELETE EMPLOYEES QUERY DEBUG:', deleteEmployeesQuery);
     console.log('EMPLOYEES TO DELETE:', employeeIds);
 
+
+    const deleteTrainingQuery = `DELETE FROM ${pathwayConfig.databaseName}.TRAINING_STATUS WHERE EMPLOYEE_ID IN (${placeholders})`
+
+    connection.query(deleteTrainingQuery, employeeIds, (err, results) => {
+        if (err) {
+            console.error('DAG NABIT: ', err.message, err.code);
+            return res.status(500).json({ error: 'Database query failed', details: err.message });
+
+        }
+    })
     // First, delete employees from EMPLOYEE_DATA
     connection.query(deleteEmployeesQuery, employeeIds, (err, results) => {
         if (err) {
@@ -389,5 +372,6 @@ expressApp.post('/delete_employees', (req, res) => {
 
         console.log('Deleted employees:', results.affectedRows);
 
-        // Now delete corresponding login info from LOGIN_INFO
-    })});
+        // Now delete corresponding login info from LOGIN_INFO and TRAINING_STATUS
+    })
+});

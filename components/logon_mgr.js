@@ -1,12 +1,11 @@
 console.log("[INFO] Logon manager loaded");
 
-const expressApp = require('./express_init.js');
 const bcrypt = require('bcrypt');
-const mysql = require('mysql2/promise');
 const path = require('path');
-
+const mysql = require('mysql2/promise');
+const port = 3030;
+const expressApp = require('./express_init.js');
 const pathwayConfig = require('./config.js');
-
 const session = require('express-session');
 
 expressApp.use(session({
@@ -35,10 +34,9 @@ expressApp.post('/login', async (req, res) => {
             user: pathwayConfig.user,
             password: pathwayConfig.password,
             database: pathwayConfig.databaseName
-
         });
 
-        // Query the database for the user
+// Query the database for the user
         const [rows] = await connection.execute(
             `SELECT * FROM EMPLOYEE_DATA WHERE USERNAME = ?`,
             [loginName]
@@ -48,7 +46,7 @@ expressApp.post('/login', async (req, res) => {
             return res.status(401).json({ error: "Unauthorized. Probably invalid login or something" })
         }
 
-        // Ensure PASS is a string
+// Ensure PASS is a string
         const storedHash = rows[0].PASS;
 
         // Compare the provided password with the stored hash
@@ -61,13 +59,12 @@ expressApp.post('/login', async (req, res) => {
 
             if (userRole === 'HR') {
                 res.redirect('/hr/hr_interface.html');
-            
+
             } else if (userRole === 'NEW' || userRole === 'CURRENT') {
                 res.redirect('/client/client_interface.html');
             } else {
                 return res.status(401).json({ error: "Invalid username or password" });
             }
-            console.log(req.session.user); // Tells me "nicely" what the loginName and role are
         }
     } catch (error) {
         console.error("[ERROR]", error);

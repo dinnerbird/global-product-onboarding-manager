@@ -17,10 +17,6 @@ expressApp.use(session({
 
 const { isAuthenticated, authorizeRole } = require('./auth.js');
 
-// L@@K ***PLEASE READ*** L@@K
-// NOTE: All admin passwords are "password123" for ease of demonstration
-// alex_admin adam_admin
-
 expressApp.post('/login', async (req, res) => {
     const { loginName, password } = req.body;
 
@@ -36,7 +32,7 @@ expressApp.post('/login', async (req, res) => {
             database: pathwayConfig.databaseName
         });
 
-// Query the database for the user
+        // Query the database for the user
         const [rows] = await connection.execute(
             `SELECT * FROM EMPLOYEE_DATA WHERE USERNAME = ?`,
             [loginName]
@@ -46,7 +42,7 @@ expressApp.post('/login', async (req, res) => {
             return res.status(401).json({ error: "Unauthorized. Probably invalid login or something" })
         }
 
-// Ensure PASS is a string
+        // Ensure PASS is a string
         const storedHash = rows[0].PASS;
 
         // Compare the provided password with the stored hash
@@ -91,7 +87,6 @@ expressApp.get('/client/client_interface.html', isAuthenticated, authorizeRole('
     res.sendFile(path.join(__dirname, '../client/client_interface.html'));
 });
 
-// Example in logon_mgr
 expressApp.get('/get-login-name', (req, res) => {
     const loginName = req.session?.user?.loginName; // Assuming session stores user info
     if (loginName) {
@@ -101,3 +96,26 @@ expressApp.get('/get-login-name', (req, res) => {
     }
 });
 
+function getLoginName(req) {
+    const loginName = req.session?.user?.loginName; // Assuming session stores user info
+
+    if (!loginName) {
+        return null;
+    }
+    // Use regex to split the loginName into first and last name
+    const match = loginName.match(/([A-Z][^A-Z]*)([A-Z][^A-Z]*)/);
+
+    if (!match) {
+        return null; // Return null if the regex doesn't match
+    }
+
+    const loginFirstName = match[1];
+    const loginLastName = match[2];
+
+    console.log('GET LOGIN NAME REQUEST: ', loginFirstName, loginLastName);
+    return { loginFirstName, loginLastName }; // Return as an object
+}
+
+module.exports = {
+    getLoginName
+}

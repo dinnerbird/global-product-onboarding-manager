@@ -10,7 +10,10 @@
 
 */
 
-var errorMessage = document.getElementById('errorSpot');
+function yeet(error) {
+    throw error;
+  }
+  
 
 
 // This is the login function. I'll be honest I'm kinda proud of how it turned out
@@ -219,6 +222,9 @@ function sayhi() {
 }
 
 function renderTable(data) {
+    var errorMessage = document.getElementById('errorSpot');
+
+
     errorMessage.innerHTML = '';
     const table = document.getElementById('data-table');
 
@@ -310,7 +316,24 @@ function yeetEmployees() {
 
 }
 
-function stragonc() {
+function gravyTrainer() {
+    var errorMessage = document.getElementById('errorSpot');
+
+    fetch('/training-materials-request')
+    .then(response => {
+        if (!response.ok) {
+            yeet(new Error('Was not able to grab training materials.'))
+            errorMessage.innerHTML = "Was not able to grab training materials"
+        }
+        return response.json();
+    })
+        .then(data => {
+            renderTable(data);
+        })
+}
+
+// DEmote Employees
+function stragnoc() {
     const selectedEmployees = Array.from(document.querySelectorAll('input[name="employee"]:checked'))
     .map(input => input.value);
 
@@ -346,6 +369,7 @@ fetch('/DEMOTE_employees', {
     });
 }
 
+// PROmote Employees
 function congrats() {
     const selectedEmployees = Array.from(document.querySelectorAll('input[name="employee"]:checked'))
         .map(input => input.value);
@@ -387,6 +411,7 @@ function congrats() {
 
 
 // This is a friendly way to greet the user.
+// Demosceners triggering seizures at a party just to say hello to their friends:
 function getTheGreetz() {
     fetch('/get-login-name')
     .then(response => {
@@ -400,8 +425,11 @@ function getTheGreetz() {
         console.log('Login name: ', loginName);
 
         const greetzH2 = document.getElementById('GREETZ');
-        let formattedLoginName = loginName.replace(/([A-Z][^A-Z]*)([A-Z])/, '$1 $2'); // Insert space after the second capital letter
+        let formattedLoginName = loginName.replace(/([A-Z][^A-Z]*)([A-Z])/, '$1 $2'); // I feel like I could type complete gibberish and it would still make less sense than regex.
         greetzH2.innerHTML = 'Hello, ' + formattedLoginName + '!';
+        console.log(formattedLoginName);
+
+        // Throw formatted login name back to the database, see what matches?
     })
     .catch(err => {
         console.error('Error caught for login name:', err);

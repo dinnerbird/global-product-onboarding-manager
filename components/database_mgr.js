@@ -8,9 +8,15 @@ const mysql = require('mysql');
 const port = 3030;
 const expressApp = require('./express_init.js');
 const pathwayConfig = require('./config.js');
+const { getLoginName } = require('./logon_mgr.js');
+
 // be careful with the require stuff, it can cause circular references
 // ask me how I know!
 
+function yeet(error) {
+    throw error;
+  }
+  
 function offToSeeTheWizard(callback) {
     const selectTest = `SELECT * FROM ${pathwayConfig.databaseName}.no_passes_for_you`; // Need a way to pretty print it
     connection.query(selectTest, (err, results) => {
@@ -22,6 +28,7 @@ function offToSeeTheWizard(callback) {
         callback(null, results);
     });
 }
+
 
 function DodgeSecondGenDashboard(callback) {
     // CRUNCH CRUNCH CRUNCH CRUNCH
@@ -40,6 +47,8 @@ function DodgeSecondGenDashboard(callback) {
         callback(null, results);
     });
 }
+
+
 
 expressApp.get('/overview-init', (req, res) => {
     DodgeSecondGenDashboard((err, results) => {
@@ -60,6 +69,48 @@ expressApp.get('/page-init', (req, res) => {
         }
     });
 })
+
+
+// Upon UPDATE of DATE_COMPLETED column, set to COMPLETION_STATUS to "Complete"
+
+function trainingMaterialsGet(req, callback) {
+//    const { loginFirstName, loginLastName } = getLoginName(req); // Use req to get login details
+const loginDetails = getLoginName(req);
+
+// Note to self if you're going nuts over WHY it's not working...try sending a login request again
+console.log('Login Details:', loginDetails);
+
+const loginFirstName = loginDetails.loginFirstName;
+const loginLastName = loginDetails.loginLastName;
+
+    const clientViewGet = `
+        SELECT * FROM ${pathwayConfig.databaseName}.NICERLOOKINGTABLE 
+        WHERE \`First Name\` = "${loginFirstName}" 
+        AND \`Last Name\` = "${loginLastName}"
+    `;
+
+    connection.query(clientViewGet, (err, results) => {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        console.log("Training materials loaded!");
+        callback(null, results);
+    });
+}
+
+expressApp.get('/training-materials-request', (req, res) => {
+    trainingMaterialsGet(req, (err, results) => {
+        if (err) {
+            res.status(500).send('BALONEY!' + err.message);
+        } else {
+            res.json(results);
+        }
+    })
+});
+
+
+
 // "Make your connection, now"
 
 // This does the actual connection business.

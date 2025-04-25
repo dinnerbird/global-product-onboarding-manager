@@ -1,12 +1,10 @@
-# Enterprise Global Product Onboarding Manager
-## Development Codename: "Picard"
-
-Team 3
+# Pathway Employee Management and Onboarding System
 
 ## Requirements:
 - NodeJS
 - SQL database of some sort. (This implementation uses MySQL)
 - A brain
+- Patience
 
 The purpose of this system is to streamline the Enterprise new employee onboarding process for HR. This will help facilitate better data integrity and reduce manual labor with automation.
 
@@ -14,6 +12,7 @@ The purpose of this system is to streamline the Enterprise new employee onboardi
 - Authentication Manager:
     - Username/password handling
     - Can identify the difference between HR "admins", new employees, and existing employees
+    - Works fine half of the time, all of the time
 - Training Material Manager:
     - Training progress database
     - HR can facilitate requests to track progress of new employees
@@ -21,20 +20,15 @@ The purpose of this system is to streamline the Enterprise new employee onboardi
 - Employee Manager:
     - Add/remove/modify employee data
     - Prepare requests for onboarding
-
+- Login Manager:
+    - Does exactly what it says on the tin.
+    - Handles logins AND knows the difference between HR and employees.
+    - May also be held together with nails and duct tape.
 The bogus_data CSV and XLSX files are for **debugging purposes only**, and should **__not__** be used in a production environment. Mainly because the names are a bit *silly*. 
 
 Likewise, the database login credentials should be changed from the default.
 
-## Demo Installation:
+## Running the darn thing
+Run `node components/enterprise_onboarding.js` to initialize the server. 
 
-- NPM requirements: `mysql2, path, express`
-
-1. Import the `bogus_data.csv` file into your MySQL client of choice (we're using Workbench)
-2. Modify the `EMPLOYEE_ID` column to be the primary key, and enable "Auto Increment" (AI) (not THAT kind of AI)
-
-```ALTER TABLE bogus_data
-MODIFY COLUMN EMPLOYEE_ID INT AUTO_INCREMENT PRIMARY KEY;
-```
-3. Next, run `node components/enterprise_onboarding.js` to initialize the server. 
-4. Inevitably swear like a sailor because some stupid unexplainable error prevented it from working right the first time
+Inevitably swear like a sailor because some stupid unexplainable error prevented it from working right the first time.

@@ -222,21 +222,26 @@ function sayhi() {
 }
 
 function renderTable(data) {
+
+    // Locates the error message handler and cleans it out
     var errorMessage = document.getElementById('errorSpot');
-
-
     errorMessage.innerHTML = '';
+
+    // HAS to be named data-table
     const table = document.getElementById('data-table');
 
+    // Could have it create an element if not found but I don't feel like doing that
     if (table === null) {
         console.log("Where's the table? I'm calling my lawyer!");
         errorMessage.innerHTML = "Your target table in the HTML is missing.";
         return;
     }
 
+    // Finds a thead and tbody
     const thead = table.querySelector('thead');
     const tbody = table.querySelector('tbody');
 
+    // Cleans them out too
     thead.innerHTML = '';
     tbody.innerHTML = '';
 
@@ -244,14 +249,23 @@ function renderTable(data) {
     const headers = Object.keys(data[0]);
     const headerRow = thead.insertRow();
 
-    // Check if it's actually the new employee page
+    // Check if it's actually the employee manager page
+    // There's probably a million better ways I coul do it, but it's not like I'm being paid for my efforts...
     const isNewEmployeePage = window.location.pathname === '/employee_manager';
 
     if (isNewEmployeePage) {
         const checkboxHeader = document.createElement('th');
         checkboxHeader.textContent = 'Select';
         headerRow.appendChild(checkboxHeader);
+        
+    }
 
+    const isClientPage = window.location.pathname === '/client_interface';
+    if (isClientPage) {
+        const buttonHeader = document.createElement('th');
+        buttonHeader.textContent = 'Actions';
+        headerRow.appendChild(buttonHeader);
+        
     }
 
     headers.forEach(header => {
@@ -273,12 +287,41 @@ function renderTable(data) {
             checkboxCell.appendChild(checkbox);
         }
 
+        if (isClientPage) {
+            const openButtonCell = row.insertCell();
+            const openButton = document.createElement('button');
+            openButton.type = 'button';
+            openButton.name = 'clientTrainerButton';
+            openButton.value = item.id || JSON.stringify(item.ID); // id and ID are NOT THE SAME just so you know
+            openButton.innerHTML = 'Start';
+            openButtonCell.appendChild(openButton);
+            openButton.onclick = () => selectTrainingMaterial(item.ID);
+        }
+
         headers.forEach(header => {
             const cell = row.insertCell();
             cell.textContent = item[header];
         });
     });
 };
+
+function selectTrainingMaterial(itemID) {
+    console.log('Selected Training Material ID:', itemID);
+
+   fetch(`/training-materials/${itemID}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch training material details.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Training Material Details:', data);
+        })
+        .catch(err => {
+            console.error('Error fetching training material details:', err);
+        });
+}
 
 function yeetEmployees() {
     const selectedEmployees = Array.from(document.querySelectorAll('input[name="employee"]:checked'))
@@ -326,11 +369,17 @@ function gravyTrainer() {
             errorMessage.innerHTML = "Was not able to grab training materials"
         }
         return response.json();
+        
     })
         .then(data => {
             renderTable(data);
+            console.log(data);
+
+            // Need to figure out a way to tack buttons onto the end of this table. I have a general idea of what needs to be done
+
         })
 }
+
 
 // DEmote Employees
 function stragnoc() {
@@ -413,6 +462,7 @@ function congrats() {
 // This is a friendly way to greet the user.
 // Demosceners triggering seizures at a party just to say hello to their friends:
 function getTheGreetz() {
+    window.history.pushState({}, '', '/client_interface');
     fetch('/get-login-name')
     .then(response => {
         if (!response.ok) {

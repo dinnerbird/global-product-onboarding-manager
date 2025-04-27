@@ -14,7 +14,7 @@ expressApp.use(express.static(path.join(__dirname, '..')));
 
 // These routes are for general pages.
 // FUN FACT! If you forget the "req" parameter, the server will crash.
-expressApp.get('/client', (req, res) => {
+expressApp.get('/client_interface' || '/client', (req, res) => {
     
     const referer = req.get('Referer');
     if (!referer || !referer.startsWith('http://localhost:3030')) {
@@ -44,7 +44,7 @@ expressApp.get('/teapot', (req, res) => {
 expressApp.get('/hr_interface', (req, res) => {
     const referer = req.get('Referer');
     if (!referer || !referer.startsWith('http://localhost:3030')) {
-        return res.status(403).send(`You can't just go typing in addresses like that...`);
+        return res.status(403).send(`You can't just go typing in addresses like that!`);
     }
     res.sendFile(path.join(__dirname, '..', 'hr', 'hr_interface.html'));
 });
@@ -54,7 +54,7 @@ expressApp.get('/employee_manager', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'hr', 'employee_manager.html'));
     const referer = req.get('Referer');
     if (!referer || !referer.startsWith('http://localhost:3030')) {
-        return res.status(403).send(`Not quite...`);
+        return res.status(403).send(`Replace loose screw behind keyboard and try again...`);
     }
 });
 
@@ -65,7 +65,15 @@ expressApp.get('/add_employee', (req, res) => {
     if (!referer || !referer.startsWith('http://localhost:3030')) {
         return res.status(403).send(`Just what do you think you're doing?`);
     }
-})
+});
+
+expressApp.get('/training', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'client', 'training.html'));
+    const referer = req.get('Referer');
+    if (!referer || !referer.startsWith('http://localhost:3030')) {
+        return res.status(403).send(`Confusion, misappropriation, indignation`);
+    } // one thing, I don't know why
+});
 
 expressApp.use(express.json());
 

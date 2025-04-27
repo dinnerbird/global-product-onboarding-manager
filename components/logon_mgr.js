@@ -56,8 +56,10 @@ expressApp.post('/login', async (req, res) => {
             if (userRole === 'HR') {
                 res.redirect('/hr/hr_interface.html');
 
+            // Checks if NEW or CURRENT
             } else if (userRole === 'NEW' || userRole === 'CURRENT') {
                 res.redirect('/client/client_interface.html');
+
             } else {
                 return res.status(401).json({ error: "Invalid username or password" });
             }

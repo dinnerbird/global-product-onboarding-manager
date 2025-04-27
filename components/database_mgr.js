@@ -84,7 +84,7 @@ const loginFirstName = loginDetails.loginFirstName;
 const loginLastName = loginDetails.loginLastName;
 
     const clientViewGet = `
-        SELECT * FROM ${pathwayConfig.databaseName}.NICERLOOKINGTABLE 
+        SELECT ID, \`Completion Status\`, \`Training Title\` FROM ${pathwayConfig.databaseName}.NICERLOOKINGTABLE 
         WHERE \`First Name\` = "${loginFirstName}" 
         AND \`Last Name\` = "${loginLastName}"
     `;

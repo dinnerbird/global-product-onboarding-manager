@@ -137,12 +137,6 @@ connection.connect(function (err) {
     console.log("[INFO] Database manager loaded");
 });
 
-
-
-
-// Simple and Accessible Hash (SAHash)
-// listens for the crunchatizeMeCaptain function call and does some wizardry here
-
 // This is a BIG ASS FUNCTION with lots of moving parts. Things CAN and WILL go wrong here.
 // Just ask my homie Murphy, he'll tell you all about it
 expressApp.get('/submit', async (req, res) => {
@@ -207,7 +201,6 @@ FROM TRAINING_PROGRAM;
 
 // hot damn, this is a lot of code for a simple filter
 // this is a GET request because we're not changing anything in the database
-// Refactored /filter endpoint
 
 expressApp.get('/filter', (req, res) => {
     const option = req.query.option;
@@ -262,7 +255,7 @@ expressApp.get('/filter', (req, res) => {
     // Validate the option
     const filter = filterOptions[option];
     if (!filter) {
-        return res.status(400).json({ error: 'Invalid filter option. Please stop trying to further break my duct tape and paperclips...' });
+        return res.status(400).json({ error: 'Invalid filter option. Please stop trying to further break my duct tape and paperclips.' });
     }
 
     // Build the base query

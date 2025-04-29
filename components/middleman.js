@@ -10,13 +10,11 @@
 
 */
 
-/* Please excuse the egregious use of document.write(). It was not my first choice either, but I'm on a very short schedule. */
+/* Please excuse the egregious use of document.write(). It was not my first choice either, but I'm on a very, VERY short schedule. */
 
 function yeet(error) {
     throw error;
 }
-
-
 
 // This is the login function. I'll be honest I'm kinda proud of how it turned out
 // It's 8am on a cloudy thursday, not even on my second cup of coffee
@@ -388,6 +386,7 @@ function yeetEmployees() {
 
 }
 
+// Requests training materials and slaps them into the desired page
 function gravyTrainer() {
     const errorMessage = document.getElementById('errorSpot');
     if (!errorMessage) {
@@ -405,6 +404,7 @@ function gravyTrainer() {
         })
         .then(data => {
             renderTable(data);
+            // Hi, if you're having an error here, this isn't the place to look
         })
         .catch(err => {
             console.error('Error fetching training materials:', err);
@@ -491,10 +491,11 @@ function congrats() {
 }
 
 
-// This is a friendly way to greet the user.
-// Demosceners triggering seizures at a party just to say hello to their friends:
-function getTheGreetz() {
+// This is a friendly way to greet the user. Right now the regex is totally bonkers and I can't be bothered right now.
+// If you goof up the capitalization, it'll just have a really bad day
 
+// >demosceners when they trigger seizures at a party just to say hello to their friends:
+function getTheGreetz() {
 
     fetch('/get-login-name')
         .then(response => {
@@ -509,10 +510,11 @@ function getTheGreetz() {
 
             const greetzH2 = document.getElementById('GREETZ');
             let formattedLoginName = loginName.replace(/([A-Z][^A-Z]*)([A-Z])/, '$1 $2');
+            // I could type a 10 volume compendium of pure gibberish and it would still make more sense than regex
             greetzH2.innerHTML = 'Hello, ' + formattedLoginName + '!';
             console.log(formattedLoginName);
 
-            // Throw formatted login name back to the database, see what matches?
+            // Throw formatted login name back to the database, see what matches???
         })
         .catch(err => {
             console.error('Error caught for login name:', err);

@@ -10,10 +10,12 @@
 
 */
 
+/* Please excuse the egregious use of document.write(). It was not my first choice either, but I'm on a very short schedule. */
+
 function yeet(error) {
     throw error;
-  }
-  
+}
+
 
 
 // This is the login function. I'll be honest I'm kinda proud of how it turned out
@@ -40,16 +42,13 @@ function showMeTheMoney() {
             }
         })
         .then(html => {
-            console.log('Server response received, opening in a new tab...');
             const newWindow = window.open();
             newWindow.document.open();
             newWindow.document.write(html); // is document.write really that verboten?
             newWindow.document.close();
+
         })
-        .catch(err => {
-            console.error('Error:', err);
-            alert(`Error: ${err.message}`);
-        });
+
 }
 
 function pageInitThing() {
@@ -67,6 +66,22 @@ function pageInitThing() {
 
 };
 
+function trainingManagerTableRenderThing() {
+    console.log('Fetching the goods')
+    fetch('/training-page-init')
+        .then(response => response.json())
+        .then(data => {
+            if (Array.isArray(data)) {
+                renderTable(data);
+            } else {
+                console.warn('Expected an array, got:', data)
+            }
+        }) // returning the goods
+        .catch(err => console.error('pageInitThing ERROR!', err)); // you gotta be #$%& kidding me
+
+};
+
+
 function dashboardOverviewInit() {
     console.log('Glancing...')
     fetch('/overview-init')
@@ -80,21 +95,36 @@ function dashboardOverviewInit() {
         }) // returning the goods
         .catch(
             err => (
-                errorMessage.innerHTML = 'There doesn\'t seem to be anything here...'))}; // you gotta be #$%& kidding me
+                errorMessage.innerHTML = 'There doesn\'t seem to be anything here...'))
+}; // you gotta be #$%& kidding me
 
 function openEmployeeManager() {
-    console.log('Opening employee manager')
+    console.log('Opening employee manager');
     fetch('/employee_manager')
         .then(response => response.text())
-        .then(data => {
-            //console.log(data);
-            const newWindow = window.open('/employee_manager', '_blank');
+        .then(html => {
+            const newWindow = window.open();
             newWindow.document.open();
-            newWindow.document.write(data); // okay document.write is bad but I'm in a hurry
+            newWindow.document.write(html); // is document.write really that verboten?
             newWindow.document.close();
-            newWindow.history.pushState({}, '', '/employee_manager'); // fancy!
+            newWindow.history.pushState({}, '', '/employee_manager'); // Maintain the fancy navigation
+
+            })
+        }
+
+function trainingMaterialManager() {
+    console.log('Opening training manager');
+    fetch('/training_material_manager')
+        .then(response => response.text())
+        .then(html => {
+            const newWindow = window.open();
+            newWindow.document.open();
+            newWindow.document.write(html); // is document.write really that verboten?
+            newWindow.document.close();
+            newWindow.history.pushState({}, '', '/training_material_manager'); // Maintain the fancy navigation
+
         })
-        .catch(err => console.error('addNewEmployee ERROR!', err));
+        .catch(err => console.error('GOODNESS GRACIOUS GREAT BALLS OF FIRE! ', err));
 }
 
 function addNewPopupBox() {
@@ -145,13 +175,13 @@ function crunchatizeMeCaptain() {
     } catch (error) {
         console.error("Unexpected error:", error);
     }
-        
+
     return false;
 
-    }
+}
 
 
-    
+
 // may not be able to get some things done in time.
 // This function is just a placeholder if Enterprise is actually insane enough 
 // to warrant using my software
@@ -192,24 +222,22 @@ function filterTable() {
         });
 };
 
-function filterHRTable() {
+function filterTableFancy() {
 
     const options = logChange();
-    /* 
-                    <option value="opt_INCOMPLETE">Incomplete</option>
-                <option value="opt_NOTSTARTED">New Employee</option>
-                <option value="opt_COMPLETED">Completed</option>
-    */
-   console.log("Selected option: " + options);
 
-   fetch(`/filter?option=${options}`)
-       .then(response => response.json())
-       .then(data => {
-           renderTable(data);
-       })
-       .catch(err => {
-        errorMessage.innerHTML = 'There\'s nothing to show here.'
-       });
+    console.log("Selected option: " + options);
+
+    fetch(`/filter?option=${options}`)
+        .then(response => response.json())
+        .then(data => {
+            renderTable(data);
+        })
+        .catch(err => {
+            const errorMessage = document.getElementById('errorSpot');
+
+            errorMessage.innerHTML = 'There\'s nothing to show here.'
+        });
 }
 
 function logChange() {
@@ -257,7 +285,7 @@ function renderTable(data) {
         const checkboxHeader = document.createElement('th');
         checkboxHeader.textContent = 'Select';
         headerRow.appendChild(checkboxHeader);
-        
+
     }
 
     const isClientPage = window.location.pathname === '/client_interface';
@@ -265,7 +293,7 @@ function renderTable(data) {
         const buttonHeader = document.createElement('th');
         buttonHeader.textContent = 'Actions';
         headerRow.appendChild(buttonHeader);
-        
+
     }
 
     headers.forEach(header => {
@@ -308,7 +336,7 @@ function renderTable(data) {
 function selectTrainingMaterial(itemID) {
     console.log('Selected Training Material ID:', itemID);
 
-   fetch(`/training-materials/${itemID}`)
+    fetch(`/training-materials/${itemID}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Failed to fetch training material details.');
@@ -317,6 +345,7 @@ function selectTrainingMaterial(itemID) {
         })
         .then(data => {
             console.log('Training Material Details:', data);
+
         })
         .catch(err => {
             console.error('Error fetching training material details:', err);
@@ -360,62 +389,65 @@ function yeetEmployees() {
 }
 
 function gravyTrainer() {
-    var errorMessage = document.getElementById('errorSpot');
+    const errorMessage = document.getElementById('errorSpot');
+    if (!errorMessage) {
+        console.error('Error spot element not found in the DOM.');
+        return;
+    }
 
     fetch('/training-materials-request')
-    .then(response => {
-        if (!response.ok) {
-            yeet(new Error('Was not able to grab training materials.'))
-            errorMessage.innerHTML = "Was not able to grab training materials"
-        }
-        return response.json();
-        
-    })
+        .then(response => {
+            if (!response.ok) {
+                errorMessage.innerHTML = "Was not able to grab training materials";
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             renderTable(data);
-            console.log(data);
-
-            // Need to figure out a way to tack buttons onto the end of this table. I have a general idea of what needs to be done
-
         })
+        .catch(err => {
+            console.error('Error fetching training materials:', err);
+            errorMessage.innerHTML = "An unexpected error occurred while fetching training materials.";
+        });
 }
 
 
 // DEmote Employees
 function stragnoc() {
     const selectedEmployees = Array.from(document.querySelectorAll('input[name="employee"]:checked'))
-    .map(input => input.value);
+        .map(input => input.value);
 
-if (selectedEmployees.length === 0) {
-    console.log('No employees selected');
-    alert('Please select at least one employee to demote.');
-    return;
-}
+    if (selectedEmployees.length === 0) {
+        console.log('No employees selected');
+        alert('Please select at least one employee to demote.');
+        return;
+    }
 
-console.log('Selected employees:', selectedEmployees);
+    console.log('Selected employees:', selectedEmployees);
 
-fetch('/DEMOTE_employees', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ employees: selectedEmployees }) // Send as JSON
-})
-    .then(response => {
-        if (!response.ok) {
-            alert("An error occurred while promoting. Please check the console.");
-
-        }
-        if (response.ok) {
-            alert('Employees *demoted* successfully!');
-        }
-        return response.json();
+    fetch('/DEMOTE_employees', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ employees: selectedEmployees }) // Send as JSON
     })
-    .then(data => {
-        console.log('Response:', data);
+        .then(response => {
+            if (!response.ok) {
+                alert("An error occurred while promoting. Please check the console.");
 
-        pageInitThing();
-    });
+            }
+            if (response.ok) {
+                alert('Employees *demoted* successfully!');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response:', data);
+
+            pageInitThing();
+        });
 }
 
 // PROmote Employees
@@ -462,28 +494,33 @@ function congrats() {
 // This is a friendly way to greet the user.
 // Demosceners triggering seizures at a party just to say hello to their friends:
 function getTheGreetz() {
-    window.history.pushState({}, '', '/client_interface');
+
+
     fetch('/get-login-name')
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to get login name.')
-        }
-        return response.json();
-    })
-    .then(data => {
-        const loginName = data.loginName
-        console.log('Login name: ', loginName);
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to get login name.')
+            }
+            return response.json();
+        })
+        .then(data => {
+            const loginName = data.loginName
+            console.log('Login name: ', loginName);
 
-        const greetzH2 = document.getElementById('GREETZ');
-        let formattedLoginName = loginName.replace(/([A-Z][^A-Z]*)([A-Z])/, '$1 $2'); // I feel like I could type complete gibberish and it would still make less sense than regex.
-        greetzH2.innerHTML = 'Hello, ' + formattedLoginName + '!';
-        console.log(formattedLoginName);
+            const greetzH2 = document.getElementById('GREETZ');
+            let formattedLoginName = loginName.replace(/([A-Z][^A-Z]*)([A-Z])/, '$1 $2');
+            greetzH2.innerHTML = 'Hello, ' + formattedLoginName + '!';
+            console.log(formattedLoginName);
 
-        // Throw formatted login name back to the database, see what matches?
-    })
-    .catch(err => {
-        console.error('Error caught for login name:', err);
-    });
+            // Throw formatted login name back to the database, see what matches?
+        })
+        .catch(err => {
+            console.error('Error caught for login name:', err);
+        });
 
 
+}
+
+function changeAddress(newPath) {
+    history.pushState(null, '', newPath);
 }

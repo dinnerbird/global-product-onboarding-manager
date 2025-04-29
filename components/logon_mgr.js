@@ -99,23 +99,14 @@ expressApp.get('/get-login-name', (req, res) => {
 });
 
 function getLoginName(req) {
-    const loginName = req.session?.user?.loginName; // Assuming session stores user info
+    const loginName = req.session?.user?.loginName; // Assuming session stores user info   
 
     if (!loginName) {
         return null;
     }
-    // Use regex to split the loginName into first and last name
-    const match = loginName.match(/([A-Z][^A-Z]*)([A-Z][^A-Z]*)/);
 
-    if (!match) {
-        return null; // Return null if the regex doesn't match
-    }
-
-    const loginFirstName = match[1];
-    const loginLastName = match[2];
-
-    console.log('GET LOGIN NAME REQUEST: ', loginFirstName, loginLastName);
-    return { loginFirstName, loginLastName }; // Return as an object
+    console.log('GET LOGIN NAME REQUEST: ', loginName);
+    return { loginName }; // Return as an object
 }
 
 module.exports = {

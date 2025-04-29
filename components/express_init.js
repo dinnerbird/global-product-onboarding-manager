@@ -67,12 +67,22 @@ expressApp.get('/add_employee', (req, res) => {
     }
 });
 
+// Client training page
 expressApp.get('/training', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'client', 'training.html'));
     const referer = req.get('Referer');
     if (!referer || !referer.startsWith('http://localhost:3030')) {
-        return res.status(403).send(`Confusion, misappropriation, indignation`);
+        return res.status(403).send(`Please do the needful and log in first`);
     } // one thing, I don't know why
+});
+
+// Training material manager
+expressApp.get('/training_material_manager', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'hr', 'training_manager.html'));
+    const referer = req.get('Referer');
+    if (!referer || !referer.startsWith('http://localhost:3030')) {
+        return res.status(403).send(`*twitches* We...really like a go-getter around here...synergize and circle back with us sometime...*grimacing*`);
+    }
 });
 
 expressApp.use(express.json());

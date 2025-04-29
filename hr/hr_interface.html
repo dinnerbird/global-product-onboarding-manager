@@ -29,13 +29,13 @@ border-radius: 4px; padding: 50px;">
             <button id="add_new" onclick="openEmployeeManager()">Edit Employees...</button>
             <!--<button id="pendingApprovals" onclick="Nothingburger('pending')">Pending Approvals...</button>
             <button id="sendReminder" onclick="Nothingburger('reminder')">Send Reminder...</button>-->
-            <button id="fileUpload" onclick="Nothingburger()">Manage Training Materials...</button>
+            <button id="fileUpload" onclick="trainingMaterialManager()">Manage Training Materials...</button>
             <select id="entryTypeSelector" onchange="logChange()">
                 <option value="opt_NOTSTARTED">Not Started</option>
                 <option value="opt_INCOMPLETE">Incomplete</option>
                 <option value="opt_COMPLETED">Completed</option>
             </select>
-            <button id="filterButton" onclick="filterHRTable()">Filter!</button>
+            <button id="filterButton" onclick="filterTableFancy()">Filter!</button>
         </div>
         <div class="toolbox">
 
@@ -51,7 +51,10 @@ border-radius: 4px; padding: 50px;">
     </div>
 </div>
     <script src="../components/middleman.js"></script>
-    <script>dashboardOverviewInit(); getTheGreetz();</script>
+    <script>dashboardOverviewInit(); 
+    getTheGreetz();
+    changeAddress('/hr_interface');
+    </script>
 </body>
 
 </html>

@@ -1,7 +1,6 @@
 // Pathway Database Manager
 // You're telling me a dolphin wrote this database software?
 
-// SEE I wanted to try doing it FANCY but NOOOOOOOO
 const bcrypt = require('bcrypt');
 const path = require('path');
 const mysql = require('mysql');
@@ -9,14 +8,16 @@ const port = 3030;
 const expressApp = require('./express_init.js');
 const pathwayConfig = require('./config.js');
 const { getLoginName } = require('./logon_mgr.js');
+const { connect } = require('http2');
 
 // be careful with the require stuff, it can cause circular references
 // ask me how I know!
 
 function yeet(error) {
     throw error;
-  }
-  
+}
+
+// Edit employees interface
 function offToSeeTheWizard(callback) {
     const selectTest = `SELECT * FROM ${pathwayConfig.databaseName}.no_passes_for_you`; // Need a way to pretty print it
     connection.query(selectTest, (err, results) => {
@@ -30,35 +31,60 @@ function offToSeeTheWizard(callback) {
 }
 
 
+// HR dashboard query function
+// Those who know the reference: more power to you.
 function DodgeSecondGenDashboard(callback) {
     // CRUNCH CRUNCH CRUNCH CRUNCH
-    const dashboardSelect = `
-    SELECT * FROM bogus_data.NICERLOOKINGTABLE
+    const dashboardSelect = `SELECT 
+    CONCAT(\`First Name\`, ' ', \`Last Name\`) AS \`Employee Name\`,
+    \`Training Title\`,
+    \`Completion Status\`,
+    \`Completion Date\`
+FROM
+    bogus_data.NICERLOOKINGTABLE;
     `
     // Honestly, my favorite part of SQL is getting to SCREAM AT YOUR COMPUTER... in style.
 
-    // TODO: Map TRAINING_IDs to pretty names
     connection.query(dashboardSelect, (err, results) => {
         if (err) {
             callback(err, null);
             return;
         }
-        console.log("DB entries loaded")
+        console.log("Dashboard entries loaded")
         callback(null, results);
     });
 }
 
+function prepareTheKrabbyPatty(callback) {
+    const trainingSelect = `
+    SELECT * FROM TRAINING_PROGRAM
+    `
 
+
+    connection.query(trainingSelect, (err, results) => {
+
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        console.log("training entries loaded");
+        callback(null, results);
+    })
+}
+
+
+// ABANDON ALL HOPE, YE WHO ENTER HERE
+// specifically below all these lines
 
 expressApp.get('/overview-init', (req, res) => {
     DodgeSecondGenDashboard((err, results) => {
         if (err) {
-            res.status(500).send('Error executing query: ' + err.message);
+/* nice */             res.status(500).send('Error executing query: ' + err.message);
         } else {
             res.json(results);
         }
     });
-})
+});
 
 expressApp.get('/page-init', (req, res) => {
     offToSeeTheWizard((err, results) => {
@@ -68,49 +94,17 @@ expressApp.get('/page-init', (req, res) => {
             res.json(results);
         }
     });
-})
+});
 
-
-// Upon UPDATE of DATE_COMPLETED column, set to COMPLETION_STATUS to "Complete"
-
-function trainingMaterialsGet(req, callback) {
-//    const { loginFirstName, loginLastName } = getLoginName(req); // Use req to get login details
-const loginDetails = getLoginName(req);
-
-// Note to self if you're going nuts over WHY it's not working...try sending a login request again
-console.log('Login Details:', loginDetails);
-
-const loginFirstName = loginDetails.loginFirstName;
-const loginLastName = loginDetails.loginLastName;
-
-    const clientViewGet = `
-        SELECT ID, \`Completion Status\`, \`Training Title\` FROM ${pathwayConfig.databaseName}.NICERLOOKINGTABLE 
-        WHERE \`First Name\` = "${loginFirstName}" 
-        AND \`Last Name\` = "${loginLastName}"
-    `;
-
-    connection.query(clientViewGet, (err, results) => {
+expressApp.get('/training-page-init', (req, res) => {
+    prepareTheKrabbyPatty((err, results) => {
         if (err) {
-            callback(err, null);
-            return;
-        }
-        console.log("Training materials loaded!");
-        callback(null, results);
-    });
-}
-
-expressApp.get('/training-materials-request', (req, res) => {
-    trainingMaterialsGet(req, (err, results) => {
-        if (err) {
-            res.status(500).send('BALONEY!' + err.message);
+            res.status(500).send('Plankton stole the secret formula: ' + err.message);
         } else {
             res.json(results);
         }
     })
 });
-
-
-
 // "Make your connection, now"
 
 // This does the actual connection business.
@@ -149,7 +143,8 @@ connection.connect(function (err) {
 // Simple and Accessible Hash (SAHash)
 // listens for the crunchatizeMeCaptain function call and does some wizardry here
 
-// This is a BIG ASS FUNCTION with lots of moving parts. Things can go wrong here.
+// This is a BIG ASS FUNCTION with lots of moving parts. Things CAN and WILL go wrong here.
+// Just ask my homie Murphy, he'll tell you all about it
 expressApp.get('/submit', async (req, res) => {
 
     // Get the heaping spaghetti pile of informacione
@@ -212,34 +207,71 @@ FROM TRAINING_PROGRAM;
 
 // hot damn, this is a lot of code for a simple filter
 // this is a GET request because we're not changing anything in the database
+// Refactored /filter endpoint
+
 expressApp.get('/filter', (req, res) => {
     const option = req.query.option;
     const firstName = req.query.firstName;
     const lastName = req.query.lastName;
-    let query = '';
+
+    // Turning if-else spaghetti into object-mapping lasagna
+    // Doesn't this look nicer?
+    const filterOptions = {
+        opt_HR: {
+            table: 'EMPLOYEE_DATA',
+            condition: 'DESIGNATION = "HR"',
+        },
+        opt_NEW: {
+            table: 'EMPLOYEE_DATA',
+            condition: 'DESIGNATION = "NEW"',
+        },
+        opt_CURRENT: {
+            table: 'EMPLOYEE_DATA',
+            condition: 'DESIGNATION = "CURRENT"',
+        },
+        opt_INCOMPLETE: {
+            table: 'DASHBOARD_VIEW',
+            condition: '`Completion Status` = "Incomplete"',
+        },
+        opt_NOTSTARTED: {
+            table: 'DASHBOARD_VIEW',
+            condition: '`Completion Status` = "Not Started"',
+        },
+        opt_COMPLETED: {
+            table: 'DASHBOARD_VIEW',
+            condition: '`Completion Status` = "Complete"',
+        },
+        opt_GENERAL: {
+            table: 'TRAINING_PROGRAM',
+            condition: 'CATEGORY = "General"',
+        },
+        opt_SAFETY: {
+            table: 'TRAINING_PROGRAM',
+            condition: 'CATEGORY = "SAFETY"',
+        },
+        opt_NEWHIRE: {
+            table: 'TRAINING_PROGRAM',
+            condition: 'CATEGORY = "New Hire"',
+        },
+        opt_PRIVACY: {
+            table: 'TRAINING_PROGRAM',
+            condition: 'CATEGORY = "Privacy"',
+        },
+    };
+
+    // Validate the option
+    const filter = filterOptions[option];
+    if (!filter) {
+        return res.status(400).json({ error: 'Invalid filter option. Please stop trying to further break my duct tape and paperclips...' });
+    }
+
+    // Build the base query
+    let query = `SELECT * FROM ${pathwayConfig.databaseName}.${filter.table} WHERE ${filter.condition}`;
     const queryParams = [];
 
-    // This probably could be done better
-    if (option === 'opt_HR') {
-        query = `SELECT * FROM ${pathwayConfig.databaseName}.EMPLOYEE_DATA WHERE DESIGNATION = "HR"`;
-    } else if (option === 'opt_NEW') {
-        query = `SELECT * FROM ${pathwayConfig.databaseName}.EMPLOYEE_DATA WHERE DESIGNATION = "NEW"`;
-    } else if (option === 'opt_CURRENT') {
-        query = `SELECT * FROM ${pathwayConfig.databaseName}.EMPLOYEE_DATA WHERE DESIGNATION = "CURRENT"`;
-    } else if (option === 'opt_INCOMPLETE') {
-        query = `SELECT * FROM ${pathwayConfig.databaseName}.NICERLOOKINGTABLE WHERE \`Completion Status\` = "Incomplete"`;
-    } else if (option === 'opt_NOTSTARTED') {
-        query = `SELECT * FROM ${pathwayConfig.databaseName}.NICERLOOKINGTABLE WHERE \`Completion Status\` = "Not Started"`;
-    } else if (option === 'opt_COMPLETED') {
-        query = `SELECT * FROM ${pathwayConfig.databaseName}.NICERLOOKINGTABLE WHERE \`Completion Status\` = "Complete"`;
-    }
-    // "Ones and zeroes everywhere! I thought I saw a 2..."
-    // "It was just a dream, Bender. There's no such thing as 2."
-    else {
-        return res.status(400).json({ error: 'Bad request' });
-    }
-
-    // Handle case-insensitive and partial matches. You know how people's spelling skills are
+    // Add optional filters for firstName and lastName. Mainly to help assist with improper capitalization
+    // LIKE allows for "close enough" guesses
+    // Database is overall case-insensitive but still cares about spelling
     if (firstName) {
         query += ' AND LOWER(first_name) LIKE ?';
         queryParams.push(`%${firstName.toLowerCase()}%`);
@@ -248,18 +280,19 @@ expressApp.get('/filter', (req, res) => {
         query += ' AND LOWER(last_name) LIKE ?';
         queryParams.push(`%${lastName.toLowerCase()}%`);
     }
-    // who needs silly debuggers when you can just log everything???
-    console.log('QUERY DEBUG:' + query);
-    console.log('EXTRA PARAMS:' + queryParams);
 
+    // Debugging logs
+    console.log('QUERY DEBUG:', query);
+    console.log('EXTRA PARAMS:', queryParams);
 
+    // Execute the query
     connection.query(query, queryParams, (err, results) => {
         if (err) {
             console.error('Query error:', err);
             return res.status(500).json({ error: 'Database query failed' });
         }
         res.json(results);
-    })
+    });
 });
 
 // This is a POST request because we're changing the database

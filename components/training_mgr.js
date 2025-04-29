@@ -46,6 +46,7 @@ expressApp.get('/training-materials/:itemID', async (req, res) => {
 
             console.log('[INFO] Training materials fetched successfully:', results);
             res.json(results); // Send the results as a JSON response
+            
         });
 
         // Close the connection
@@ -55,3 +56,36 @@ expressApp.get('/training-materials/:itemID', async (req, res) => {
         res.status(500).json({ error: 'Internal server error.' });
     }
 });
+
+
+function trainingMaterialsGet(req, callback) {
+    const loginDetails = getLoginName(req);
+
+    // Debugging logs
+    console.log(loginDetails);
+    console.log(loginDetails.loginName);
+
+    const query = `
+SELECT ID, \`Completion Status\`, \`Training Title\`, \`Completion Date\` FROM ${pathwayConfig.databaseName}.NICERLOOKINGTABLE WHERE \`Username\` = '${loginDetails.loginName}'
+    `; // The beauty of case insensitivity. 
+
+    connection.query(query, (err, rows) => {
+        if (err) {
+            callback(err, null);
+        } else {
+            callback(null, rows);
+        }
+    });
+}
+
+expressApp.get('/training-materials-request', (req, res) => {
+    trainingMaterialsGet(req, (err, results) => {
+        
+        if (err) {
+            res.status(500).send('FIDDLESTICKS! ' + err.message);
+        } else {
+            res.json(results);
+        }
+    })
+});
+

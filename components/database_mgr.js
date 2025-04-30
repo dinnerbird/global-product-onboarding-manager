@@ -3,15 +3,15 @@
 
 const bcrypt = require('bcrypt');
 const path = require('path');
-const mysql = require('mysql');
 const port = 3030;
 const expressApp = require('./express_init.js');
-const pathwayConfig = require('./config.js');
+const { pathwayConfig } = require('./config.js');
+const { connection } = require('./config.js')
 const { getLoginName } = require('./logon_mgr.js');
-const { connect } = require('http2');
 
 // be careful with the require stuff, it can cause circular references
 // ask me how I know!
+
 
 function yeet(error) {
     throw error;
@@ -41,7 +41,8 @@ function DodgeSecondGenDashboard(callback) {
     \`Completion Status\`,
     \`Completion Date\`
 FROM
-    bogus_data.NICERLOOKINGTABLE;
+    bogus_data.NICERLOOKINGTABLE
+    ORDER BY \`Employee Name\`;
     `
     // Honestly, my favorite part of SQL is getting to SCREAM AT YOUR COMPUTER... in style.
 
@@ -56,10 +57,7 @@ FROM
 }
 
 function prepareTheKrabbyPatty(callback) {
-    const trainingSelect = `
-    SELECT * FROM TRAINING_PROGRAM
-    `
-
+    const trainingSelect = ``
 
     connection.query(trainingSelect, (err, results) => {
 
@@ -74,7 +72,7 @@ function prepareTheKrabbyPatty(callback) {
 
 
 // ABANDON ALL HOPE, YE WHO ENTER HERE
-// specifically below all these lines
+// specifically, ye who scroll below these lines
 
 expressApp.get('/overview-init', (req, res) => {
     DodgeSecondGenDashboard((err, results) => {
@@ -109,14 +107,6 @@ expressApp.get('/training-page-init', (req, res) => {
 
 // This does the actual connection business.
 
-var connection = mysql.createConnection({
-    host: pathwayConfig.host,
-    user: pathwayConfig.user,
-    password: pathwayConfig.password,
-    database: pathwayConfig.databaseName
-});
-
-
 connection.connect(function (err) {
     if (err) {
         switch (err.code) {
@@ -134,7 +124,8 @@ connection.connect(function (err) {
 
         }
     }
-    console.log("[INFO] Database manager loaded");
+    console.log("[INFO] Database manager loaded.");
+
 });
 
 // This is a BIG ASS FUNCTION with lots of moving parts. Things CAN and WILL go wrong here.
@@ -150,6 +141,10 @@ expressApp.get('/submit', async (req, res) => {
 
     // Begin hashing
     const saltRounds = 10;
+
+    // This has to be await-based because it takes a couple msec to actually make the damn hash
+    // so "when it's done", THEN you can put it in.
+    // Otherwise you'll be scratching your head at a weird "http header error" that isn't exactly helpful
     const THE_BIG_ONE = await bcrypt.hash(tempClientPassword, saltRounds);
 
     // If you can't remember your own first and last name, God help you
@@ -159,7 +154,7 @@ expressApp.get('/submit', async (req, res) => {
     console.log(`RECEIVED: ${firstName} ${lastName} (NEW EMPLOYEE) ${emailAddress} ${phoneNum} ${TempUserName} ${THE_BIG_ONE}`);
 
     // The question marks perfectly sum up my confusion here.
-    // Seems to work well enough
+    // Seems to work well enough.
     const query = `
         INSERT INTO ${pathwayConfig.databaseName}.EMPLOYEE_DATA (FIRST_NAME, LAST_NAME, DESIGNATION, EMAIL, PHONE, USERNAME, PASS) VALUES (?, ?, 'NEW', ?, ?, ?, ?);`;
 
@@ -199,7 +194,10 @@ FROM TRAINING_PROGRAM;
     console.log('Submit endpoint processed successfully');
 });
 
-// hot damn, this is a lot of code for a simple filter
+
+// Jones BIG ASS Endpoints and Foot Massage
+// Better come down here, GET some of this S$&#T
+
 // this is a GET request because we're not changing anything in the database
 
 expressApp.get('/filter', (req, res) => {
@@ -240,17 +238,12 @@ expressApp.get('/filter', (req, res) => {
         },
         opt_SAFETY: {
             table: 'TRAINING_PROGRAM',
-            condition: 'CATEGORY = "SAFETY"',
+            condition: 'CATEGORY = "Cohort Training"',
         },
         opt_NEWHIRE: {
             table: 'TRAINING_PROGRAM',
-            condition: 'CATEGORY = "New Hire"',
-        },
-        opt_PRIVACY: {
-            table: 'TRAINING_PROGRAM',
-            condition: 'CATEGORY = "Privacy"',
-        },
-    };
+            condition: 'CATEGORY = "Skills Workshop"'
+    }};
 
     // Validate the option
     const filter = filterOptions[option];

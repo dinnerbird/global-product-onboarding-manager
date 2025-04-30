@@ -35,8 +35,11 @@ function showMeTheMoney() {
                 console.log('Login successful');
                 return response.text(); // Parse the response as plain text (HTML)
             } else {
+
+                alert('Unauthorized. Invalid username or password.');
                 console.error('Login failed');
                 return response.text().then(err => { throw new Error(err); });
+
             }
         })
         .then(html => {
@@ -105,24 +108,9 @@ function openEmployeeManager() {
             newWindow.document.open();
             newWindow.document.write(html); // is document.write really that verboten?
             newWindow.document.close();
-            newWindow.history.pushState({}, '', '/employee_manager'); // Maintain the fancy navigation
+            changeAddress('/employee_manager');
 
             })
-        }
-
-function trainingMaterialManager() {
-    console.log('Opening training manager');
-    fetch('/training_material_manager')
-        .then(response => response.text())
-        .then(html => {
-            const newWindow = window.open();
-            newWindow.document.open();
-            newWindow.document.write(html); // is document.write really that verboten?
-            newWindow.document.close();
-            newWindow.history.pushState({}, '', '/training_material_manager'); // Maintain the fancy navigation
-
-        })
-        .catch(err => console.error('GOODNESS GRACIOUS GREAT BALLS OF FIRE! ', err));
 }
 
 function addNewPopupBox() {
@@ -152,12 +140,16 @@ function crunchatizeMeCaptain() {
 
     try {
         console.log("Crunchatized: " + firstName + ' ' + lastName + ' ' + emailAddress + ' ' + phoneNum);
-        fetch(`/submit?&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}&phoneNum=${encodeURIComponent(phoneNum)}&emailAddress=${encodeURIComponent(emailAddress)}`) // Stuffs it all in the endpoint POST
+        fetch(`/submit?&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}&phoneNum=${encodeURIComponent(phoneNum)}&emailAddress=${encodeURIComponent(emailAddress)}`)
+        // Stuffs it all in the endpoint POST
+        // This is the equivalent of like...a 10 foot party sub or something.
+        // I think the mayonnaise is starting to turn.
             .then(async response => {
                 if (!response.ok) {
                     // If the response is not OK, throw an error with the response JSON
                     const errorData = await response.json();
                     throw new Error(errorData.message || 'Failed to add employee...');
+                    // One more week, and I can throw it in the fridge.
                 }
                 return response.json(); // Parse the JSON if the response is OK
             })
@@ -165,6 +157,7 @@ function crunchatizeMeCaptain() {
                 console.log(data);
                 alert(`Employee ${firstName} ${lastName} added successfully!`);
                 window.close();
+                
             })
             .catch(error => {
                 console.error("Error:", error);
@@ -177,6 +170,9 @@ function crunchatizeMeCaptain() {
     return false;
 
 }
+
+
+//TODO: Create "cross off the list" functionality and a "submit" button
 
 
 
@@ -199,7 +195,7 @@ function Nothingburger(action) {
 
 }
 
-// honestly I'm kinda proud of this
+// !!! Only works on HR dashboard !!!
 function filterTable() {
     const option = logChange();
 
@@ -220,6 +216,8 @@ function filterTable() {
         });
 };
 
+
+// USE THIS INSTEAD it's much nicer written AND can account for other dropdowns
 function filterTableFancy() {
 
     const options = logChange();
@@ -288,9 +286,9 @@ function renderTable(data) {
 
     const isClientPage = window.location.pathname === '/client_interface';
     if (isClientPage) {
-        const buttonHeader = document.createElement('th');
-        buttonHeader.textContent = 'Actions';
-        headerRow.appendChild(buttonHeader);
+        const clientCboxHeader = document.createElement('th');
+        clientCboxHeader.textContent = 'Actions';
+        headerRow.appendChild(clientCboxHeader);
 
     }
 
@@ -314,14 +312,12 @@ function renderTable(data) {
         }
 
         if (isClientPage) {
-            const openButtonCell = row.insertCell();
-            const openButton = document.createElement('button');
-            openButton.type = 'button';
-            openButton.name = 'clientTrainerButton';
-            openButton.value = item.id || JSON.stringify(item.ID); // id and ID are NOT THE SAME just so you know
-            openButton.innerHTML = 'Start';
-            openButtonCell.appendChild(openButton);
-            openButton.onclick = () => selectTrainingMaterial(item.ID);
+            const clientCboxCell = row.insertCell();
+            const clientCbox = document.createElement('input');
+            clientCbox.type = 'checkbox';
+            clientCbox.name = 'clientTrainerButton';
+            clientCbox.value = item.id || JSON.stringify(item); // id and ID are NOT THE SAME just so you know
+            clientCboxCell.appendChild(clientCbox);
         }
 
         headers.forEach(header => {
@@ -331,10 +327,10 @@ function renderTable(data) {
     });
 };
 
-function selectTrainingMaterial(itemID) {
-    console.log('Selected Training Material ID:', itemID);
+function accessTraining(itemCategory) {
+    console.log('Selected Training Material ID:', itemCategory);
 
-    fetch(`/training-materials/${itemID}`)
+    fetch(`/training-materials-request/?&itemCategory=${encodeURIComponent(itemCategory)}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Failed to fetch training material details.');
@@ -343,7 +339,7 @@ function selectTrainingMaterial(itemID) {
         })
         .then(data => {
             console.log('Training Material Details:', data);
-
+            renderTable(data);
         })
         .catch(err => {
             console.error('Error fetching training material details:', err);
@@ -386,6 +382,41 @@ function yeetEmployees() {
 
 }
 
+function yeetTraining() {
+    const selectedMaterials = Array.from(document.querySelectorAll('input[name="clientTrainerButton"]:checked'))
+        .map(input => input.value);
+
+    if (selectedMaterials.length === 0) {
+        console.log('No employees selected');
+        alert('Please select at least training material to "complete".'); // irony quotes :)
+        return;
+    }
+
+    console.log('Selected employees:', selectedMaterials);
+
+    // Send the selected employees to the server
+    fetch('/complete-training', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ employees: selectedMaterials }) // Send as JSON
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`FIDDLESTICKS! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Delete response:', data);
+        })
+        .catch(err => console.error('Error removing training materials:', err))
+        .then(
+           gravyTrainer()
+        )
+
+}
 // Requests training materials and slaps them into the desired page
 function gravyTrainer() {
     const errorMessage = document.getElementById('errorSpot');

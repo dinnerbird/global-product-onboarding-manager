@@ -11,6 +11,9 @@
 
 `Client <-> Browser <-> (MiddleMan) => (Node, MySQL on 3306, Express on 3030)`
 
+**Just stick to the core functionality.**
+**Don't massively overcomplicate the hell out of everything.**
+
 
 ### Training Program
 - Serialized training IDs for every video.
@@ -22,7 +25,7 @@
 ### Training Status:
 - I'm thinking multiple employees will have several training videos queued up.
 - Status ID, serialized similar to Training ID, all are unique. Probably could get away with a unique tag of some sort
-- Completion status TRUE/FALSE
+- Three-way completion status (Incomplete, In Progress, Completed)
 - Completion date YYYY-MM-DD
     
 ## Components:
@@ -41,4 +44,7 @@
 ### Database Manager:
   - Users will never directly interact with the underlying database backend — in other words, no direct SQL input
   - Several tables are laid out for storing data in different spots. Consult with [the definitions file](./definitions.md) for more information.
+
+
+Advice to self: ***stop bullshitting around***
 

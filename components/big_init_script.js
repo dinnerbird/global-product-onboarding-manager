@@ -8,6 +8,7 @@ This program is dedicated to the naysayers, the doubters, and the downers that t
 const GREEN = "\u001b[32m";
 const WHITE = "\u001b[37m";
 const BOLD = "\u001b[1m";
+const PINK = "\u001b[35m";
 const database_mgr = require('./database_mgr.js');
 const logon_mgr = require('./logon_mgr.js');
 const training_mgr = require('./training_mgr.js');
@@ -44,7 +45,11 @@ async function initializeModules() {
 Employee Management and Onboarding System`
         );
         console.log(WHITE)
-        console.log('\u001b[0m')
+        console.log('\u001b[0m') // reset formatting
+        if (pathwayConfig.DEBUG_INFO) {
+            console.log(PINK + BOLD + 'Debug info is enabled.');
+            console.log('\u001b[0m');
+        }
     } catch (error) {
         console.error('Error initializing modules:', error);
     }

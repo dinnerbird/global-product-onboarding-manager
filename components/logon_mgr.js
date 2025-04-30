@@ -2,10 +2,12 @@ console.log("[INFO] Logon manager loaded");
 
 const bcrypt = require('bcrypt');
 const path = require('path');
-const mysql = require('mysql2/promise');
-const port = 3030;
+
 const expressApp = require('./express_init.js');
+
+const { connection } = require('./config.js');
 const pathwayConfig = require('./config.js');
+
 const session = require('express-session');
 
 expressApp.use(session({
@@ -24,51 +26,37 @@ expressApp.post('/login', async (req, res) => {
         return res.status(400).json({ error: "Username and password are required" });
     }
 
-    try {
-        const connection = await mysql.createConnection({
-            host: pathwayConfig.host,
-            user: pathwayConfig.user,
-            password: pathwayConfig.password,
-            database: pathwayConfig.databaseName
-        });
-
-        // Query the database for the user
-        const [rows] = await connection.execute(
-            `SELECT * FROM EMPLOYEE_DATA WHERE USERNAME = ?`,
-            [loginName]
-        );
-
+    // Query the database for the user
+    connection.query(`SELECT * FROM EMPLOYEE_DATA WHERE USERNAME = ?`, [loginName], async (err, rows) => {
+        if (err) {
+            console.error("Database query failed.", err);
+            return res.status(500).json({ error: "Internal server error." })
+        }
         if (rows.length === 0) {
-            return res.status(401).json({ error: "Unauthorized. Probably invalid login or something" })
+            return res.status(401).json({ error: "Unauthorized. Invalid username or password." });
         }
 
+        const userData = rows[0];
+        console.log(userData);
         // Ensure PASS is a string
-        const storedHash = rows[0].PASS;
+        const storedHash = userData.PASS;
+        const userRole = userData.DESIGNATION;
 
         // Compare the provided password with the stored hash
         const isMatch = await bcrypt.compare(password, storedHash);
 
         if (isMatch) {
-            const userRole = rows[0].DESIGNATION;
             console.log(`USER LOGGED IN AS: ${userRole}`); // Logs the raw role
             req.session.user = { loginName, role: userRole };
 
             if (userRole === 'HR') {
-                res.redirect('/hr/hr_interface.html');
-
-            // Checks if NEW or CURRENT
+                return res.redirect('/hr/hr_interface.html');
             } else if (userRole === 'NEW' || userRole === 'CURRENT') {
-                res.redirect('/client/client_interface.html');
-
-            } else {
-                return res.status(401).json({ error: "Invalid username or password" });
+                return res.redirect('/client/client_interface.html');
             }
         }
-    } catch (error) {
-        console.error("[ERROR]", error);
-        return res.status(500).json({ error: "Internal server error." });
-    }
-});
+    })
+})
 
 expressApp.post('/logout', (req, res) => {
     req.session.destroy(err => {

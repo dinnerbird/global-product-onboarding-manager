@@ -5,7 +5,9 @@
     > It's currently browser-based only, but the way I've designed it should be friendly to mobile devices too.
 ### Database
 - Are we using MySQL 100% or something else mixed in?
+    > I'm using 100% MySQL for the database backend.
 - What tables are in the database?  (Example: Users Table, Trainings Table, Completion Status Table)
+    > Employee data, Training materials, training status tracking, and several sub-tables to organize data (such as `CLIENT_VIEW`, `USERPASS`, and `NICERLOOKINGTABLE`) (yes, it's really called that)
 ### Authentication
 - How is login authentication handled? (Is it secure? Are passwords hashed? Is department code verified first?)
     > Passwords are hashed and salted. (`bcrypt` with 10 salt rounds)

@@ -36,7 +36,7 @@ function trainingMaterialsGet(req, itemCategory, callback) {
     console.log(loginDetails.loginName);
 
     // Use the itemCategory passed from the route handler
-    const query = `SELECT ID, \`Training Title\`, \`Category\` FROM ${pathwayConfig.databaseName}.NICERLOOKINGTABLE WHERE \`Username\` = '${loginDetails.loginName}' AND \`Category\` LIKE '%${itemCategory}%'`;
+    const query = `SELECT ID, \`Training Title\`, \`Category\` FROM ${pathwayConfig.databaseName}.NICERLOOKINGTABLE WHERE \`Username\` = '${loginDetails.loginName}' AND \`Category\` LIKE '%${itemCategory}%' AND \`Completion Status\` = 'Not Started'`;
     connection.query(query, (err, rows) => {
         if (err) {
             callback(err, null);
@@ -56,12 +56,13 @@ expressApp.post('/complete-training', (req, res) => {
     const { materials } = req.body; // Expecting an array of training objects or JSON strings
     const sessionUsername = req.session?.user?.loginName;
 
-    console.log('MATERIALS:', materials);
+
 
     if (!sessionUsername) {
         return res.status(401).json({ error: 'Unauthorized: Employee session not found.' });
     }
 
+    // Do you know how long this damn thing took?
     const parsedMaterials = materials.map(material => {
         try {
             return JSON.parse(material);
@@ -71,20 +72,23 @@ expressApp.post('/complete-training', (req, res) => {
         }
     }).filter(material => material !== null);
 
-
     if (!Array.isArray(materials) || materials.length === 0) {
         return res.status(400).json({ error: 'AINT GOT NO GAS IN IT.' });
     }
 
-    console.log('Parsed materials:', parsedMaterials)
 
     const trainingIDs = parsedMaterials.map(material => material.ID);
 
     if (trainingIDs.length === 0) {
         return res.status(400).json({ error: 'No training IDs provided.' });
     }
+    if (DEBUG_INFO) {
+        console.log('Materials:', materials);
+        console.log('Parsed materials:', parsedMaterials)
+        console.log('Extracted Training IDs:', trainingIDs);
 
-    console.log('Extracted Training IDs:', trainingIDs);
+    }
+
 
     // Proceed with the rest of your logic.
 
@@ -105,33 +109,38 @@ expressApp.post('/complete-training', (req, res) => {
         console.log('Found employee ID:', sessionEmployeeId);
 
 
-    // Hot single triple-equal signs in your area looking for some comparison action
-    if (trainingIDs.length === 0) {
-        return res.status(400).json({ error: 'Nothing provided for deletion' });
-    }
-
-    // Generate placeholders for the IN clause
-    const placeholders = trainingIDs.map(() => '?').join(','); // e.g., "?, ?, ?"
-    const deleteTrainingQuery = `DELETE FROM ?? WHERE EMPLOYEE_ID = ? AND TRAINING_ID IN (${placeholders})`;
-
-    // Log query only in debug mode (avoid in production)
-    if (DEBUG_INFO) {
-        console.log('[DEBUG] Executing query:', deleteTrainingQuery);
-    }
-
-    // Execute the query with properly parameterized inputs
-    connection.query(
-        deleteTrainingQuery,
-        [pathwayConfig.databaseName + '.TRAINING_STATUS', sessionEmployeeId, ...trainingIDs],
-        (err, results) => {
-            if (err) {
-                console.error('Error deleting training IDs:', err.message, err.code);
-                return res.status(500).json({ error: 'Database query failed', details: err.message });
-            }
-
-            console.log('Fired Check-Off\'s gun:', results.affectedRows);
-            res.status(200).json({ message: 'Training IDs successfully deleted for the current employee.' });
+        // Hot single triple-equal signs in your area looking for some comparison action
+        if (trainingIDs.length === 0) {
+            return res.status(400).json({ error: 'Nothing provided for deletion' });
         }
-    );
-    
-})});
+
+        // Generate placeholders for the IN clause
+        const placeholders = trainingIDs.map(() => '?').join(','); // e.g., "?, ?, ?"
+        // Are you being intentionally dense?
+        // house.map(() => '?').join(',');
+
+        const updateTrainingQuery = `UPDATE ?? SET COMPLETION_STATUS = 2, COMPLETION_DATE = NOW() WHERE EMPLOYEE_ID = ? AND TRAINING_ID IN (${placeholders})`; // Update query to mark as completed
+
+        // Log query only in debug mode (avoid in production)
+        if (DEBUG_INFO) {
+            console.log('[DEBUG] Executing query:', updateTrainingQuery);
+        }
+
+        // Execute the query with properly parameterized inputs
+        connection.query(
+            updateTrainingQuery,
+            [pathwayConfig.databaseName + '.TRAINING_STATUS', sessionEmployeeId, ...trainingIDs],
+            (err, results) => {
+                if (err) {
+                    console.error('Error modifying training IDs:', err.message, err.code);
+                    return res.status(500).json({ error: 'Database query failed', details: err.message });
+                }
+
+                console.log('Fired Check-Off\'s gun:', results.affectedRows);
+                res.status(200).json({ message: 'Training IDs successfully updated for the current employee.' });
+                //... then in the following one it should be fired.
+            }
+        );
+
+    })
+});

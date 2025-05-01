@@ -12,6 +12,16 @@
 
 /* Please excuse the egregious use of document.write(). It was not my first choice either, but I'm on a very, VERY short schedule. */
 
+
+/* Developers often have an ugly app but they don't know it's ugly, in the same way parents don't know they have an ugly baby. */
+/* The baby's ugly, but it's still a baby. */
+
+function startClientInterface() {
+    getTheGreetz();
+    gravyTrainer();
+    changeAddress('/client_interface');
+    callYouOutonYourBullhonkey();
+}
 function yeet(error) {
     throw error;
 }
@@ -220,11 +230,14 @@ function filterTable() {
 // USE THIS INSTEAD it's much nicer written AND can account for other dropdowns
 function filterTableFancy() {
 
+    const firstName = document.getElementById('firstNameBox').value;
+    const lastName = document.getElementById('lastNameBox').value;
+
     const options = logChange();
 
     console.log("Selected option: " + options);
-
-    fetch(`/filter?option=${options}`)
+    console.log("NAME DEBUG:" + firstName + ' ' + lastName)
+    fetch(`/filter?option=${options}&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`)
         .then(response => response.json())
         .then(data => {
             renderTable(data);
@@ -246,6 +259,23 @@ function sayhi() {
 }
 
 
+function callYouOutonYourBullhonkey() {
+    fetch('/client-reporter')
+        .then(response => response.json())
+        .then(data => {
+            const reporterSpot = document.getElementById('progress_report');
+            reporterSpot.innerHTML = JSON.stringify(data, null, 2)
+                .replace(/[\{\}\[\]"]/g, '') // Remove braces, brackets, and quotes
+                .replace(/,/g, '\n')         // Replace commas with newlines
+                .replace(/:/g, ': ');        // Add space after colons
+        })
+        .catch(err => {
+            console.error('Error fetching client report:', err);
+            const reporterSpot = document.getElementById('progress_report');
+            reporterSpot.innerHTML = 'Failed to load client report.';
+        });
+}
+
 // This is the big function that's responsible for rendering tables that you see all over Pathway.
 function renderTable(data) {
 
@@ -255,6 +285,7 @@ function renderTable(data) {
 
     // HAS to be named data-table
     const table = document.getElementById('data-table');
+    
 
     // Could have it create an element if not found but I don't feel like doing that
     if (table === null) {
@@ -327,7 +358,7 @@ function renderTable(data) {
             cell.textContent = item[header];
         });
     });
-};
+}
 
 function accessTraining(itemCategory) {
     console.log('Selected Training Material ID:', itemCategory);
@@ -385,11 +416,13 @@ function yeetEmployees() {
 }
 
 function checkOffsGun() {
+    // If in the first act you have hung a pistol on the wall...
     const selectedMaterials = Array.from(document.querySelectorAll('input[name="clientTrainerButton"]:checked'));
 
+
+    // Fill your cravings
     const circusOfValues = selectedMaterials.map(material => material.value);
 
-    console.log(circusOfValues); // Debugging: Check the array before sending
 
     fetch('/complete-training', {
         method: 'POST',
@@ -407,8 +440,9 @@ function checkOffsGun() {
         .then(data => {
             console.log('Response:', data);
             alert('Training materials marked as complete successfully!');
+            renderTable(data);
+            callYouOutonYourBullhonkey();
         })
-        .catch(err => console.error('Error completing training materials:', err));
 }
 
 // Requests training materials and slaps them into the desired page
@@ -431,10 +465,6 @@ function gravyTrainer() {
             renderTable(data);
             // Hi, if you're having an error here, this isn't the place to look
         })
-        .catch(err => {
-            console.error('Error fetching training materials:', err);
-            errorMessage.innerHTML = "An unexpected error occurred while fetching training materials.";
-        });
 }
 
 

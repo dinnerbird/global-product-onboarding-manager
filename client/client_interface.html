@@ -1,60 +1,56 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="view" content='width=device-width, initial-scale=1.0'>
-        <title>Client Interface</title>
-        <link rel="stylesheet" href="../css/boring_corporate.css" >
-        <link rel="icon" type="image/x-icon" href="/res/favicon.ico">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-        <script src="../components/middleman.js"></script>
-        <style>
 
-        </style>
-    </head>
-     
-    <body>
-        <div class="header_bar">
-            <img src="../res/Pathway_logo.png" alt="Pathway Logo" style="max-width: 120px;"/>
-            <h1>New Employee Onboarding Portal</h1>
+<head>
+    <meta charset="UTF-8">
+    <meta name="view" content='width=device-width, initial-scale=1.0'>
+    <title>Client Interface</title>
+    <link rel="stylesheet" href="../css/boring_corporate.css">
+    <link rel="icon" type="image/x-icon" href="/res/favicon.ico">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+    <script src="../components/middleman.js"></script>
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div class="header_bar">
+        <img src="../res/Pathway_logo.png" alt="Pathway Logo" style="max-width: 120px;" />
+        <h1>New Employee Onboarding Portal</h1>
+    </div>
+
+    <div class="content">
+        <!-- <input type="button" onclick="gravyTrainer();" value="Reload Materials"> -->
+        <!-- This is a debug button. Don't use. -->
+        <h2 id="GREETZ"></h2>
+        <h2 id="progress_report"></h2>
+
+        <p> What are those words??? Oh, it's a space filler? Weird! -- Kennedy Moore</p>
+        <h2 id="informative"></h2>
+        <button id="train_COHORT" onclick="accessTraining('cohort')">Cohort Training</button>
+        <button id="train_SKILLS" onclick="accessTraining('skills')">Skills Workshop</button>
+        <button id="train_GEN" onclick="accessTraining('general')">General Training</button>
+        <button id="CLIENT_SUBMIT" onclick="checkOffsGun()">Save Changes</button>
+    </div>
+
+    <div class="toolbox">
+        <div class="tablecontainer">
+
+            <div class="oops" id="errorSpot"></div>
+            <table id="data-table">
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+
+
         </div>
-       
-        <div class="content">
-           <!-- <input type="button" onclick="gravyTrainer();" value="Reload Materials"> -->
-            <!-- This is a debug button. Don't use. -->
-            <h2 id="GREETZ"></h2>
-            <p> What are those words??? Oh, it's a space filler? Weird! -- Kennedy Moore</p>
-            <h2 id="informative"></h2>
-            <button id="train_COHORT" onclick="accessTraining('cohort')">Cohort Training</button>
-            <button id="train_SKILLS" onclick="accessTraining('skills')">Skills Workshop</button>
-            <button id="train_GEN" onclick="accessTraining('general')">General Training</button>
-            <button id="CLIENT_SUBMIT" onclick="checkOffsGun()">Save Changes</button>
-        </div>
-
-        <div class="toolbox">
-            
-
-            <div class="tablecontainer">
-                
-                <div class="oops" id="errorSpot"></div>
-                <table id="data-table">
-                    <thead></thead>
-                    <tbody></tbody>
-                </table>
-                <!-- Three buttons for opening respective categories.
-                 COUNT of how many you still need to do with little note underneath
-                 [ Cohort Materials ] [ Skills Materials ] [ General ]
-                 | Remaining number | | Remaining Number | | Remain# |
-                <= total -> "incomplete"
-                =0 -> "complete" 
-                  -->
-
-            </div>
-        </div>
-    </body>
+    </div>
+</body>
 <script>
-getTheGreetz();
-gravyTrainer();
-changeAddress('/client_interface');
+ startClientInterface();
 </script>
+
 </html>

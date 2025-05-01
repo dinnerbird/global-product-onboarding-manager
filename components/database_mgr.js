@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const path = require('path');
 const port = 3030;
 const expressApp = require('./express_init.js');
-const { pathwayConfig } = require('./config.js');
+const { pathwayConfig, DEBUG_INFO } = require('./config.js');
 const { connection } = require('./config.js')
 const { getLoginName } = require('./logon_mgr.js');
 
@@ -30,20 +30,17 @@ function offToSeeTheWizard(callback) {
     });
 }
 
+// SELECT CONCAT(COUNT(*), ' ', 'items') AS `Unfinished Training` FROM bogus_data.DASHBOARD_VIEW WHERE `Completion Status` = 'Not Started' AND `First Name` = 'Alex' AND `Last Name` = 'Helton'
+// This is a surprise tool that'll help us later.
+
+
 
 // HR dashboard query function
 // Those who know the reference: more power to you.
 function DodgeSecondGenDashboard(callback) {
     // CRUNCH CRUNCH CRUNCH CRUNCH
-    const dashboardSelect = `SELECT 
-    CONCAT(\`First Name\`, ' ', \`Last Name\`) AS \`Employee Name\`,
-    \`Training Title\`,
-    \`Completion Status\`,
-    \`Completion Date\`
-FROM
-    bogus_data.NICERLOOKINGTABLE
-    ORDER BY \`Employee Name\`;
-    `
+    const dashboardSelect = `SELECT * FROM
+    bogus_data.DASHBOARD_VIEW`
     // Honestly, my favorite part of SQL is getting to SCREAM AT YOUR COMPUTER... in style.
 
     connection.query(dashboardSelect, (err, results) => {
@@ -195,7 +192,7 @@ FROM TRAINING_PROGRAM;
 });
 
 
-// Jones BIG ASS Endpoints and Foot Massage
+// Jones BIG ASS Endpoints and Object Mapping
 // Better come down here, GET some of this S$&#T
 
 // this is a GET request because we're not changing anything in the database
@@ -251,6 +248,8 @@ expressApp.get('/filter', (req, res) => {
         return res.status(400).json({ error: 'Invalid filter option. Please stop trying to further break my duct tape and paperclips.' });
     }
 
+
+
     // Build the base query
     let query = `SELECT * FROM ${pathwayConfig.databaseName}.${filter.table} WHERE ${filter.condition}`;
     const queryParams = [];
@@ -259,17 +258,20 @@ expressApp.get('/filter', (req, res) => {
     // LIKE allows for "close enough" guesses
     // Database is overall case-insensitive but still cares about spelling
     if (firstName) {
-        query += ' AND LOWER(first_name) LIKE ?';
+        query += ' AND LOWER(`First Name`) LIKE ?';
         queryParams.push(`%${firstName.toLowerCase()}%`);
     }
     if (lastName) {
-        query += ' AND LOWER(last_name) LIKE ?';
+        query += ' AND LOWER(`Last Name`) LIKE ?';
         queryParams.push(`%${lastName.toLowerCase()}%`);
     }
 
     // Debugging logs
-    console.log('QUERY DEBUG:', query);
-    console.log('EXTRA PARAMS:', queryParams);
+
+    if (DEBUG_INFO) {
+        console.log('QUERY DEBUG:', query);
+        console.log('EXTRA PARAMS:', queryParams);
+    }
 
     // Execute the query
     connection.query(query, queryParams, (err, results) => {
@@ -444,4 +446,24 @@ expressApp.post('/delete_employees', (req, res) => {
 
         // Now delete corresponding login info from LOGIN_INFO and TRAINING_STATUS
     })
+});
+
+expressApp.get('/client-reporter', (req, res) => {
+    const reportingUser = getLoginName(req);
+    console.log('Reporting User: ', reportingUser.loginName);
+    const clientRemainderQuery = `SELECT 
+    CONCAT(COUNT(*), ' ', 'items') AS \`Unfinished Training\`
+FROM
+    bogus_data.NICERLOOKINGTABLE
+WHERE
+    \`Completion Status\` = 'Not Started' AND \`Username\` = '${reportingUser.loginName}'`
+
+    connection.query(clientRemainderQuery, reportingUser, (err, results) => {
+        res.json(results);
+        if (DEBUG_INFO) {
+            console.log('Jank ass query results: ', results)
+            
+        }
+    }
+    )
 });

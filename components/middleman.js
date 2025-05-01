@@ -245,6 +245,8 @@ function sayhi() {
     alert('hello');
 }
 
+
+// This is the big function that's responsible for rendering tables that you see all over Pathway.
 function renderTable(data) {
 
     // Locates the error message handler and cleans it out
@@ -382,41 +384,33 @@ function yeetEmployees() {
 
 }
 
-function yeetTraining() {
-    const selectedMaterials = Array.from(document.querySelectorAll('input[name="clientTrainerButton"]:checked'))
-        .map(input => input.value);
+function checkOffsGun() {
+    const selectedMaterials = Array.from(document.querySelectorAll('input[name="clientTrainerButton"]:checked'));
 
-    if (selectedMaterials.length === 0) {
-        console.log('No employees selected');
-        alert('Please select at least training material to "complete".'); // irony quotes :)
-        return;
-    }
+    const circusOfValues = selectedMaterials.map(material => material.value);
 
-    console.log('Selected employees:', selectedMaterials);
+    console.log(circusOfValues); // Debugging: Check the array before sending
 
-    // Send the selected employees to the server
     fetch('/complete-training', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ employees: selectedMaterials }) // Send as JSON
+        body: JSON.stringify({ materials: circusOfValues }) // Convert the array to JSON
     })
         .then(response => {
             if (!response.ok) {
-                throw new Error(`FIDDLESTICKS! status: ${response.status}`);
+                throw new Error(`Error! Status: ${response.status}`);
             }
             return response.json();
         })
         .then(data => {
-            console.log('Delete response:', data);
+            console.log('Response:', data);
+            alert('Training materials marked as complete successfully!');
         })
-        .catch(err => console.error('Error removing training materials:', err))
-        .then(
-           gravyTrainer()
-        )
-
+        .catch(err => console.error('Error completing training materials:', err));
 }
+
 // Requests training materials and slaps them into the desired page
 function gravyTrainer() {
     const errorMessage = document.getElementById('errorSpot');

@@ -8,14 +8,7 @@ const expressApp = require('./express_init.js');
 const { connection } = require('./config.js');
 const pathwayConfig = require('./config.js');
 
-const session = require('express-session');
 
-expressApp.use(session({
-    secret: 'bologna', // Replace with a strong secret key
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false } // Set to true if using HTTPS
-}));
 
 const { isAuthenticated, authorizeRole } = require('./auth.js');
 

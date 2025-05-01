@@ -1,7 +1,9 @@
 const express = require('express');
 const path = require('path');
-const expressApp = express();
 
+
+const session = require('express-session');
+const expressApp = express();
 const port = 3030;
 // Does the do...
 expressApp.listen(port, () => {
@@ -84,6 +86,14 @@ expressApp.get('/training_material_manager', (req, res) => {
         return res.status(403).send(`*twitches* We...really like a go-getter around here...synergize and circle back with us sometime...*grimacing*`);
     }
 });
+
+
+expressApp.use(session({
+    secret: 'bologna', // Replace with a strong secret key
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } // Set to true if using HTTPS
+}));
 
 expressApp.use(express.json());
 

@@ -45,6 +45,10 @@ label {
     overflow:auto;
 }
 
+#snitchBox {
+    font-size: larger;
+
+}
 
 .toolbox{
     display: flex;
@@ -53,7 +57,10 @@ label {
     margin: 10px auto;
     /* border: 2px dotted rgb(225, 0, 255); */
     gap: 10px;
-    width: 90%;
+
+    border: 1px solid #ccc;
+    border-radius:4px;
+    padding: 50px;
 
 }
 
@@ -202,3 +209,5 @@ button {
 button:active {
     background-color: #45a049;
   }
+
+  

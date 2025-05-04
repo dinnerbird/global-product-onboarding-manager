@@ -95,6 +95,7 @@ function trainingManagerTableRenderThing() {
 
 function dashboardOverviewInit() {
     console.log('Glancing...')
+    document.getElementById('snitchBox').innerHTML = '';
     fetch('/overview-init')
         .then(response => response.json())
         .then(data => {
@@ -117,10 +118,11 @@ function openEmployeeManager() {
             const newWindow = window.open();
             newWindow.document.open();
             newWindow.document.write(html); // is document.write really that verboten?
-            newWindow.document.close();
-            changeAddress('/employee_manager');
+            newWindow.location.href = 'employee_manager';
 
-            })
+            newWindow.document.close();
+
+        })
 }
 
 function addNewPopupBox() {
@@ -151,9 +153,9 @@ function crunchatizeMeCaptain() {
     try {
         console.log("Crunchatized: " + firstName + ' ' + lastName + ' ' + emailAddress + ' ' + phoneNum);
         fetch(`/submit?&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}&phoneNum=${encodeURIComponent(phoneNum)}&emailAddress=${encodeURIComponent(emailAddress)}`)
-        // Stuffs it all in the endpoint POST
-        // This is the equivalent of like...a 10 foot party sub or something.
-        // I think the mayonnaise is starting to turn.
+            // Stuffs it all in the endpoint POST
+            // This is the equivalent of like...a 10 foot party sub or something.
+            // I think the mayonnaise is starting to turn.
             .then(async response => {
                 if (!response.ok) {
                     // If the response is not OK, throw an error with the response JSON
@@ -167,7 +169,7 @@ function crunchatizeMeCaptain() {
                 console.log(data);
                 alert(`Employee ${firstName} ${lastName} added successfully!`);
                 window.close();
-                
+
             })
             .catch(error => {
                 console.error("Error:", error);
@@ -247,6 +249,21 @@ function filterTableFancy() {
 
             errorMessage.innerHTML = 'There\'s nothing to show here.'
         });
+
+
+    if (window.location.pathname === '/hr_interface') {
+        // "Snitch" component
+        console.log('yes on hr interface');
+        fetch(`/filter-reporter?firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                const snitchBox = document.getElementById('snitchBox');
+                snitchBox.innerHTML = prettyUpJsonData(data);
+                // this is going to break horribly
+            })
+    }
+// functionality changed, keeping for posterity though
 }
 
 function logChange() {
@@ -264,10 +281,7 @@ function callYouOutonYourBullhonkey() {
         .then(response => response.json())
         .then(data => {
             const reporterSpot = document.getElementById('progress_report');
-            reporterSpot.innerHTML = JSON.stringify(data, null, 2)
-                .replace(/[\{\}\[\]"]/g, '') // Remove braces, brackets, and quotes
-                .replace(/,/g, '\n')         // Replace commas with newlines
-                .replace(/:/g, ': ');        // Add space after colons
+            reporterSpot.innerHTML = prettyUpJsonData(data);
         })
         .catch(err => {
             console.error('Error fetching client report:', err);
@@ -285,7 +299,7 @@ function renderTable(data) {
 
     // HAS to be named data-table
     const table = document.getElementById('data-table');
-    
+
 
     // Could have it create an element if not found but I don't feel like doing that
     if (table === null) {
@@ -580,4 +594,19 @@ function getTheGreetz() {
 
 function changeAddress(newPath) {
     history.pushState(null, '', newPath);
+}
+
+/**
+ * Formats JSON data into a human-readable string by removing braces, brackets, and quotes,
+ * replacing commas with newlines, and adding spaces after colons.
+ * 
+ * @param {Object} data - The JSON object to format.
+ * @returns {string} - The formatted string.
+ */
+function prettyUpJsonData(data) {
+    return JSON.stringify(data, null, 2)
+        .replace(/[\{\}\[\]"]/g, '') // Remove braces, brackets, and quotes
+        .replace(/, /g, '\n')         // Replace commas with newlines
+        .replace(/:/g, ': ')      // Add space after colons
+        .replace(/,\s*$/gm, '');
 }

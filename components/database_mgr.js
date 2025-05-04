@@ -218,37 +218,38 @@ expressApp.get('/filter', (req, res) => {
             condition: 'DESIGNATION = "CURRENT"',
         },
         opt_INCOMPLETE: {
-            table: 'DASHBOARD_VIEW',
+            table: 'FILTER_RESULTS',
             condition: '`Completion Status` = "Incomplete"',
         },
         opt_NOTSTARTED: {
-            table: 'DASHBOARD_VIEW',
+            table: 'FILTER_RESULTS',
             condition: '`Completion Status` = "Not Started"',
         },
         opt_COMPLETED: {
-            table: 'DASHBOARD_VIEW',
+            table: 'FILTER_RESULTS',
             condition: '`Completion Status` = "Complete"',
         },
         opt_GENERAL: {
             table: 'TRAINING_PROGRAM',
             condition: 'CATEGORY = "General"',
         },
-        opt_SAFETY: {
+        opt_COHORT: {
             table: 'TRAINING_PROGRAM',
             condition: 'CATEGORY = "Cohort Training"',
         },
-        opt_NEWHIRE: {
+        opt_SKILLS: {
             table: 'TRAINING_PROGRAM',
             condition: 'CATEGORY = "Skills Workshop"'
-    }};
+
+            // These last three are being unused currently. Don't.
+        }
+    };
 
     // Validate the option
     const filter = filterOptions[option];
     if (!filter) {
         return res.status(400).json({ error: 'Invalid filter option. Please stop trying to further break my duct tape and paperclips.' });
     }
-
-
 
     // Build the base query
     let query = `SELECT * FROM ${pathwayConfig.databaseName}.${filter.table} WHERE ${filter.condition}`;
@@ -462,7 +463,31 @@ WHERE
         res.json(results);
         if (DEBUG_INFO) {
             console.log('Jank ass query results: ', results)
-            
+
+        }
+    }
+    )
+});
+
+expressApp.get('/filter-reporter', (req, res) => {
+    const firstNameReport = req.query.firstName;
+    const lastNameReport = req.query.lastName;
+
+    if (DEBUG_INFO) {
+        console.log(firstNameReport, lastNameReport);
+    }
+    const filter_reporter_query = `SELECT
+  CONCAT(COUNT(CASE WHEN \`Completion Status\` = 'Not Started' THEN 1 END), ' items') AS \`Not Started\`,
+  CONCAT(COUNT(CASE WHEN \`Completion Status\` = 'Complete' THEN 1 END), ' items') AS \`Complete\`
+FROM NICERLOOKINGTABLE
+WHERE \`First Name\` = '${firstNameReport}' OR \`Last Name\` = '${lastNameReport}';`
+
+
+    connection.query(filter_reporter_query, (err, results) => {
+        res.json(results);
+        if (DEBUG_INFO) {
+            console.log('More jank ass query results: ', results)
+
         }
     }
     )

@@ -5,13 +5,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pathway Employee Manager</title>
+    <title>Pathway HR Dashboard</title>
     <link rel="icon" type="image/x-icon" href="/res/favicon.ico">
     <link rel="stylesheet" href="../css/boring_corporate.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-    
+    <style>
+        /* Hide buttons and other elements when printing */
+        @media print {
+            .buttonbox, #entryTypeSelector, #firstNameBox, #lastNameBox, #filterButton, #GREETZ, .header_bar{
+                display: none;
+            }
+
+            .toolbox {
+                border: none;
+            }
+            
+        }
+        </style>
 </head>
 
 <body>
@@ -21,15 +33,14 @@
     </div>
 <div class="content" >
     <h2 id="GREETZ"></h2>
-    <div class="toolbox" style="border: 1px solid #ccc;
-border-radius: 4px; padding: 50px;">
+    <div class="toolbox">
 
         <div class="buttonbox">
             <button id="rerender-table" onclick="dashboardOverviewInit()">Reset Table</button>
             <button id="add_new" onclick="openEmployeeManager()">Edit Employees...</button>
             <!--<button id="pendingApprovals" onclick="Nothingburger('pending')">Pending Approvals...</button>
             <button id="sendReminder" onclick="Nothingburger('reminder')">Send Reminder...</button>-->
-            <button id="fileUpload" onclick="trainingMaterialManager()">Manage Training Materials...</button>
+            <button id="fileUpload" onclick="window.print()">Print Report...</button>
             <select id="entryTypeSelector" onchange="logChange()">
                 <option value="opt_NOTSTARTED">Not Started</option>
                 <option value="opt_INCOMPLETE">Incomplete</option>
@@ -38,8 +49,14 @@ border-radius: 4px; padding: 50px;">
             <input type="text" id="firstNameBox" placeholder="First Name">
             <input type="text" id="lastNameBox" placeholder="Last Name">
             <button id="filterButton" onclick="filterTableFancy()">Filter!</button>
+            <div style="border-radius: 5px;">
+                <pre id="snitchBox"></pre>
+            </div>
+            <div id="niceBox" style="background: #5c5">
+
+            </div>
         </div>
-        <div class="toolbox">
+        <div class="toolbox" style="border: none">
 
         <!-- Need to figure out a solution so this page isn't SUPER DUPER LOOOOOOONNNNGGGG -->
             <div class="tablecontainer">

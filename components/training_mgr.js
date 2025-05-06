@@ -3,6 +3,7 @@ console.log('[INFO] Training manager loaded');
 // Here's the plan:
 // One employee will have several training "materials" --> assign all however many at once to that employee
 // For demonstration purposes it's however many god damn materials as listed in TRAINING_PROGRAM
+// 28 to be exact
 const path = require('path');
 const expressApp = require('./express_init.js');
 const { pathwayConfig, DEBUG_INFO } = require('./config.js');
@@ -46,17 +47,14 @@ function trainingMaterialsGet(req, itemCategory, callback) {
     });
 }
 expressApp.get('/training-page-request', (req, res) => {
-    return res.status(418).json({ error: 'yeah this is just an empty endpoint for now, stay tuned...I think' })
+    return res.status(418).json({ error: 'SORRY NOTHING' })
 });
 
 
-// THIS IS THE BIG ONE
-
+// THIS IS THE BIG ONE!
 expressApp.post('/complete-training', (req, res) => {
     const { materials } = req.body; // Expecting an array of training objects or JSON strings
     const sessionUsername = req.session?.user?.loginName;
-
-
 
     if (!sessionUsername) {
         return res.status(401).json({ error: 'Unauthorized: Employee session not found.' });
@@ -76,7 +74,9 @@ expressApp.post('/complete-training', (req, res) => {
         return res.status(400).json({ error: 'AINT GOT NO GAS IN IT.' });
     }
 
-
+    // "Cool, state of the art JavaScript!"
+    // "TOUCH"
+    // "Don't touch."
     const trainingIDs = parsedMaterials.map(material => material.ID);
 
     if (trainingIDs.length === 0) {
@@ -88,11 +88,11 @@ expressApp.post('/complete-training', (req, res) => {
         console.log('Extracted Training IDs:', trainingIDs);
 
     }
-
-
-    // Proceed with the rest of your logic.
-
     // Query to fetch EMPLOYEE_ID based on USERNAME
+
+    // "Wow, the query from 'Pathway: The Movie'!"
+    // "TOUCH"
+    // "Don't touch!"
     const employeeIdQuery = `SELECT EMPLOYEE_ID FROM ${pathwayConfig.databaseName}.ID_NAMES WHERE USERNAME = ?`;
 
     connection.query(employeeIdQuery, [sessionUsername], (err, results) => {
@@ -116,17 +116,23 @@ expressApp.post('/complete-training', (req, res) => {
 
         // Generate placeholders for the IN clause
         const placeholders = trainingIDs.map(() => '?').join(','); // e.g., "?, ?, ?"
-        // Are you being intentionally dense?
+        // Are you being intentionally dense!?
         // house.map(() => '?').join(',');
 
         const updateTrainingQuery = `UPDATE ?? SET COMPLETION_STATUS = 2, COMPLETION_DATE = NOW() WHERE EMPLOYEE_ID = ? AND TRAINING_ID IN (${placeholders})`; // Update query to mark as completed
+
+        // (??) This whole query is a blunder
 
         // Log query only in debug mode (avoid in production)
         if (DEBUG_INFO) {
             console.log('[DEBUG] Executing query:', updateTrainingQuery);
         }
 
-        // Execute the query with properly parameterized inputs
+        // "Look! Dr. dinnerbird! The guy who got screwed by a DELETE statement...and lived!"
+        // "And now it only hurts when you query it."
+        // connection.query(existentialPainQuery)
+        // "TOUCH!"
+        // "Do I have to follow you all day?"
         connection.query(
             updateTrainingQuery,
             [pathwayConfig.databaseName + '.TRAINING_STATUS', sessionEmployeeId, ...trainingIDs],
@@ -135,9 +141,8 @@ expressApp.post('/complete-training', (req, res) => {
                     console.error('Error modifying training IDs:', err.message, err.code);
                     return res.status(500).json({ error: 'Database query failed', details: err.message });
                 }
-
                 console.log('Fired Check-Off\'s gun:', results.affectedRows);
-                res.status(200).json({ message: 'Training IDs successfully updated for the current employee.' });
+                res.status(200).json({ message: 'Success! Records updated for the current employee.' });
                 //... then in the following one it should be fired.
             }
         );

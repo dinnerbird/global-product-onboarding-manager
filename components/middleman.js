@@ -62,6 +62,10 @@ function showMeTheMoney() {
 
 }
 
+
+// This is the function that started all the trouble.
+// I *think* this only applies to the employee editor page. 
+// I don't know, don't touch.
 function pageInitThing() {
     console.log('Fetching the goods')
     fetch('/page-init')
@@ -77,6 +81,7 @@ function pageInitThing() {
 
 };
 
+// More than likely deprecated due to killing off training material mgmt. What the hell was I thinking?
 function trainingManagerTableRenderThing() {
     console.log('Fetching the goods')
     fetch('/training-page-init')
@@ -93,6 +98,8 @@ function trainingManagerTableRenderThing() {
 };
 
 
+// Dashboard overview for HR.
+// If you know the reference, more power to you.
 function dashboardOverviewInit() {
     console.log('Glancing...')
     document.getElementById('snitchBox').innerHTML = '';
@@ -110,6 +117,8 @@ function dashboardOverviewInit() {
                 errorMessage.innerHTML = 'There doesn\'t seem to be anything here...'))
 }; // you gotta be #$%& kidding me
 
+
+// Opens the employee manager in a new window.
 function openEmployeeManager() {
     console.log('Opening employee manager');
     fetch('/employee_manager')
@@ -117,14 +126,14 @@ function openEmployeeManager() {
         .then(html => {
             const newWindow = window.open();
             newWindow.document.open();
-            newWindow.document.write(html); // is document.write really that verboten?
+            newWindow.document.write(html); // Forgive me Father, for I have sinned.
             newWindow.location.href = 'employee_manager';
 
             newWindow.document.close();
-
         })
 }
 
+// That was easy...?
 function addNewPopupBox() {
     fetch('/add_employee')
         .then(response => response.text())
@@ -154,14 +163,18 @@ function crunchatizeMeCaptain() {
         console.log("Crunchatized: " + firstName + ' ' + lastName + ' ' + emailAddress + ' ' + phoneNum);
         fetch(`/submit?&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}&phoneNum=${encodeURIComponent(phoneNum)}&emailAddress=${encodeURIComponent(emailAddress)}`)
             // Stuffs it all in the endpoint POST
+            // I think this is close to 200 characters total.
+
             // This is the equivalent of like...a 10 foot party sub or something.
-            // I think the mayonnaise is starting to turn.
+            // ...and I think the mayonnaise is starting to turn.
+            // Two more feet, and I can throw it in the fridge.
+
             .then(async response => {
                 if (!response.ok) {
                     // If the response is not OK, throw an error with the response JSON
                     const errorData = await response.json();
                     throw new Error(errorData.message || 'Failed to add employee...');
-                    // One more week, and I can throw it in the fridge.
+
                 }
                 return response.json(); // Parse the JSON if the response is OK
             })
@@ -174,6 +187,7 @@ function crunchatizeMeCaptain() {
             .catch(error => {
                 console.error("Error:", error);
                 alert(`Error: ${error.message}`);
+                // I would like to be alone with the sandwich for a moment.
             });
     } catch (error) {
         console.error("Unexpected error:", error);
@@ -182,15 +196,8 @@ function crunchatizeMeCaptain() {
     return false;
 
 }
-
-
-//TODO: Create "cross off the list" functionality and a "submit" button
-
-
-
-// may not be able to get some things done in time.
-// This function is just a placeholder if Enterprise is actually insane enough 
-// to warrant using my software
+// I'm worried that I may not be able to get some things done in time.
+// This function is just a placeholder if Enterprise is actually insane enough to warrant using my software.
 
 function Nothingburger(action) {
     // I mean, I guess you could do *something* here
@@ -202,7 +209,7 @@ function Nothingburger(action) {
         alert('Send reminder function');
     }
     else if (action == 'register-link') {
-        alert('AIN\'T YET IMPLEMENTED CHIEF');
+        alert('Not implemented.');
     }
 
 }
@@ -271,11 +278,13 @@ function logChange() {
     return selectedValue;
 };
 
-function sayhi() {
-    alert('hello');
+function davidPhantom() {
+    alert('Hello! How are you today?');
 }
 
+// Fifty-something cases of Bull Honkey!
 
+// For the client to track their own progress. Janky as hell, can't figure out how to do it "nicely"
 function callYouOutonYourBullhonkey() {
     fetch('/client-reporter')
         .then(response => response.json())
@@ -374,6 +383,7 @@ function renderTable(data) {
     });
 }
 
+// For client interface. 
 function accessTraining(itemCategory) {
     console.log('Selected Training Material ID:', itemCategory);
 
@@ -393,6 +403,7 @@ function accessTraining(itemCategory) {
         });
 }
 
+// Delete employees from selected checkboxes.
 function yeetEmployees() {
     const selectedEmployees = Array.from(document.querySelectorAll('input[name="employee"]:checked'))
         .map(input => input.value);
@@ -429,14 +440,14 @@ function yeetEmployees() {
 
 }
 
+// Submit training function. 
+// This took me an ungodly amount of time to figure out.
 function checkOffsGun() {
     // If in the first act you have hung a pistol on the wall...
     const selectedMaterials = Array.from(document.querySelectorAll('input[name="clientTrainerButton"]:checked'));
 
-
     // Fill your cravings
     const circusOfValues = selectedMaterials.map(material => material.value);
-
 
     fetch('/complete-training', {
         method: 'POST',
@@ -455,7 +466,6 @@ function checkOffsGun() {
             console.log('Response:', data);
             alert('Training materials marked as complete successfully!');
             renderTable(data);
-            callYouOutonYourBullhonkey();
         })
 }
 
@@ -483,6 +493,8 @@ function gravyTrainer() {
 
 
 // DEmote Employees
+
+// (...it's "congrats" backwards)
 function stragnoc() {
     const selectedEmployees = Array.from(document.querySelectorAll('input[name="employee"]:checked'))
         .map(input => input.value);
@@ -596,17 +608,12 @@ function changeAddress(newPath) {
     history.pushState(null, '', newPath);
 }
 
-/**
- * Formats JSON data into a human-readable string by removing braces, brackets, and quotes,
- * replacing commas with newlines, and adding spaces after colons.
- * 
- * @param {Object} data - The JSON object to format.
- * @returns {string} - The formatted string.
- */
+
 function prettyUpJsonData(data) {
     return JSON.stringify(data, null, 2)
         .replace(/[\{\}\[\]"]/g, '') // Remove braces, brackets, and quotes
         .replace(/, /g, '\n')         // Replace commas with newlines
         .replace(/:/g, ': ')      // Add space after colons
-        .replace(/,\s*$/gm, '');
+        .replace(/,\s*$/gm, ''); 
+        // You know, I put an infinite number of monkeys at an infinite number of computers and they just kept making more JS frameworks!
 }

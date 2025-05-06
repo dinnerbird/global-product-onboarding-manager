@@ -111,18 +111,13 @@ connection.connect(function (err) {
                 throw new Error("Connection refused. Is the database running?");
             default:
                 throw new Error("NUTS!!! An error occurred:" + err.message);
-            case 'ER_PARSE_ERROR':
-                throw new Error("Please recheck your query. I won't accept that garglemesh.");
             case 'ER_NOT_SUPPORTED_AUTH_MODE':
                 throw new Error("Your client doesn't support the auth protocol the I'm looking for. Replace the loose screw behind the keyboard.");
             case 'ER_DBACCESS_DENIED_ERROR':
                 throw new Error('Access denied. Have you considered kicking rocks?' + err.message);
-            // I have had to waste a week of my time getting these morons to set up their dev environments
-
         }
     }
     console.log("[INFO] Database manager loaded.");
-
 });
 
 // This is a BIG ASS FUNCTION with lots of moving parts. Things CAN and WILL go wrong here.
@@ -130,6 +125,7 @@ connection.connect(function (err) {
 expressApp.get('/submit', async (req, res) => {
 
     // Get the heaping spaghetti pile of informacione
+    // if (req.query.firstName === "Mario") { console.log("Hello Mario") };
     const firstName = req.query.firstName;
     const lastName = req.query.lastName;
     const phoneNum = req.query.phoneNum;
@@ -143,6 +139,8 @@ expressApp.get('/submit', async (req, res) => {
     // so "when it's done", THEN you can put it in.
     // Otherwise you'll be scratching your head at a weird "http header error" that isn't exactly helpful
     const THE_BIG_ONE = await bcrypt.hash(tempClientPassword, saltRounds);
+    // The code police will say "await" has no effect on this function,
+    // but you shouldn't test the gods on it.
 
     // If you can't remember your own first and last name, God help you
     const TempUserName = firstName + lastName;
@@ -150,11 +148,11 @@ expressApp.get('/submit', async (req, res) => {
     // Debug
     console.log(`RECEIVED: ${firstName} ${lastName} (NEW EMPLOYEE) ${emailAddress} ${phoneNum} ${TempUserName} ${THE_BIG_ONE}`);
 
-    // The question marks perfectly sum up my confusion here.
-    // Seems to work well enough.
     const query = `
         INSERT INTO ${pathwayConfig.databaseName}.EMPLOYEE_DATA (FIRST_NAME, LAST_NAME, DESIGNATION, EMAIL, PHONE, USERNAME, PASS) VALUES (?, ?, 'NEW', ?, ?, ?, ?);`;
 
+        // The question marks perfectly sum up my confusion here.
+        // Seems to work well enough.
     connection.query(query, [firstName, lastName, emailAddress, phoneNum, TempUserName, THE_BIG_ONE], async (err, results) => {
         if (err) {
             console.error('Query error:', err);
@@ -162,6 +160,7 @@ expressApp.get('/submit', async (req, res) => {
         }
         console.log('Employee added:', results);
         // "Now, are you ready? It's showtime!"
+        // >={:^) 
     });
 
     // TRAINING MATERIALS ASSIGNMENT!
@@ -178,6 +177,8 @@ SELECT
 FROM TRAINING_PROGRAM;
 
     `; // THIS IS GOOD DO NOT TOUCH FOR THE LOVE OF GOD PLEEEEEAAAASEEEE
+    // This is one of those kinds of things you forget writing and also can't understand
+    // (but it works)
     connection.query(trainingQuery, [firstName, lastName], (err, results) => {
         if (err) {
             console.error('Training assignment error:', err);
@@ -202,7 +203,7 @@ expressApp.get('/filter', (req, res) => {
     const firstName = req.query.firstName;
     const lastName = req.query.lastName;
 
-    // Turning if-else spaghetti into object-mapping lasagna
+    // Turning if-else spaghetti into nice orderly object-mapping lasagna
     // Doesn't this look nicer?
     const filterOptions = {
         opt_HR: {
@@ -252,12 +253,13 @@ expressApp.get('/filter', (req, res) => {
     }
 
     // Build the base query
+    // I worry that SELECT * might cause performance issues down the line
     let query = `SELECT * FROM ${pathwayConfig.databaseName}.${filter.table} WHERE ${filter.condition}`;
     const queryParams = [];
 
     // Add optional filters for firstName and lastName. Mainly to help assist with improper capitalization
     // LIKE allows for "close enough" guesses
-    // Database is overall case-insensitive but still cares about spelling
+    // Database is overall case-insensitive but still mostly cares about spelling.
     if (firstName) {
         query += ' AND LOWER(`First Name`) LIKE ?';
         queryParams.push(`%${firstName.toLowerCase()}%`);
@@ -274,7 +276,7 @@ expressApp.get('/filter', (req, res) => {
         console.log('EXTRA PARAMS:', queryParams);
     }
 
-    // Execute the query
+    // Did that work?
     connection.query(query, queryParams, (err, results) => {
         if (err) {
             console.error('Query error:', err);
@@ -469,6 +471,8 @@ WHERE
     )
 });
 
+// JANK ALERT: Use with caution.
+// Preformatted garglemesh on the receiving end of this. Not my first choice but works for now.
 expressApp.get('/filter-reporter', (req, res) => {
     const firstNameReport = req.query.firstName;
     const lastNameReport = req.query.lastName;

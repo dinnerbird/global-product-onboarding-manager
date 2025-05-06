@@ -8,10 +8,6 @@ const expressApp = require('./express_init.js');
 const { connection } = require('./config.js');
 const pathwayConfig = require('./config.js');
 
-
-
-const { isAuthenticated, authorizeRole } = require('./auth.js');
-
 expressApp.post('/login', async (req, res) => {
     const { loginName, password } = req.body;
 
@@ -26,7 +22,7 @@ expressApp.post('/login', async (req, res) => {
             return res.status(500).json({ error: "Internal server error." })
         }
         if (rows.length === 0) {
-            return res.status(401).json({ error: "Unauthorized. Invalid username or password." });
+            return res.status(401).json({ error: "Unauthorized." });
         }
 
         const userData = rows[0];
@@ -90,6 +86,22 @@ function getLoginName(req) {
     return { loginName }; // Return as an object
 }
 
+function isAuthenticated(req, res, next) {
+    if (req.session.user) {
+        return next(); // User is authenticated
+    }
+    return res.status(401).json({ error: "Unauthorized access. Please log in." });
+}
+
+function authorizeRole(role) {
+    return (req, res, next) => {
+        if (req.session.user && req.session.user.role === role) {
+            return next(); // User has the correct role
+        }
+        return res.status(403).json({ error: "Forbidden. You do not have access to this resource." });
+    };
+}
+
 module.exports = {
-    getLoginName
+    getLoginName // I really don't like the way this is implemented, BUT it works well enough.
 }

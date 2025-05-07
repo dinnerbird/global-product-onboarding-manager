@@ -5,10 +5,7 @@
 This program is dedicated to the naysayers, the doubters, and the downers that thought I'd never graduate from college.
 
 */
-const GREEN = "\u001b[32m"; // <-- Are these really necessary?
-const WHITE = "\u001b[37m";
-const BOLD = "\u001b[1m";
-const PINK = "\u001b[35m"; // Yes! We like fancy splash screens.
+
 const database_mgr = require('./database_mgr.js');
 const logon_mgr = require('./logon_mgr.js');
 const training_mgr = require('./training_mgr.js');
@@ -22,14 +19,6 @@ const expressApp = require('./express_init.js');
 const bcrypt = require('bcrypt');
 const pathwayConfig = require('./config.js');
 
-
-const splashScreen = `${GREEN} + ${BOLD} +
-█▀▀▀▄  ▄▀▀█ ▀▀█▀▀ █   █ █   █  ▄▀▀█ █   █ TM
-█  ▄▀ █   █   █   █ ▄▄█ █   █ █   █ █   █  
-█▄▀   █▄▀▀█   █   █▀  █ █ █ █ █▄▀▀█  ▀▄▀   
-█     █   █   █   █   █ █▄▀▄▀ █   █   █
-
-Employee Management and Onboarding System`
 
 // ** STOP DOING ASYNC **
 
@@ -49,11 +38,16 @@ async function initializeModules() {
         if (training_mgr.initialize) {
             await training_mgr.initialize(); // Wait for training_mgr to initialize
         }
-        console.log(splashScreen);
         console.log('\u001b[0m') // reset formatting
         if (pathwayConfig.DEBUG_INFO) {
-            console.log(PINK + BOLD + 'Debug info is enabled...hope you like jargon!');
+            console.log(`\u001b[1m\u001b[35m\u001b[35mDebug info is enabled...it's time to JANK IT UP! :^D`);
+        }
+        if (pathwayConfig.DISPLAY_SPLASH) {
+            console.log(pathwayConfig.splashScreen);
             console.log('\u001b[0m');
+
+        } else {
+            console.log(`Pathway Employee Management and Onboarding System`);
         }
     } catch (error) {
         console.error('Error initializing modules:', error);

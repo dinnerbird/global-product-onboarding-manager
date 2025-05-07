@@ -19,25 +19,30 @@ expressApp.get('/training-materials-request', (req, res) => {
         console.log('[DEBUG] Received itemCategory:', itemCategory);
         // This is probably a security risk. Who cares at this point?
     }
-
-    trainingMaterialsGet(req, itemCategory, (err, results) => {
-        if (err) {
-            res.status(500).send('FIDDLESTICKS! ' + err.message);
-        } else {
-            res.json(results);
-        }
-    });
-});
+    try {
+        trainingMaterialsGet(req, itemCategory, (err, results) => {
+            if (err) {
+                res.status(500).send('FIDDLESTICKS! ' + err.message);
+            } else {
+                res.json(results);
+            }
+        });
+    } catch (error) {
+            throw new TypeError('Not a catastrophic failure, but not a good outcome either. Try logging in again.');
+    }})
 
 function trainingMaterialsGet(req, itemCategory, callback) {
     const loginDetails = getLoginName(req);
 
     // Debugging logs
-    console.log(loginDetails);
-    console.log(loginDetails.loginName);
+    if (DEBUG_INFO) {
+        console.log(loginDetails);
+        console.log(loginDetails.loginName);
+    }
+
 
     // Use the itemCategory passed from the route handler
-    const query = `SELECT ID, \`Training Title\`, \`Category\` FROM ${pathwayConfig.databaseName}.NICERLOOKINGTABLE WHERE \`Username\` = '${loginDetails.loginName}' AND \`Category\` LIKE '%${itemCategory}%' AND \`Completion Status\` = 'Not Started'`;
+    const query = `SELECT ID, \`Training Title\`, \`Category\` FROM ${pathwayConfig.databaseName}.NICERLOOKINGTABLE WHERE \`Username\` = '${loginDetails.loginName}' AND \`Category\` LIKE '%${itemCategory}%' AND \`Completion Status\` = 'Incomplete'`;
     connection.query(query, (err, rows) => {
         if (err) {
             callback(err, null);
@@ -70,8 +75,9 @@ expressApp.post('/complete-training', (req, res) => {
         }
     }).filter(material => material !== null);
 
+    // If it's not an array OR if the array is empty (no training left to do/something broke elsewhere)
     if (!Array.isArray(materials) || materials.length === 0) {
-        return res.status(400).json({ error: 'AINT GOT NO GAS IN IT.' });
+        return res.status(400).json({ error: 'Shut her down, Clancy, she\'s pumpin\' mud!.' });
     }
 
     // "Cool, state of the art JavaScript!"
@@ -119,7 +125,7 @@ expressApp.post('/complete-training', (req, res) => {
         // Are you being intentionally dense!?
         // house.map(() => '?').join(',');
 
-        const updateTrainingQuery = `UPDATE ?? SET COMPLETION_STATUS = 2, COMPLETION_DATE = NOW() WHERE EMPLOYEE_ID = ? AND TRAINING_ID IN (${placeholders})`; // Update query to mark as completed
+        const updateTrainingQuery = `UPDATE ?? SET COMPLETION_STATUS = 1, COMPLETION_DATE = NOW() WHERE EMPLOYEE_ID = ? AND TRAINING_ID IN (${placeholders})`; // Update query to mark as completed
 
         // (??) This whole query is a blunder
 

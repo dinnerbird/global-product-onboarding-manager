@@ -123,73 +123,73 @@ connection.connect(function (err) {
 // This is a BIG ASS FUNCTION with lots of moving parts. Things CAN and WILL go wrong here.
 // Just ask my homie Murphy, he'll tell you all about it
 expressApp.get('/submit', async (req, res) => {
+    try {
+        const firstName = req.query.firstName;
+        const lastName = req.query.lastName;
+        const phoneNum = req.query.phoneNum;
+        const emailAddress = req.query.emailAddress;
+        const tempClientPassword = req.query.phoneNum;
 
-    // Get the heaping spaghetti pile of informacione
-    // if (req.query.firstName === "Mario") { console.log("Hello Mario") };
-    const firstName = req.query.firstName;
-    const lastName = req.query.lastName;
-    const phoneNum = req.query.phoneNum;
-    const emailAddress = req.query.emailAddress;
-    const tempClientPassword = req.query.phoneNum; // Use phone number as the password
+        const saltRounds = 10;
+        const THE_BIG_ONE = await bcrypt.hash(tempClientPassword, saltRounds);
+        const TempUserName = `${firstName}${lastName}`;
 
-    // Begin hashing
-    const saltRounds = 10;
+        const checkUsernameQuery = `
+            SELECT COUNT(*) AS count 
+            FROM ${pathwayConfig.databaseName}.EMPLOYEE_DATA 
+            WHERE USERNAME LIKE ?`;
 
-    // This has to be await-based because it takes a couple msec to actually make the damn hash
-    // so "when it's done", THEN you can put it in.
-    // Otherwise you'll be scratching your head at a weird "http header error" that isn't exactly helpful
-    const THE_BIG_ONE = await bcrypt.hash(tempClientPassword, saltRounds);
-    // The code police will say "await" has no effect on this function,
-    // but you shouldn't test the gods on it.
+        connection.query(checkUsernameQuery, [`${TempUserName}%`], (err, results) => {
+            if (err) {
+                console.error('Error checking username:', err);
+                return res.status(500).json({ error: 'Database query failed' });
+            }
 
-    // If you can't remember your own first and last name, God help you
-    const TempUserName = firstName + lastName;
+            const count = results[0].count;
+            const uniqueUserName = count > 0 ? `${TempUserName}${count + 1}` : TempUserName;
 
-    // Debug
-    console.log(`RECEIVED: ${firstName} ${lastName} (NEW EMPLOYEE) ${emailAddress} ${phoneNum} ${TempUserName} ${THE_BIG_ONE}`);
+            const query = `
+                INSERT INTO ${pathwayConfig.databaseName}.EMPLOYEE_DATA 
+                (FIRST_NAME, LAST_NAME, DESIGNATION, EMAIL, PHONE, USERNAME, PASS) 
+                VALUES (?, ?, 'NEW', ?, ?, ?, ?);`;
 
-    const query = `
-        INSERT INTO ${pathwayConfig.databaseName}.EMPLOYEE_DATA (FIRST_NAME, LAST_NAME, DESIGNATION, EMAIL, PHONE, USERNAME, PASS) VALUES (?, ?, 'NEW', ?, ?, ?, ?);`;
+            connection.query(query, [firstName, lastName, emailAddress, phoneNum, uniqueUserName, THE_BIG_ONE], (err, results) => {
+                if (err) {
+                    console.error('Query error:', err);
+                    return res.status(500).json({ error: 'Database query failed' });
+                }
 
-        // The question marks perfectly sum up my confusion here.
-        // Seems to work well enough.
-    connection.query(query, [firstName, lastName, emailAddress, phoneNum, TempUserName, THE_BIG_ONE], async (err, results) => {
-        if (err) {
-            console.error('Query error:', err);
-            return res.status(500).json({ error: 'Database query failed' });
-        }
-        console.log('Employee added:', results);
-        // "Now, are you ready? It's showtime!"
-        // >={:^) 
-    });
+                const trainingQuery = `
+                    INSERT INTO ${pathwayConfig.databaseName}.TRAINING_STATUS (EMPLOYEE_ID, TRAINING_ID, COMPLETION_STATUS, COMPLETION_DATE)
+                    SELECT 
+                        (SELECT EMPLOYEE_ID 
+                         FROM bogus_data.EMPLOYEE_DATA 
+                         ORDER BY EMPLOYEE_ID DESC 
+                         LIMIT 1),
+                        TRAINING_ID,
+                        0,
+                        NULL
+                    FROM TRAINING_PROGRAM;`;
 
-    // TRAINING MATERIALS ASSIGNMENT!
-    const trainingQuery = `
-    INSERT INTO ${pathwayConfig.databaseName}.TRAINING_STATUS (EMPLOYEE_ID, TRAINING_ID, COMPLETION_STATUS, COMPLETION_DATE)
-SELECT 
-    (SELECT EMPLOYEE_ID 
-     FROM bogus_data.EMPLOYEE_DATA 
-     ORDER BY EMPLOYEE_ID DESC 
-     LIMIT 1),
-    TRAINING_ID,
-    0,
-    NULL
-FROM TRAINING_PROGRAM;
+                connection.query(trainingQuery, (err, trainingResults) => {
+                    if (err) {
+                        console.error('Training assignment error:', err);
+                        return res.status(500).json({ error: 'Training assignment failed' });
+                    }
 
-    `; // THIS IS GOOD DO NOT TOUCH FOR THE LOVE OF GOD PLEEEEEAAAASEEEE
-    // This is one of those kinds of things you forget writing and also can't understand
-    // (but it works)
-    connection.query(trainingQuery, [firstName, lastName], (err, results) => {
-        if (err) {
-            console.error('Training assignment error:', err);
-            return res.status(500).json({ error: 'Training assignment failed' });
-        }
-        console.log('Training assignments added:', results);
-        res.json({ message: 'Training assignments added successfully', results });
-    });
-    // I don't know why this is here, but it seems to work
-
-    console.log('Submit endpoint processed successfully');
+                    console.log('Submit endpoint processed successfully');
+                    res.json({
+                        message: 'Employee added and training assignments completed successfully',
+                        employeeResults: results,
+                        trainingResults: trainingResults,
+                    });
+                });
+            });
+        });
+    } catch (error) {
+        console.error('Unexpected error:', error);
+        res.status(500).json({ error: 'An unexpected error occurred' });
+    }
 });
 
 
@@ -323,7 +323,7 @@ expressApp.post('/promote_employees', (req, res) => {
         }
 
         // Proceed with the promotion if no HR employees are found
-        const updateQuery = `UPDATE ${pathwayConfig.databaseName}.EMPLOYEE_DATA SET DESIGNATION = 'CURRENT' WHERE EMPLOYEE_ID IN (${placeholders})`;
+        const updateQuery = `UPDATE ${pathwayConfig.databaseName}.EMPLOYEE_DATA SET DESIGNATION = 'CURRENT' WHERE EMPLOYEE_ID IN (${placeholders}) AND DESIGNATION = 'HR'`;
 
         connection.query(updateQuery, employeeIds, (err, results) => {
             if (err) {
@@ -371,7 +371,7 @@ expressApp.post('/DEMOTE_employees', (req, res) => {
         }
 
         // Proceed with the promotion if no HR employees are found
-        const updateQuery = `UPDATE ${pathwayConfig.databaseName}.EMPLOYEE_DATA SET DESIGNATION = 'NEW' WHERE EMPLOYEE_ID IN (${placeholders})`;
+        const updateQuery = `UPDATE ${pathwayConfig.databaseName}.EMPLOYEE_DATA SET DESIGNATION = 'NEW' WHERE EMPLOYEE_ID IN (${placeholders}) AND DESIGNATION != 'HR';`
 
         connection.query(updateQuery, employeeIds, (err, results) => {
             if (err) {
@@ -425,9 +425,11 @@ expressApp.post('/delete_employees', (req, res) => {
     const placeholders = employeeIds.map(() => '?').join(','); // Create placeholders for the query
     const deleteEmployeesQuery = `DELETE FROM ${pathwayConfig.databaseName}.EMPLOYEE_DATA WHERE EMPLOYEE_ID IN (${placeholders})`;
 
-    console.log('DELETE EMPLOYEES QUERY DEBUG:', deleteEmployeesQuery);
-    console.log('EMPLOYEES TO DELETE:', employeeIds);
+    if (DEBUG_INFO) {
 
+        console.log('DELETE EMPLOYEES QUERY DEBUG:', deleteEmployeesQuery);
+        console.log('EMPLOYEES TO DELETE:', employeeIds);
+    }
 
     const deleteTrainingQuery = `DELETE FROM ${pathwayConfig.databaseName}.TRAINING_STATUS WHERE EMPLOYEE_ID IN (${placeholders})`
 
@@ -459,7 +461,7 @@ expressApp.get('/client-reporter', (req, res) => {
 FROM
     bogus_data.NICERLOOKINGTABLE
 WHERE
-    \`Completion Status\` = 'Not Started' AND \`Username\` = '${reportingUser.loginName}'`
+    \`Completion Status\` = 'Incomplete' AND \`Username\` = '${reportingUser.loginName}'`
 
     connection.query(clientRemainderQuery, reportingUser, (err, results) => {
         res.json(results);
@@ -481,7 +483,7 @@ expressApp.get('/filter-reporter', (req, res) => {
         console.log(firstNameReport, lastNameReport);
     }
     const filter_reporter_query = `SELECT
-  CONCAT(COUNT(CASE WHEN \`Completion Status\` = 'Not Started' THEN 1 END), ' items') AS \`Not Started\`,
+  CONCAT(COUNT(CASE WHEN \`Completion Status\` = 'Incomplete' THEN 1 END), ' items') AS \`Incomplete\`,
   CONCAT(COUNT(CASE WHEN \`Completion Status\` = 'Complete' THEN 1 END), ' items') AS \`Complete\`
 FROM NICERLOOKINGTABLE
 WHERE \`First Name\` = '${firstNameReport}' OR \`Last Name\` = '${lastNameReport}';`

@@ -3,6 +3,8 @@
 const DEBUG_INFO = true;
 // GOOD
 
+const DISPLAY_SPLASH = true;
+
 const mysql = require('mysql');
 
 // This should be edited by the end user.
@@ -14,6 +16,10 @@ const pathwayConfig = {
     databaseName: 'bogus_data'
 };
 
+const GREEN = "\u001b[32m"; // <-- Are these really necessary?
+const WHITE = "\u001b[37m";
+
+const BOLD = "\u001b[1m"
 // Create and export the MySQL connection. This is an object
 
 // 
@@ -25,11 +31,22 @@ const connection = mysql.createConnection({
     password: pathwayConfig.password,
     database: pathwayConfig.databaseName
 });
-// ___/=====/
-// \_/
-// This ain't a pipe, chief.
+
+
+const splashScreen = `${GREEN} ${BOLD}
+█▀▀▀▄  ▄▀▀█ ▀▀█▀▀ █   █ █   █  ▄▀▀█ █   █ TM
+█  ▄▀ █   █   █   █ ▄▄█ █   █ █   █ █   █  
+█▄▀   █▄▀▀█   █   █▀  █ █ █ █ █▄▀▀█  ▀▄▀   
+█     █   █   █   █   █ █▄▀▄▀ █   █   █
+
+Employee Management and Onboarding System`
+
+
 module.exports = {
     pathwayConfig,
     connection,
-    DEBUG_INFO
+    DEBUG_INFO,
+    splashScreen,
+    DISPLAY_SPLASH, GREEN, WHITE, BOLD
 };
+

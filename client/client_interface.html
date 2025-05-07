@@ -33,24 +33,26 @@
         <button id="train_COHORT" onclick="accessTraining('cohort')">Cohort Training</button>
         <button id="train_SKILLS" onclick="accessTraining('skills')">Skills Workshop</button>
         <button id="train_GEN" onclick="accessTraining('general')">General Training</button>
-        <button id="CLIENT_SUBMIT" onclick="checkOffsGun()">Save Changes</button>
+        <button id="CLIENT_SUBMIT" onclick="clientSubmitJankRemover()">Save Changes</button>
     </div>
 
     <div class="toolbox">
         <div class="tablecontainer">
-
             <div class="oops" id="errorSpot"></div>
             <table id="data-table">
                 <thead></thead>
                 <tbody></tbody>
             </table>
-
-
         </div>
     </div>
 </body>
 <script>
  startClientInterface();
+
+ async function clientSubmitJankRemover() {
+    checkOffsGun();
+    await callYouOutonYourBullhonkey();
+ }
 </script>
 
 </html>

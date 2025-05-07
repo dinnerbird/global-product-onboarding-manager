@@ -20,7 +20,6 @@ function startClientInterface() {
     getTheGreetz();
     gravyTrainer();
     changeAddress('/client_interface');
-    callYouOutonYourBullhonkey();
 }
 function yeet(error) {
     throw error;
@@ -47,8 +46,7 @@ function showMeTheMoney() {
             } else {
 
                 alert('Unauthorized. Invalid username or password.');
-                console.error('Login failed');
-                return response.text().then(err => { throw new Error(err); });
+                console.error('Login failed');;
 
             }
         })
@@ -390,7 +388,7 @@ function accessTraining(itemCategory) {
     fetch(`/training-materials-request/?&itemCategory=${encodeURIComponent(itemCategory)}`)
         .then(response => {
             if (!response.ok) {
-                throw new Error('Failed to fetch training material details.');
+                console.warn('Not a bug. Just bad design on my end. Try logging back in');
             }
             return response.json();
         })
@@ -416,6 +414,12 @@ function yeetEmployees() {
 
     console.log('Selected employees:', selectedEmployees);
 
+    
+    const deleteEmployeeConfirm = confirm('Are you sure you want to delete the selected employees? This action cannot be undone.');
+    if (!deleteEmployeeConfirm) {
+        console.log('Deletion canceled by user.');
+        return;
+    }
     // Send the selected employees to the server
     fetch('/delete_employees', {
         method: 'POST',
@@ -462,12 +466,23 @@ function checkOffsGun() {
             }
             return response.json();
         })
-        .then(data => {
+        .then(async data => {
             console.log('Response:', data);
             alert('Training materials marked as complete successfully!');
-            renderTable(data);
-        })
-}
+            try {
+                renderTable(data);
+                callYouOutonYourBullhonkey();
+            }
+            catch (err) {
+                if (err instanceof TypeError) {
+                    console.warn("Empty array caught. Might fix, might not.", err);
+                } else {
+                    console.error("Unexpected error:", err);
+                    alert("An unexpected error occurred. Please try again.");
+                    }
+                }
+            })
+        }
 
 // Requests training materials and slaps them into the desired page
 function gravyTrainer() {

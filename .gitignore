@@ -400,3 +400,4 @@ FodyWeavers.xsd
 *.sln.iml
 
 # let's not have that happen again
+components/config.js

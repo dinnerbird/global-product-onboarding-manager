@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Pathway Manual</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/boring_corporate.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+    <!-- The content below will be included at the end of the <head> element. -->
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            // your code here
+        });
+    </script>
+</head>
+
+<body for="html-export">
+    <div class="header_bar">
+        <img src="../res/Pathway_logo.png" alt="Pathway Logo" style="max-width: 120px;" />
+
+        <h2 class="header-title">Pathway Manual</h2>
+    </div>
+    <div class="content">
+        <ul>
+            <li><a href="#i-system-overview">I. System Overview</a></li>
+        </ul>
+        <ul>
+            <li><a href="#ii-application-overview">II. Application Overview</a></li>
+            <ul>
+                <li><a href="#21-login-page">2.1 Login Page</a></li>
+                <li><a href="#22-dashboard-interface">2.2 Dashboard Interface</a></li>
+                <ul>
+                    <li><a href="#221-manager-dashboard">2.2.1 Manager Dashboard:</a></li>
+                    <li><a href="#222-new-employee-dashboard">2.2.2 New Employee Dashboard</a></li>
+                    <li><a href="#23-addedit-employees">2.3 Add/Edit Employees</a></li>
+                    <li><a href="#24-generate-reports">2.4 Generate Reports</a></li>
+                    <li><a href="#25-known-limitations">2.5 Known Limitations</a></li>
+                </ul>
+            </ul>
+        </ul>
+
+        </ul>
+        <ul>
+            <li>
+                <a href="#iii-system-navigation--user-instructions">III. System Navigation &amp; User
+                    instructions</a>
+            </li>
+            <ul>
+                <li><a href="#31-login-screen">3.1. Login Screen</a></li>
+                <li><a href="#32-main-menu-navigation">3.2. Main Menu Navigation</a>
+                    <ul>
+                        <li><a href="#321-manager-dashboard">3.2.1 Manager Dashboard</a></li>
+                        <li><a href="#322-employee-dashboard">3.2.2 Employee Dashboard</a></li>
+                    </ul>
+                </li>
+                <li><a href="#33-edit-employee">3.3 Edit Employee</a>
+                    <ul>
+                        <li><a href="#key-features">Key Features:</a></li>
+                    </ul>
+                </li>
+                <li><a href="#34-add-new-employee">3.4 Add New Employee</a></li>
+            </ul>
+        </ul>
+        <ul>
+            <li><a href="#iv-support-and-troubleshooting">IV. Support and Troubleshooting</a>
+                <ul>
+                    <li><a href="#general-help">General Help</a></li>
+                    <li><a href="#login-help">Login Help</a></li>
+                </ul>
+            </li>
+        </ul>
+        </li>
+
+        </ul>
+        <h2 id="i-system-overview">I. System Overview </h2>
+        <p>PATHWAY is a standalone employee training tracing system designed to improve the<br>
+            training preparation process for the Global Products Team at Enterprise Mobility.</p>
+        <p>The system provides a centralized platform where managers can assign training tasks, track employee
+            progress,
+            and generate complete reports, while employees can easily view and complete and report their
+            required
+            training. PATHWAY was created to replace the Global Products department's previous manual
+            process.<br>
+            By using PATHWAY, Enterprise Mobility aims to improve training accountability, reduce administrative
+            workload, and ensure that employees are properly prepared for their roles.</p>
+        <p>PATHWAY is a secure, web-based application that does not require integration with Enterprise's
+            internal
+            infrastructure.</p>
+        <p>Access is limited to <strong>authorized Enterprise Mobility employees</strong>, with managers
+            responsible for
+            creating employee accounts. The system supports distinct user roles — including "HR" and "New"
+            employees of
+            the Global products Department — ensuring each user only sees the tools and data relevant to their
+            role.</p>
+        <h2 id="ii-application-overview">II. Application Overview </h2>
+        <p>This section outlines the primary features and functionality available within the PATHWAY system.</p>
+        <p>The PATHWAY system is a browser-based application with a user-friendly interface that supports two
+            main user
+            roles: Management and Employee. Managers can add employees, assign training tasks, track progress,
+            and
+            generate reports, while employees log in to view and log their completed assigned training. All
+            system
+            functionality is accessed via secure login, and navigation is designed to be easy to use for
+            non-technical
+            users.</p>
+        <p>The following sections provide visual guidance for logging in, managing training records, and using
+            PATHWAY's
+            core features.</p>
+        <h2 id="21-login-page">2.1 Login Page </h2>
+        <p>Access to the PATHWAY system is restricted to administrative users. Each admin must enter a valid
+            username
+            and password to log in. All passwords are securely hashed and salted using bcrypt encryption
+            standards to
+            protect user credentials. Once authenticated, users are redirected to the dashboard where core
+            features can
+            be accessed.</p>
+        <h2 id="22-dashboard-interface">2.2 Dashboard Interface </h2>
+        <p>The dashboard serves as the central workspace for all user actions. From this interface,
+            administrators can
+            manage employee records, view training progress, and interact with uploaded training materials. The
+            layout
+            is designed to be user-friendly and intuitive, allowing quick access to all primary functions.</p>
+        <p>There are two main user login types: Managers and Employees.</p>
+        <h4 id="221-manager-dashboard">2.2.1 Manager Dashboard: </h4>
+        <p>Within the PATHWAY management dashboard, managers have the ability to add and edit employee profiles,
+            monitor
+            individual training progress, and generate PDF reports summarizing completion status and assigned
+            tasks.</p>
+        <h4 id="222-new-employee-dashboard">2.2.2 New Employee Dashboard </h4>
+        <p>The PATHWAY Employee Dashboard provides new hires with a personalized view of their assigned training
+            tasks.
+            Employees are greeted with a personalized interface that lists their outstanding training modules,
+            categorized by training type. Users can select training categories to filter module types, mark
+            items as
+            completed, and track their own progress</p>
+        <h3 id="23-addedit-employees">2.3 Add/Edit Employees </h3>
+        <p>The add and edit employees interface allows managers to easily create, update, or deactivate employee
+            profiles within the PATHWAY system. When onboarding a new hire, managers can enter essential
+            information
+            such as name, job title, email address, etc. to create a new employee profile for the system.</p>
+        <p>For existing employees, the edit employee interface provides a quick way to update roles, correct
+            information, and adjust access as needed. The layout minimizes errors and ensures that all employee
+            records
+            remain accurate and up to date.</p>
+        <h3 id="24-generate-reports">2.4 Generate Reports </h3>
+        <p>The PATHWHAY system includes a built-in reporting feature that allows managers to generate
+            professional,
+            print-ready PDF reports summarizing employee training progress. These reports display key details
+            such as
+            complete tasks, outstanding assignments, and training categories. This functionality is useful for
+            internal
+            documentation, performance reviews, and client-facing updates that require proof of training
+            completion.
+            Managers can export accurate, up-to-date information without manually compiling spreadsheets or
+            emails,
+            saving time and minimizing admin overhead.</p>
+        <h3 id="25-known-limitations">2.5 Known Limitations </h3>
+        <p><code>TBA - waiting on development</code></p>
+        <h2 id="iii-system-navigation--user-instructions">III. System Navigation &amp; User instructions </h2>
+        <p>The PATHWAY Training Tracking System has been designed with ease of use in mind, offering a
+            straightforward
+            navigation structure and intuitive user actions. All functions are accessible via the main dashboard
+            once an
+            admin user logs in.</p>
+        <h3 id="31-login-screen">3.1. Login Screen </h3>
+        <p>The login screen is the entry point for all authorized suers of the PATHWAY Training Tracking system,
+            including both Managers and New Employees</p>
+        <p><strong><em>How to Log In:</em></strong></p>
+        <ul>
+            <li>
+                <p><strong>1. Navigate to the Login Page</strong><br>
+                    a. Open a secure browser and go to the PATHWAY system URL provided by your<br>
+                    team lead or manager.</p>
+            </li>
+            <li>
+                <p><strong>2. Enter Your Credentials</strong><br>
+                    a. Type your <strong>username</strong> and <strong>password</strong> into the designated
+                    fields.<br>
+                    i. For new employees, credentials are provided by your manager.<br>
+                    b. Each user has a unique login—passwords are system-generated and securely<br>
+                    encrypted.</p>
+            </li>
+            <li>
+                <p><strong>3. Click the Green “Login” Button</strong></p>
+            </li>
+            <li>
+                <p><strong>4. This will authenticate your account and direct you to the dashboard <em>specific
+                            to your
+                            role</em>.</strong></p>
+            </li>
+        </ul>
+        <h3 id="32-main-menu-navigation">3.2. Main Menu Navigation </h3>
+        <h4 id="321-manager-dashboard">3.2.1 Manager Dashboard </h4>
+        <p>After logging in, managers are directed to the <strong>Manager Dashboard</strong>, the central hub
+            for
+            overseeing employee training progress and managing system functions.</p>
+        <p><strong>Manager Dashboard map:</strong></p>
+        <ol>
+            <li>
+                <p><strong>Greeting Message</strong></p>
+                <ul>
+                    <li>Displays a personalized welcome (e.g., <em>"Hello, Alex Helton!"</em> ) to confirm login
+                        identity and user role.</li>
+                </ul>
+            </li>
+            <li>
+                <p><strong>Reset Table Button</strong></p>
+                <ul>
+                    <li>Clears all filters and returns the dashboard table to its default view</li>
+                    <li>Helpful when switching between employee Views or after using search/filter features</li>
+                </ul>
+            </li>
+            <li>
+                <p><strong>Edit Employees</strong></p>
+                <ul>
+                    <li>Opens the employee management interface.</li>
+                    <li>Allows the manager to:
+                        <ul>
+                            <li>Add new employees</li>
+                            <li>Edit existing employee records</li>
+                            <li>Promote/demote user roles</li>
+                            <li>Remove inactive users</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <p><strong>Print Report</strong></p>
+                <ul>
+                    <li>Generates a PDF report of the current dashboard table view
+                        <ul>
+                            <li>If employee FIRST and LAST name is entered into the name filter box, it will
+                                generate a
+                                report that that single employee's training status only</li>
+                        </ul>
+                    </li>
+                    <li>Useful for saving or sharing records of training completion across department and for
+                        audit
+                        reports</li>
+                </ul>
+            </li>
+            <li>
+                <p><strong>Filter by status</strong></p>
+                <ul>
+                    <li>Dropdown menu to filter completion status of employee trainings
+                        <ul>
+                            <li>“Incomplete”</li>
+                            <li>“Complete”</li>
+                        </ul>
+                    </li>
+                    <li>Allows manager to focus on specific employee training stages</li>
+                </ul>
+            </li>
+            <li>
+                <p><strong>Filter fields &amp; button</strong></p>
+                <ul>
+                    <li>Input requirement fields (e.g: First name / Last name) to filter one employee<br>
+                        training completing status; indicated on training overview table (7)</li>
+                    <li>The "Filter!" Button applies all selected filters (status + name)</li>
+                </ul>
+            </li>
+            <li>
+                <p><strong>Employee Summary Table</strong></p>
+                <ul>
+                    <li>Displays employee names alongside their training progress
+                        <ul>
+                            <li>Default table shows all employees' training status</li>
+                        </ul>
+                    </li>
+                    <li>Once employee FIRST and LAST NAMES are entered, press FILTER to update the table and
+                        share
+                        specified employee training completion status</li>
+                    <li>"NOT STARTED" and "COMPLETED" columns reflect real-time training item<br>
+                        counts of the employee self-reported training material</li>
+                </ul>
+            </li>
+        </ol>
+        <h4 id="322-employee-dashboard">3.2.2 Employee Dashboard </h4>
+        <p>After logging in with new employee credentials, employees are directed to the <strong>New Employee
+                Onboarding
+                Portal</strong>. This dashboard is where employees can view, organize, and report their assigned
+            training tasks.</p>
+        <ol>
+            <li><strong>Personalized Greeting</strong>
+                <ul>
+                    <li>Personalized Greeting welcomes the user (e.g., <em>"Hello, Joe Rottman!"</em> )</li>
+                </ul>
+            </li>
+            <li><strong>Unfinished Training Counter</strong>
+                <ul>
+                    <li>Represents the number of training assignments the employee has not yet completed</li>
+                    <li><strong><em>“Unfinished Training: [X] Items”</em></strong> - X represents number</li>
+                </ul>
+            </li>
+            <li><strong>Training Category Buttons</strong>
+                <ul>
+                    <li>Training Buttons allows employees to sort and view training items by category:
+                        <ul>
+                            <li>Cohort Training</li>
+                            <li>Skills Workshop</li>
+                            <li>General Training</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ol>
+        <p>These employees prioritize and organize their training session based on type.</p>
+        <ol start="4">
+            <li><strong>Training Table</strong>
+                <ul>
+                    <li>Displays each assigned training item with keys details:
+                        <ul>
+                            <li><strong>Training Title</strong> - The name of the module</li>
+                            <li><strong>Category</strong> - The training type</li>
+                            <li><strong>Checkbox (under Actions)</strong> - Lets the employee mark when the
+                                training
+                                has<br>
+                                been completed<br>
+                                <strong>5. Save Changes Button</strong>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>Once items are checked off, Clicking <strong>Save Changes</strong> updates the
+                        employee's
+                        training<br>
+                        record</li>
+                    <li>The action ensures that managers can view the most up-to-date training status on
+                        their<br>
+                        dashboard</li>
+                </ul>
+            </li>
+        </ol>
+        <h3 id="33-edit-employee">3.3 Edit Employee </h3>
+        <p>The <strong>Edit Employees</strong> interface allows managers to view and manage existing employee
+            records<br>
+            and adding a new employee.</p>
+        <h4 id="key-features">Key Features: </h4>
+        <ol>
+            <li>Reset Table: Refreshes the employee list and clears any filters taht may be applied</li>
+            <li>Remove Selected: Deletes the selected employee(s) from the system<br>
+                <em>2.1.This action</em> <strong><em>CANNOT</em></strong> <em>be undone!</em>
+            </li>
+            <li>Promote Selected: Changes a users' designation from “NEW EMPLOYEE” to<br>
+                “CURRENT EMPLOYEE” or another admin-level role (HR)</li>
+            <li>Demote Selected: Reverts an employee designation<br>
+                (<em>Accidentally promoted an employee from new to current? Selected Demote to correct that
+                    error.</em>)
+            </li>
+            <li>Add employee: Launches a form to enter a new employee's first name, last name, email address,
+                and phone
+                number</li>
+            <li>Sort by Dropdown: Sorts the employee list by their role (New, Current, HR) for quicker filtering
+            </li>
+            <li>Search Fields &amp; Filter Button: Narrow the list of employees by entering a first or last name
+                and
+                clicking “Filter!” to return specific results</li>
+        </ol>
+        <h3 id="34-add-new-employee">3.4 Add New Employee </h3>
+        <p>The <strong>Add Employee</strong> screen allows managers to quickly input new employees' information
+            into<br>
+            the PATHWAY system. This feature enables account creation and ensures new hires can access<br>
+            their assigned trainings list.</p>
+        <p><strong><em>Add Employee Instructions:</em></strong></p>
+        <ul>
+            <li><strong>First Name / Last Name Fields:</strong> Enter the employee's legal first and last name.
+            </li>
+            <li><strong>Email Address:</strong> Input the employee's work email address.</li>
+            <li><strong>Phone Number:</strong> Enter a contact number for record-keeping or communication
+                purposes.</li>
+            <li><strong>Cancel Button:</strong> Discards the current form and returns the manager to the
+                previous
+                screen<br>
+                without saving any entered data.</li>
+            <li><strong>Submit Button:</strong> Saves the entered information and automatically generates
+                login<br>
+                credentials (username and password) for the employee. The username is the employee's<br>
+                name in this format: <code>FirstnameLastname</code> (e.g. <code>JohnSmith</code>). The password
+                is the
+                employee's phone number.</li>
+        </ul>
+        <h2 id="iv-support-and-troubleshooting">IV. Support and Troubleshooting </h2>
+        <h3 id="general-help">General Help </h3>
+        <ul>
+            <li>
+                <p>If issues arise while using Pathway, start by referring to the relevant sections of this user
+                    guide
+                    for step-by-step help. We also recommend checking your internet connection and refreshing
+                    your
+                    browser to reload the system.</p>
+            </li>
+            <li>
+                <p>Each page within Pathway includes a “Help” button that links directly to guidance for that
+                    specific
+                    interface.</p>
+            </li>
+            <li>
+                <p>These guides include clear descriptions of all expected features and functions to help you
+                    resolve
+                    issues quickly.</p>
+            </li>
+        </ul>
+        <h3 id="login-help">Login Help </h3>
+        <ul>
+            <li>
+                <p>If an employee is unable to log in to Pathway, start by verifying whether they have access to
+                    the
+                    system.</p>
+                <ul>
+                    <li><em>You can do this by searching for their name on the Manager Dashboard or in the “Edit
+                            Employees” interface.</em></li>
+                </ul>
+            </li>
+            <li>
+                <p>If the employee is not in the system, add them as a user through the “Edit Employees”
+                    interface. Once
+                    their profile is created, login credentials are automatically generated.</p>
+            </li>
+            <li>
+                <p>The username is the <strong>employee's first and last name</strong> (no spaces or special
+                    characters).</p>
+            </li>
+            <li>
+                <p>The password is the <strong>employee's phone number</strong> (numbers only).</p>
+            </li>
+        </ul>
+        <p>Once the account is created, the manager can share these credentials with the employee. If login
+            problems
+            continue, ensure the credentials are entered correctly and that there are no typos in the employee's
+            profile.</p>
+
+    </div>
+</body>
+
+</html>

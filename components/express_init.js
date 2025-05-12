@@ -27,6 +27,14 @@ expressApp.get('/client_interface' || '/client', (req, res) => {
     
 });
 
+expressApp.get('/manual', (req, res) => {
+    const referer = req.get('Referer');
+    if (!referer) {
+        return res.status(403).send(`Pathway manual not intended for mortal witnesses.`)
+    }
+    res.sendFile(path.join(__dirname, '..', 'docs', 'manual.html'));
+})
+
 // *puts on sunglasses*
 expressApp.get('/', (req, res) => {
     res.send('Looks like your request...just got slashed.');

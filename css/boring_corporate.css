@@ -19,6 +19,26 @@ h1 {
 padding: 2% 10%;
 }
 
+.questionMark {
+    color: white;
+    text-decoration: none;
+    font-size: 100%;
+    margin-left: auto;
+    font-size: 36pt;
+}
+
+.questionMark:visited {
+    color: white;
+}
+
+a:visited {
+    color: #2d3d2d;
+}
+
+a {
+    color:#1a811d;
+}
+
 .bigboytext {
     justify-content: center;
     align-items: center;

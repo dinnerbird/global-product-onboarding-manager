@@ -207,16 +207,16 @@ expressApp.get('/filter', (req, res) => {
     // Doesn't this look nicer?
     const filterOptions = {
         opt_HR: {
-            table: 'EMPLOYEE_DATA',
-            condition: 'DESIGNATION = "HR"',
+            table: 'no_passes_for_you',
+            condition: 'Designation = "HR"',
         },
         opt_NEW: {
-            table: 'EMPLOYEE_DATA',
-            condition: 'DESIGNATION = "NEW"',
+            table: 'no_passes_for_you',
+            condition: 'Designation = "NEW"',
         },
         opt_CURRENT: {
-            table: 'EMPLOYEE_DATA',
-            condition: 'DESIGNATION = "CURRENT"',
+            table: 'no_passes_for_you',
+            condition: 'Designation = "CURRENT"',
         },
         opt_INCOMPLETE: {
             table: 'FILTER_RESULTS',

@@ -19,7 +19,7 @@ expressApp.use(express.static(path.join(__dirname, '..')));
 expressApp.get('/client_interface' || '/client', (req, res) => {
     
     const referer = req.get('Referer');
-    if (!referer || !referer.startsWith('http://localhost:3030')) {
+    if (!referer) {
         return res.status(403).send(`You shall not pass!`);
     }
     res.sendFile(path.join(__dirname, '..', 'client', 'client_interface.html'));
@@ -45,7 +45,7 @@ expressApp.get('/teapot', (req, res) => {
 // The main shebang
 expressApp.get('/hr_interface', (req, res) => {
     const referer = req.get('Referer');
-    if (!referer || !referer.startsWith('http://localhost:3030')) {
+    if (!referer) {
         return res.status(403).send(`You can't just go typing in addresses like that!`);
     }
     res.sendFile(path.join(__dirname, '..', 'hr', 'hr_interface.html'));
@@ -55,7 +55,7 @@ expressApp.get('/hr_interface', (req, res) => {
 expressApp.get('/employee_manager', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'hr', 'employee_manager.html'));
     const referer = req.get('Referer');
-    if (!referer || !referer.startsWith('http://localhost:3030')) {
+    if (!referer) {
         return res.status(403).send(`Replace loose screw behind keyboard and try again...`);
     }
 });
@@ -64,7 +64,7 @@ expressApp.get('/employee_manager', (req, res) => {
 expressApp.get('/add_employee', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'hr', 'add_employee_popup.html'));
     const referer = req.get('Referer');
-    if (!referer || !referer.startsWith('http://localhost:3030')) {
+    if (!referer) {
         return res.status(403).send(`Just what do you think you're doing?`);
     }
 });
@@ -73,7 +73,7 @@ expressApp.get('/add_employee', (req, res) => {
 expressApp.get('/training', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'client', 'training.html'));
     const referer = req.get('Referer');
-    if (!referer || !referer.startsWith('http://localhost:3030')) {
+    if (!referer) {
         return res.status(403).send(`Please do the needful and log in first`);
     } // one thing, I don't know why
 });
@@ -82,7 +82,7 @@ expressApp.get('/training', (req, res) => {
 expressApp.get('/training_material_manager', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'hr', 'training_manager.html'));
     const referer = req.get('Referer');
-    if (!referer || !referer.startsWith('http://localhost:3030')) {
+    if (!referer) {
         return res.status(403).send(`*twitches* We...really like a go-getter around here...synergize and circle back with us sometime...*grimacing*`);
     }
 });

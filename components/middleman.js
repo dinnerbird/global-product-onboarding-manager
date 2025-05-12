@@ -12,7 +12,6 @@
 
 /* Please excuse the egregious use of document.write(). It was not my first choice either, but I'm on a very, VERY short schedule. */
 
-
 /* Developers often have an ugly app but they don't know it's ugly, in the same way parents don't know they have an ugly baby. */
 /* The baby's ugly, but it's still a baby. */
 

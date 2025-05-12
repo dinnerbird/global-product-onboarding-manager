@@ -5,16 +5,23 @@ const DEBUG_INFO = true;
 
 const DISPLAY_SPLASH = true;
 
-const mysql = require('mysql');
+const mysql = require('mysql2');
 
 // This should be edited by the end user.
 // This is for my own personal dev environment. But you'll inevitably use it in production and blame me for it.
 const pathwayConfig = {
-    host: 'localhost', 
-    user: 'dinnerbird',    
-    password: 'buttsauce', 
-    databaseName: 'bogus_data'
+    host: 'lab.koalaindustries.net', 
+    user: 'root',    
+    password: 'buttsauce12345', 
+    databaseName: 'bogus_data',
+    portNumber: 27015
 };
+
+// Remote server:
+// lab.koalaindustries.net:27015, root, buttsauce12345
+
+// Local test:
+// localhost:3030, dinnerbird, buttsauce
 
 const GREEN = "\u001b[32m"; // <-- Are these really necessary?
 const WHITE = "\u001b[37m";
@@ -29,7 +36,8 @@ const connection = mysql.createConnection({
     host: pathwayConfig.host,
     user: pathwayConfig.user,
     password: pathwayConfig.password,
-    database: pathwayConfig.databaseName
+    database: pathwayConfig.databaseName,
+    port: pathwayConfig.portNumber
 });
 
 

@@ -10,7 +10,10 @@ const mysql = require('mysql2');
 // This should be edited by the end user.
 // This is for my own personal dev environment. But you'll inevitably use it in production and blame me for it.
 const pathwayConfig = {
-// This object intentionally left empty.
+    host: 'localhost',
+    user: 'dinnerbird',
+    password: 'buttsauce',
+    databaseName: 'bogus_data'
 };
 
 const GREEN = "\u001b[32m"; // <-- Are these really necessary?

@@ -323,7 +323,8 @@ expressApp.post('/promote_employees', (req, res) => {
         }
 
         // Proceed with the promotion if no HR employees are found
-        const updateQuery = `UPDATE ${pathwayConfig.databaseName}.EMPLOYEE_DATA SET DESIGNATION = 'CURRENT' WHERE EMPLOYEE_ID IN (${placeholders}) AND DESIGNATION = 'HR'`;
+        const updateQuery = `UPDATE ${pathwayConfig.databaseName}.EMPLOYEE_DATA SET DESIGNATION = 'CURRENT' WHERE EMPLOYEE_ID IN (${placeholders}) AND DESIGNATION != 'HR'`;
+        // This line has caused me more headaches than any other.
 
         connection.query(updateQuery, employeeIds, (err, results) => {
             if (err) {

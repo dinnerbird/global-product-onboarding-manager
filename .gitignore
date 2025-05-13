@@ -401,3 +401,4 @@ FodyWeavers.xsd
 
 # let's not have that happen again
 components/config.js
+components/config.js
